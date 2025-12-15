@@ -1,0 +1,15 @@
+{
+  "allowedDirectories": [
+    "/Users/melkione/Projets/Cowai"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Read(**/*)",
+      "Write(projects/**/*)",
+      "Write(versions/**/*)",
+      "Write(.state.json)"
+    ]
+  }
+}

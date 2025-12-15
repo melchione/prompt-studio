@@ -1,0 +1,29 @@
+# State files (user-specific)
+.state.json
+
+# Projects data (user-specific)
+projects/*/
+
+# Versions (user-specific)
+versions/*/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
