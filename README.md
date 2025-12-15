@@ -93,8 +93,27 @@ python3 tools/server.py
 | **Monaco Editor** | Éditeur de code avec coloration syntaxique Markdown |
 | **Navigation projet** | Sélection projet → agent → section |
 | **Switch FR/EN** | Basculer entre les versions linguistiques |
+| **Traduction** | Copier une section vers l'autre langue pour traduction |
+| **Réorganisation** | Drag & drop pour réordonner les sections |
+| **Création de section** | Modal avec numérotation automatique et création bilingue |
+| **Suppression** | Supprimer une section (par langue) |
+| **Synchronisation** | Copier les sections manquantes vers l'autre langue |
 | **Insertion d'includes** | Modal pour parcourir et insérer des références |
 | **Build intégré** | Compiler et prévisualiser le résultat |
+
+### Gestion des traductions
+
+L'interface affiche un indicateur visuel pour chaque section :
+- ✓ (vert) : La traduction existe dans l'autre langue
+- ! (rouge) : La section n'a pas encore été traduite
+
+**Actions disponibles :**
+- **Bouton "Traduire vers EN/FR"** : Copie la section actuelle vers l'autre langue
+- **Bouton "🔄" (sidebar)** : Synchronise toutes les sections manquantes entre FR et EN
+
+### Réorganisation des sections
+
+Glissez-déposez les sections dans la sidebar pour modifier leur ordre. Les fichiers sont automatiquement renommés avec le bon numéro (01-, 02-, etc.).
 
 ### Raccourcis clavier
 
@@ -126,6 +145,11 @@ L'éditeur communique via une API :
 | `GET /api/state` | État actuel (projet, agent, phase) |
 | `GET /api/projects` | Liste des projets |
 | `GET /api/projects/{name}/agents` | Agents d'un projet |
+| `GET /api/projects/{p}/agents/{a}/{lang}/{section}` | Contenu d'une section |
+| `POST /api/projects/{p}/agents/{a}/{lang}/{section}` | Sauvegarder une section |
+| `POST /api/projects/{p}/agents/{a}/translate` | Copier section vers autre langue |
+| `POST /api/projects/{p}/agents/{a}/reorder` | Réordonner les sections |
+| `POST /api/projects/{p}/agents/{a}/delete-section` | Supprimer une section |
 | `GET /api/includes` | Sections disponibles pour includes |
 | `POST /api/build` | Compiler un prompt |
 

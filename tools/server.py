@@ -106,6 +106,24 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                     self._send_json({"error": "Invalid path"}, 400)
             elif path == "/api/build":
                 self._build(data)
+            elif path.endswith("/translate"):
+                # /api/projects/{project}/agents/{agent}/translate
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._translate_section(project, agent, data)
+            elif path.endswith("/reorder"):
+                # /api/projects/{project}/agents/{agent}/reorder
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._reorder_sections(project, agent, data)
+            elif path.endswith("/delete-section"):
+                # /api/projects/{project}/agents/{agent}/delete-section
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._delete_section(project, agent, data)
             else:
                 self._send_json({"error": "Unknown endpoint"}, 404)
         except Exception as e:
@@ -355,6 +373,107 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                             })
 
         self._send_json({"includes": includes})
+
+    def _translate_section(self, project: str, agent: str, data: dict):
+        """Copie une section vers une autre langue."""
+        section = data.get("section")
+        from_lang = data.get("from_lang")
+        to_lang = data.get("to_lang")
+
+        if not all([section, from_lang, to_lang]):
+            self._send_json({"error": "section, from_lang, to_lang required"}, 400)
+            return
+
+        source_path = self.projects_dir / project / "agents" / agent / from_lang / section
+        target_path = self.projects_dir / project / "agents" / agent / to_lang / section
+
+        if not source_path.exists():
+            self._send_json({"error": f"Source section not found: {from_lang}/{section}"}, 404)
+            return
+
+        # Créer le dossier cible si nécessaire
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Copier le contenu avec un marqueur de traduction
+        content = source_path.read_text(encoding="utf-8")
+
+        # Si le fichier cible n'existe pas, ajouter un header
+        if not target_path.exists():
+            header = f"<!-- TODO: Traduire depuis {from_lang} -->\n\n"
+            content = header + content
+
+        target_path.write_text(content, encoding="utf-8")
+
+        self._send_json({
+            "success": True,
+            "message": f"Section copiée vers {to_lang}/{section}",
+            "from": f"{from_lang}/{section}",
+            "to": f"{to_lang}/{section}"
+        })
+
+    def _reorder_sections(self, project: str, agent: str, data: dict):
+        """Réordonne les sections en les renommant."""
+        lang = data.get("lang", "fr")
+        order = data.get("order", [])  # Liste des noms de fichiers dans le nouvel ordre
+
+        if not order:
+            self._send_json({"error": "order list required"}, 400)
+            return
+
+        lang_path = self.projects_dir / project / "agents" / agent / lang
+
+        if not lang_path.exists():
+            self._send_json({"error": "Language folder not found"}, 404)
+            return
+
+        # Phase 1: Renommer vers des fichiers temporaires
+        temp_files = {}
+        for i, filename in enumerate(order):
+            old_path = lang_path / filename
+            if old_path.exists():
+                # Nouveau nom avec le bon numéro
+                base_name = filename.split("-", 1)[1] if "-" in filename else filename
+                new_name = f"{(i + 1):02d}-{base_name}"
+                temp_name = f"_temp_{i}_{filename}"
+                temp_path = lang_path / temp_name
+
+                # Stocker le contenu et supprimer l'ancien
+                content = old_path.read_text(encoding="utf-8")
+                temp_files[temp_name] = (new_name, content)
+                old_path.unlink()
+
+        # Phase 2: Créer les nouveaux fichiers
+        renamed = []
+        for temp_name, (new_name, content) in temp_files.items():
+            new_path = lang_path / new_name
+            new_path.write_text(content, encoding="utf-8")
+            renamed.append({"old": temp_name.replace("_temp_", "").split("_", 1)[1], "new": new_name})
+
+        self._send_json({
+            "success": True,
+            "renamed": renamed
+        })
+
+    def _delete_section(self, project: str, agent: str, data: dict):
+        """Supprime une section."""
+        section = data.get("section")
+        lang = data.get("lang")
+
+        if not section or not lang:
+            self._send_json({"error": "section and lang required"}, 400)
+            return
+
+        section_path = self.projects_dir / project / "agents" / agent / lang / section
+
+        if not section_path.exists():
+            self._send_json({"error": "Section not found"}, 404)
+            return
+
+        section_path.unlink()
+        self._send_json({
+            "success": True,
+            "deleted": f"{lang}/{section}"
+        })
 
     def _build(self, data: dict):
         """Lance un build via le script build.py."""

@@ -84,6 +84,9 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-primary {
@@ -109,6 +112,21 @@
             background: var(--border-color);
         }
 
+        .btn-warning {
+            background: var(--accent-warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
         /* Main content */
         .main {
             display: flex;
@@ -118,7 +136,7 @@
 
         /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 300px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border-color);
             display: flex;
@@ -140,6 +158,11 @@
             text-transform: uppercase;
         }
 
+        .sidebar-actions {
+            display: flex;
+            gap: 5px;
+        }
+
         .section-list {
             flex: 1;
             overflow-y: auto;
@@ -155,6 +178,7 @@
             align-items: center;
             margin-bottom: 4px;
             transition: background 0.2s;
+            position: relative;
         }
 
         .section-item:hover {
@@ -163,6 +187,32 @@
 
         .section-item.active {
             background: var(--accent-primary);
+        }
+
+        .section-item.dragging {
+            opacity: 0.5;
+            background: var(--accent-primary);
+        }
+
+        .section-item.drag-over {
+            border-top: 2px solid var(--accent-warning);
+        }
+
+        .section-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .section-item:active .drag-handle {
+            cursor: grabbing;
         }
 
         .section-name {
@@ -176,6 +226,60 @@
 
         .section-item.active .section-meta {
             color: rgba(255,255,255,0.7);
+        }
+
+        .section-actions {
+            display: none;
+            gap: 5px;
+        }
+
+        .section-item:hover .section-actions {
+            display: flex;
+        }
+
+        .section-item.active .section-actions {
+            display: flex;
+        }
+
+        .section-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .section-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        .section-item.active .section-btn {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .section-item.active .section-btn:hover {
+            color: white;
+        }
+
+        /* Translation indicator */
+        .translation-status {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--bg-tertiary);
+        }
+
+        .translation-status.missing {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .translation-status.exists {
+            background: var(--accent-success);
+            color: white;
         }
 
         /* Editor area */
@@ -197,6 +301,12 @@
         .editor-path {
             font-size: 13px;
             color: var(--text-secondary);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .lang-toggle {
@@ -264,6 +374,10 @@
             border: 1px solid var(--border-color);
         }
 
+        .modal.small {
+            width: 400px;
+        }
+
         .modal-header {
             padding: 20px;
             border-bottom: 1px solid var(--border-color);
@@ -297,6 +411,33 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
         }
 
         /* Include list */
@@ -352,11 +493,6 @@
             font-family: monospace;
         }
 
-        .include-preview {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
         /* Toast */
         .toast {
             position: fixed;
@@ -379,6 +515,11 @@
             color: white;
         }
 
+        .toast.warning {
+            background: var(--accent-warning);
+            color: white;
+        }
+
         .toast.active {
             display: block;
         }
@@ -391,6 +532,13 @@
             padding: 2px 6px;
             border-radius: 4px;
             margin-left: 10px;
+        }
+
+        /* Help text */
+        .help-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -413,7 +561,7 @@
                 📎 Include
                 <span class="shortcut-hint">Ctrl+I</span>
             </button>
-            <button class="btn btn-secondary" onclick="addSection()">+ Section</button>
+            <button class="btn btn-secondary" onclick="openAddSectionModal()">+ Section</button>
             <button class="btn btn-primary" onclick="saveSection()">💾 Sauvegarder</button>
             <button class="btn btn-success" onclick="buildProject()">🔨 Build</button>
         </div>
@@ -425,6 +573,9 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h3>Sections</h3>
+                <div class="sidebar-actions">
+                    <button class="btn btn-small btn-secondary" onclick="syncTranslations()" title="Synchroniser les traductions">🔄</button>
+                </div>
             </div>
             <div class="section-list" id="sectionList">
                 <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
@@ -437,9 +588,14 @@
         <div class="editor-container">
             <div class="editor-header">
                 <span class="editor-path" id="editorPath">Aucun fichier sélectionné</span>
-                <div class="lang-toggle">
-                    <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
-                    <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+                <div class="editor-actions">
+                    <button class="btn btn-small btn-warning" onclick="translateSection()" id="translateBtn" style="display: none;">
+                        🌐 Traduire vers <span id="targetLang">EN</span>
+                    </button>
+                    <div class="lang-toggle">
+                        <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
+                        <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+                    </div>
                 </div>
             </div>
             <div id="editor"></div>
@@ -472,6 +628,36 @@
         </div>
     </div>
 
+    <!-- Add Section Modal -->
+    <div class="modal-overlay" id="addSectionModal">
+        <div class="modal small">
+            <div class="modal-header">
+                <h2>➕ Nouvelle section</h2>
+                <button class="modal-close" onclick="closeAddSectionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Numéro de la section</label>
+                    <input type="number" class="form-input" id="sectionNumber" min="1" max="99" value="1" placeholder="01">
+                    <div class="help-text">Le numéro définit l'ordre d'apparition</div>
+                </div>
+                <div class="form-group">
+                    <label>Nom de la section</label>
+                    <input type="text" class="form-input" id="sectionName" placeholder="ex: context, instructions, examples">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="createBothLangs" checked> Créer dans les deux langues (FR + EN)
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddSectionModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="createSection()">Créer</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
@@ -487,7 +673,9 @@
             editor: null,
             modified: false,
             includes: [],
-            selectedInclude: null
+            selectedInclude: null,
+            sections: { fr: [], en: [] },
+            draggedItem: null
         };
 
         // API helpers
@@ -593,29 +781,128 @@
             }
 
             const data = await API.get(`/projects/${project}/agents/${agent}`);
+            state.sections = data.sections;
+            renderSectionList();
+        }
+
+        // Render section list with drag & drop
+        function renderSectionList() {
             const list = document.getElementById('sectionList');
             list.innerHTML = '';
 
-            const sections = data.sections[state.lang] || [];
+            const sections = state.sections[state.lang] || [];
             if (sections.length === 0) {
                 list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Aucune section</div>';
                 return;
             }
 
-            sections.forEach(s => {
+            // Get sections from other language for comparison
+            const otherLang = state.lang === 'fr' ? 'en' : 'fr';
+            const otherSections = (state.sections[otherLang] || []).map(s => s.name);
+
+            sections.forEach((s, index) => {
                 const item = document.createElement('div');
                 item.className = 'section-item' + (s.name === state.section ? ' active' : '');
+                item.draggable = true;
+                item.dataset.index = index;
+                item.dataset.name = s.name;
+
+                const hasTranslation = otherSections.includes(s.name);
+                const translationBadge = hasTranslation
+                    ? `<span class="translation-status exists" title="Traduction ${otherLang.toUpperCase()} existe">✓</span>`
+                    : `<span class="translation-status missing" title="Pas de traduction ${otherLang.toUpperCase()}">!</span>`;
+
                 item.innerHTML = `
-                    <span class="section-name">${s.name}</span>
-                    <span class="section-meta">${s.words} mots</span>
+                    <div class="section-info">
+                        <span class="drag-handle" title="Glisser pour réordonner">⠿</span>
+                        <span class="section-name">${s.name}</span>
+                        ${translationBadge}
+                    </div>
+                    <div class="section-actions">
+                        <span class="section-meta">${s.words} mots</span>
+                        <button class="section-btn" onclick="event.stopPropagation(); deleteSection('${s.name}')" title="Supprimer">🗑️</button>
+                    </div>
                 `;
-                item.onclick = () => selectSection(s.name);
+
+                // Click to select
+                item.onclick = (e) => {
+                    if (!e.target.classList.contains('section-btn')) {
+                        selectSection(s.name, item);
+                    }
+                };
+
+                // Drag events
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragleave', handleDragLeave);
+
                 list.appendChild(item);
             });
         }
 
+        // Drag and drop handlers
+        function handleDragStart(e) {
+            state.draggedItem = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.section-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            state.draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (e.target.closest('.section-item') && e.target.closest('.section-item') !== state.draggedItem) {
+                e.target.closest('.section-item').classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            e.target.closest('.section-item')?.classList.remove('drag-over');
+        }
+
+        async function handleDrop(e) {
+            e.preventDefault();
+            const targetItem = e.target.closest('.section-item');
+            if (!targetItem || targetItem === state.draggedItem) return;
+
+            targetItem.classList.remove('drag-over');
+
+            // Get new order
+            const items = [...document.querySelectorAll('.section-item')];
+            const draggedIndex = parseInt(state.draggedItem.dataset.index);
+            const targetIndex = parseInt(targetItem.dataset.index);
+
+            // Reorder the array
+            const sections = state.sections[state.lang].map(s => s.name);
+            const [removed] = sections.splice(draggedIndex, 1);
+            sections.splice(targetIndex, 0, removed);
+
+            // Call API to reorder
+            updateStatus('Réorganisation...');
+            const result = await API.post(`/projects/${state.project}/agents/${state.agent}/reorder`, {
+                lang: state.lang,
+                order: sections
+            });
+
+            if (result.success) {
+                showToast('Sections réorganisées ✓', 'success');
+                await loadSections(state.project, state.agent);
+            } else {
+                showToast('Erreur lors de la réorganisation', 'error');
+            }
+        }
+
         // Select section
-        async function selectSection(name) {
+        async function selectSection(name, element) {
             if (state.modified && !confirm('Changements non sauvegardés. Continuer ?')) {
                 return;
             }
@@ -625,16 +912,122 @@
 
             // Update UI
             document.querySelectorAll('.section-item').forEach(el => el.classList.remove('active'));
-            event.target.closest('.section-item')?.classList.add('active');
+            element?.classList.add('active');
 
             // Load content
             const data = await API.get(`/projects/${state.project}/agents/${state.agent}/${state.lang}/${name}`);
-            state.editor.setValue(data.content);
+            state.editor.setValue(data.content || '');
 
             document.getElementById('editorPath').textContent =
                 `${state.project} / ${state.agent} / ${state.lang} / ${name}`;
 
+            // Update translate button
+            updateTranslateButton();
+
             updateStatus('Section chargée');
+        }
+
+        // Update translate button visibility and text
+        function updateTranslateButton() {
+            const btn = document.getElementById('translateBtn');
+            const targetLang = document.getElementById('targetLang');
+
+            if (!state.section) {
+                btn.style.display = 'none';
+                return;
+            }
+
+            const otherLang = state.lang === 'fr' ? 'en' : 'fr';
+            const otherSections = (state.sections[otherLang] || []).map(s => s.name);
+            const hasTranslation = otherSections.includes(state.section);
+
+            btn.style.display = 'flex';
+            targetLang.textContent = otherLang.toUpperCase();
+
+            if (hasTranslation) {
+                btn.textContent = `🌐 Voir ${otherLang.toUpperCase()}`;
+            } else {
+                btn.innerHTML = `🌐 Traduire vers <span id="targetLang">${otherLang.toUpperCase()}</span>`;
+            }
+        }
+
+        // Translate section to other language
+        async function translateSection() {
+            if (!state.project || !state.agent || !state.section) return;
+
+            const otherLang = state.lang === 'fr' ? 'en' : 'fr';
+            const otherSections = (state.sections[otherLang] || []).map(s => s.name);
+            const hasTranslation = otherSections.includes(state.section);
+
+            if (hasTranslation) {
+                // Just switch to other language
+                switchLang(otherLang);
+            } else {
+                // Create translation
+                if (!confirm(`Copier "${state.section}" vers ${otherLang.toUpperCase()} pour traduction ?`)) {
+                    return;
+                }
+
+                const result = await API.post(`/projects/${state.project}/agents/${state.agent}/translate`, {
+                    section: state.section,
+                    from_lang: state.lang,
+                    to_lang: otherLang
+                });
+
+                if (result.success) {
+                    showToast(`Section copiée vers ${otherLang.toUpperCase()} ✓`, 'success');
+                    await loadSections(state.project, state.agent);
+                    switchLang(otherLang);
+                } else {
+                    showToast(result.error || 'Erreur', 'error');
+                }
+            }
+        }
+
+        // Sync all translations (copy missing sections)
+        async function syncTranslations() {
+            if (!state.project || !state.agent) {
+                showToast('Sélectionnez d\'abord un agent', 'error');
+                return;
+            }
+
+            const frSections = (state.sections.fr || []).map(s => s.name);
+            const enSections = (state.sections.en || []).map(s => s.name);
+
+            // Find missing
+            const missingInEn = frSections.filter(s => !enSections.includes(s));
+            const missingInFr = enSections.filter(s => !frSections.includes(s));
+
+            if (missingInEn.length === 0 && missingInFr.length === 0) {
+                showToast('Toutes les sections sont synchronisées ✓', 'success');
+                return;
+            }
+
+            const msg = [];
+            if (missingInEn.length > 0) msg.push(`${missingInEn.length} section(s) à copier vers EN`);
+            if (missingInFr.length > 0) msg.push(`${missingInFr.length} section(s) à copier vers FR`);
+
+            if (!confirm(`Synchroniser les traductions ?\n\n${msg.join('\n')}`)) {
+                return;
+            }
+
+            // Copy missing sections
+            let copied = 0;
+            for (const section of missingInEn) {
+                await API.post(`/projects/${state.project}/agents/${state.agent}/translate`, {
+                    section, from_lang: 'fr', to_lang: 'en'
+                });
+                copied++;
+            }
+            for (const section of missingInFr) {
+                await API.post(`/projects/${state.project}/agents/${state.agent}/translate`, {
+                    section, from_lang: 'en', to_lang: 'fr'
+                });
+                copied++;
+            }
+
+            showToast(`${copied} section(s) synchronisée(s) ✓`, 'success');
+            await loadSections(state.project, state.agent);
         }
 
         // Switch language
@@ -652,18 +1045,20 @@
             });
 
             // Reload sections
-            await loadSections(state.project, state.agent);
+            renderSectionList();
 
             // Reload current section if exists
             if (state.section) {
-                const data = await API.get(`/projects/${state.project}/agents/${state.agent}/${lang}/${state.section}`);
-                if (!data.error) {
-                    state.editor.setValue(data.content);
+                const sectionExists = (state.sections[lang] || []).some(s => s.name === state.section);
+                if (sectionExists) {
+                    const data = await API.get(`/projects/${state.project}/agents/${state.agent}/${lang}/${state.section}`);
+                    state.editor.setValue(data.content || '');
                     document.getElementById('editorPath').textContent =
                         `${state.project} / ${state.agent} / ${lang} / ${state.section}`;
                 } else {
-                    state.editor.setValue('# Section non traduite\n\nCette section n\'existe pas encore en ' + lang);
+                    state.editor.setValue(`# Section non traduite\n\nCette section n'existe pas encore en ${lang.toUpperCase()}.\n\nCliquez sur "Traduire" pour créer la version ${lang.toUpperCase()}.`);
                 }
+                updateTranslateButton();
             }
         }
 
@@ -684,23 +1079,85 @@
             loadSections(state.project, state.agent);
         }
 
-        // Add section
-        async function addSection() {
+        // Add section modal
+        function openAddSectionModal() {
             if (!state.project || !state.agent) {
                 showToast('Sélectionnez d\'abord un agent', 'error');
                 return;
             }
 
-            const name = prompt('Nom de la section (ex: 05-examples.md):');
-            if (!name) return;
-
-            // Create empty file
-            await API.post(`/projects/${state.project}/agents/${state.agent}/${state.lang}/${name}`, {
-                content: `# ${name.replace(/^\d+-/, '').replace('.md', '')}\n\n<!-- TODO: Rédiger cette section -->\n`
+            // Calculate next section number
+            const sections = state.sections[state.lang] || [];
+            let maxNum = 0;
+            sections.forEach(s => {
+                const match = s.name.match(/^(\d+)-/);
+                if (match) {
+                    maxNum = Math.max(maxNum, parseInt(match[1]));
+                }
             });
 
-            loadSections(state.project, state.agent);
+            document.getElementById('sectionNumber').value = maxNum + 1;
+            document.getElementById('sectionName').value = '';
+            document.getElementById('addSectionModal').classList.add('active');
+            document.getElementById('sectionName').focus();
+        }
+
+        function closeAddSectionModal() {
+            document.getElementById('addSectionModal').classList.remove('active');
+        }
+
+        async function createSection() {
+            const number = parseInt(document.getElementById('sectionNumber').value);
+            const name = document.getElementById('sectionName').value.trim().toLowerCase().replace(/\s+/g, '-');
+            const createBoth = document.getElementById('createBothLangs').checked;
+
+            if (!name) {
+                showToast('Entrez un nom de section', 'error');
+                return;
+            }
+
+            const filename = `${number.toString().padStart(2, '0')}-${name}.md`;
+            const defaultContent = `# ${name.charAt(0).toUpperCase() + name.slice(1)}\n\n<!-- Rédiger cette section -->\n`;
+
+            // Create in current language
+            await API.post(`/projects/${state.project}/agents/${state.agent}/${state.lang}/${filename}`, {
+                content: defaultContent
+            });
+
+            // Create in other language if requested
+            if (createBoth) {
+                const otherLang = state.lang === 'fr' ? 'en' : 'fr';
+                await API.post(`/projects/${state.project}/agents/${state.agent}/${otherLang}/${filename}`, {
+                    content: `<!-- TODO: Translate from ${state.lang.toUpperCase()} -->\n\n${defaultContent}`
+                });
+            }
+
+            closeAddSectionModal();
             showToast('Section créée ✓', 'success');
+            await loadSections(state.project, state.agent);
+        }
+
+        // Delete section
+        async function deleteSection(sectionName) {
+            if (!confirm(`Supprimer "${sectionName}" (${state.lang.toUpperCase()}) ?`)) {
+                return;
+            }
+
+            const result = await API.post(`/projects/${state.project}/agents/${state.agent}/delete-section`, {
+                section: sectionName,
+                lang: state.lang
+            });
+
+            if (result.success) {
+                showToast('Section supprimée ✓', 'success');
+                if (state.section === sectionName) {
+                    state.section = null;
+                    state.editor.setValue('# Sélectionnez une section');
+                }
+                await loadSections(state.project, state.agent);
+            } else {
+                showToast(result.error || 'Erreur', 'error');
+            }
         }
 
         // Build project
@@ -727,7 +1184,6 @@
 
         // Include modal
         async function openIncludeModal() {
-            // Load available includes
             const data = await API.get(`/includes?project=${state.project || ''}`);
             state.includes = data.includes;
             renderIncludeList();
@@ -744,7 +1200,6 @@
             const list = document.getElementById('includeList');
             list.innerHTML = '';
 
-            // Group by agent
             const groups = {};
             state.includes.forEach(inc => {
                 if (filter && !inc.ref.toLowerCase().includes(filter.toLowerCase())) return;
@@ -761,9 +1216,7 @@
                 items.forEach(item => {
                     const el = document.createElement('div');
                     el.className = 'include-item' + (state.selectedInclude === item.ref ? ' selected' : '');
-                    el.innerHTML = `
-                        <span class="include-ref">${item.ref}</span>
-                    `;
+                    el.innerHTML = `<span class="include-ref">${item.ref}</span>`;
                     el.onclick = () => selectInclude(item.ref);
                     el.ondblclick = () => {
                         selectInclude(item.ref);
@@ -808,7 +1261,7 @@
         // Utilities
         function updateWordCount() {
             const content = state.editor.getValue();
-            const words = content.trim().split(/\s+/).length;
+            const words = content.trim().split(/\s+/).filter(w => w).length;
             document.getElementById('statusRight').textContent = `${words} mots`;
         }
 
@@ -831,24 +1284,25 @@
             await loadAgents(state.project);
             document.getElementById('sectionList').innerHTML =
                 '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Sélectionnez un agent</div>';
+            document.getElementById('translateBtn').style.display = 'none';
         });
 
         document.getElementById('agentSelect').addEventListener('change', async (e) => {
             state.agent = e.target.value;
             state.section = null;
             await loadSections(state.project, state.agent);
+            document.getElementById('translateBtn').style.display = 'none';
         });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Ctrl+S to save
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                 e.preventDefault();
                 saveSection();
             }
-            // Escape to close modal
             if (e.key === 'Escape') {
                 closeIncludeModal();
+                closeAddSectionModal();
             }
         });
 
