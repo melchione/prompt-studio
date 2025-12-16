@@ -109,7 +109,37 @@ Pour chaque section, créer :
 └── en/
     └── (5 fichiers créés)    ⏳
 
-💡 Prochaine étape : /ps:write 01-context.md pour commencer la rédaction
 ```
 
 Mettre à jour `.state.json` avec `current_section: "01-context.md"`
+
+## Résumé et Prochaines Étapes
+
+À la fin de la commande, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ STRUCTURE CRÉÉE
+
+📋 Ce qui a été fait :
+   • Structure des sections définie
+   • Dossiers fr/ et en/ créés
+   • {N} fichiers de section créés par langue
+   • Includes potentiels identifiés
+   • Templates de base ajoutés
+
+📁 Fichiers créés :
+   projects/{projet}/agents/{agent}/fr/*.md
+   projects/{projet}/agents/{agent}/en/*.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+▶️  /ps:write [section]   Rédiger une section (RECOMMANDÉ)
+    /ps:status            Voir l'état du projet
+    /ps:validate          Valider le prompt
+    /ps:conceive          Revoir la conception
+
+Suggestion : Commencez par /ps:write 01-context.md
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

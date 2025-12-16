@@ -60,3 +60,47 @@ Lister tous les agents du projet actif avec :
 
 💡 Prochaine étape : /ps:write 02-instructions.md pour continuer
 ```
+
+## Résumé et Prochaines Étapes
+
+À la fin de l'activation/création d'agent, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ AGENT {CRÉÉ|ACTIVÉ}
+
+📋 Ce qui a été fait :
+   • Agent "{nom}" {créé|activé}
+   • .state.json mis à jour
+   {Si nouveau} • Structure fr/en/ créée
+   {Si nouveau} • Phase "conceive" initialisée
+
+📁 Structure :
+   projects/{projet}/agents/{nom}/
+   ├── fr/
+   └── en/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+{Si nouvel agent}
+▶️  /ps:conceive         Démarrer la conception (RECOMMANDÉ)
+    /ps:structure        Définir la structure directement
+    /ps:status           Voir l'état
+
+{Si agent existant sans sections}
+▶️  /ps:structure        Définir la structure (RECOMMANDÉ)
+    /ps:conceive         Revoir la conception
+    /ps:status           Voir l'état
+
+{Si agent existant avec sections incomplètes}
+▶️  /ps:write [section]  Continuer la rédaction (RECOMMANDÉ)
+    /ps:validate         Vérifier l'état
+    /ps:translate        Traduire vers EN
+
+{Si agent existant complet}
+▶️  /ps:build            Compiler le prompt (RECOMMANDÉ)
+    /ps:validate         Valider avant build
+    /ps:write [section]  Modifier une section
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

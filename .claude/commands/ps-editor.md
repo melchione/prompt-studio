@@ -46,3 +46,34 @@ Pour arrêter : Ctrl+C
 - Le serveur utilise le port 8080 par défaut
 - L'API est disponible sur `/api/`
 - Les fichiers statiques sont servis depuis `editor/`
+
+## Résumé et Prochaines Étapes
+
+À l'affichage de l'éditeur, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ ÉDITEUR WEB LANCÉ
+
+📋 Ce qui a été fait :
+   • Serveur démarré sur le port {port}
+   • API REST disponible
+   • Interface web accessible
+
+📍 URL : http://localhost:{port}
+
+⌨️  Raccourcis disponibles :
+   • Ctrl+S : Sauvegarder
+   • Ctrl+I : Insérer include
+   • Escape : Fermer modales
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 COMMANDES DISPONIBLES (dans un autre terminal)
+
+    /ps:build            Compiler les prompts
+    /ps:validate         Valider le prompt
+    /ps:status           Voir l'état du projet
+
+⚠️  Pour arrêter le serveur : Ctrl+C
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

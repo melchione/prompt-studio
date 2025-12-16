@@ -1,1313 +1,2826 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Studio - Editor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --accent-primary: #3b82f6;
-            --accent-success: #22c55e;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
-            --border-color: #475569;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        .header {
-            background: var(--bg-secondary);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .logo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent-primary);
-        }
-
-        .selectors {
-            display: flex;
-            gap: 10px;
-        }
-
-        select {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-primary {
-            background: var(--accent-primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-
-        .btn-success {
-            background: var(--accent-success);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border-color);
-        }
-
-        .btn-warning {
-            background: var(--accent-warning);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--accent-danger);
-            color: white;
-        }
-
-        .btn-small {
-            padding: 4px 10px;
-            font-size: 12px;
-        }
-
-        /* Main content */
-        .main {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 300px;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-header {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .sidebar-header h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        .sidebar-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .section-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .section-item {
-            padding: 10px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-            transition: background 0.2s;
-            position: relative;
-        }
-
-        .section-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .section-item.active {
-            background: var(--accent-primary);
-        }
-
-        .section-item.dragging {
-            opacity: 0.5;
-            background: var(--accent-primary);
-        }
-
-        .section-item.drag-over {
-            border-top: 2px solid var(--accent-warning);
-        }
-
-        .section-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-        }
-
-        .drag-handle {
-            cursor: grab;
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-
-        .section-item:active .drag-handle {
-            cursor: grabbing;
-        }
-
-        .section-name {
-            font-size: 14px;
-        }
-
-        .section-meta {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .section-item.active .section-meta {
-            color: rgba(255,255,255,0.7);
-        }
-
-        .section-actions {
-            display: none;
-            gap: 5px;
-        }
-
-        .section-item:hover .section-actions {
-            display: flex;
-        }
-
-        .section-item.active .section-actions {
-            display: flex;
-        }
-
-        .section-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        .section-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: var(--text-primary);
-        }
-
-        .section-item.active .section-btn {
-            color: rgba(255,255,255,0.7);
-        }
-
-        .section-item.active .section-btn:hover {
-            color: white;
-        }
-
-        /* Translation indicator */
-        .translation-status {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            background: var(--bg-tertiary);
-        }
-
-        .translation-status.missing {
-            background: var(--accent-danger);
-            color: white;
-        }
-
-        .translation-status.exists {
-            background: var(--accent-success);
-            color: white;
-        }
-
-        /* Editor area */
-        .editor-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .editor-header {
-            padding: 10px 15px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .editor-path {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .editor-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .lang-toggle {
-            display: flex;
-            gap: 5px;
-        }
-
-        .lang-btn {
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            background: var(--bg-tertiary);
-            color: var(--text-secondary);
-        }
-
-        .lang-btn.active {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-            color: white;
-        }
-
-        #editor {
-            flex: 1;
-        }
-
-        /* Status bar */
-        .status-bar {
-            padding: 8px 15px;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            width: 600px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal.small {
-            width: 400px;
-        }
-
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .modal-footer {
-            padding: 15px 20px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        /* Form elements */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-        }
-
-        /* Include list */
-        .include-search {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .include-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .include-group {
-            margin-bottom: 15px;
-        }
-
-        .include-group-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            padding: 0 5px;
-        }
-
-        .include-item {
-            padding: 10px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .include-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .include-item.selected {
-            background: var(--accent-primary);
-        }
-
-        .include-ref {
-            font-size: 14px;
-            font-family: monospace;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: none;
-            z-index: 2000;
-        }
-
-        .toast.success {
-            background: var(--accent-success);
-            color: white;
-        }
-
-        .toast.error {
-            background: var(--accent-danger);
-            color: white;
-        }
-
-        .toast.warning {
-            background: var(--accent-warning);
-            color: white;
-        }
-
-        .toast.active {
-            display: block;
-        }
-
-        /* Keyboard shortcut hint */
-        .shortcut-hint {
-            font-size: 11px;
-            color: var(--text-secondary);
-            background: var(--bg-tertiary);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
-
-        /* Help text */
-        .help-text {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Editor - Cowai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --bg-editor: #1e1e1e;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #475569;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+      --accent-yellow: #fcd34d;
+      --accent-red: #dc2626;
+      --accent-purple: #8b5cf6;
+      --sidebar-width: 260px;
+      --header-height: 56px;
+      --diff-panel-height: 200px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    #app {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      grid-template-rows: var(--header-height) 1fr;
+      grid-template-areas: "header header" "sidebar main";
+      height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      grid-area: header;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-icon { font-size: 1.4rem; }
+
+    .agent-selector, .lang-toggle {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .agent-selector:focus, .lang-toggle:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+    .agent-selector { min-width: 220px; }
+    .agent-selector option { background: var(--bg-secondary); padding: 4px 8px; }
+    .agent-selector optgroup {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 8px 4px 4px 4px;
+    }
+    .agent-selector optgroup option {
+      font-weight: 400;
+      color: var(--text-primary);
+      padding-left: 12px;
+    }
+
+    .current-file {
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .current-file .file-icon { opacity: 0.7; }
+
+    .lang-toggle {
+      display: flex;
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .lang-toggle button {
+      background: transparent;
+      border: none;
+      padding: 8px 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+    .lang-toggle button.active {
+      background: var(--accent-blue);
+      color: white;
+    }
+    .lang-toggle button:hover:not(.active) {
+      background: var(--bg-secondary);
+    }
+
+    .header-spacer { flex: 1; }
+
+    .header-actions { display: flex; gap: 8px; }
+
+    .btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 14px;
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover { background: var(--border-color); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--accent-blue); border-color: var(--accent-blue); }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-success { background: var(--accent-green); border-color: var(--accent-green); color: #000; }
+    .btn-success:hover { background: #16a34a; }
+    .btn-warning { background: var(--accent-yellow); border-color: var(--accent-yellow); color: #000; }
+    .btn-warning:hover { background: #eab308; }
+    .btn-expand { background: var(--accent-purple); border-color: var(--accent-purple); }
+    .btn-expand:hover { background: #7c3aed; }
+
+    .modified-indicator {
+      display: none;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-yellow);
+      border-radius: 50%;
+    }
+    .modified-indicator.show { display: block; }
+
+    /* SIDEBAR */
+    #sidebar {
+      grid-area: sidebar;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-section { padding: 12px; }
+    .sidebar-section + .sidebar-section { border-top: 1px solid var(--border-color); }
+
+    .section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sections-list {
+      list-style: none;
+    }
+    .section-item {
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .section-item:hover { background: var(--bg-tertiary); }
+    .section-item.active {
+      background: var(--accent-blue);
+      color: white;
+    }
+    .section-item .section-num {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      min-width: 20px;
+    }
+    .section-item .section-name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .section-item .lang-badge {
+      font-size: 0.65rem;
+      padding: 2px 5px;
+      border-radius: 3px;
+      background: var(--bg-tertiary);
+    }
+    .section-item.active .lang-badge { background: rgba(255,255,255,0.2); }
+    .section-item .lang-badge.missing { color: var(--accent-red); }
+
+    /* Validation Panel */
+    .validation-panel {
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .validation-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      padding: 4px 0;
+    }
+    .validation-item .icon { font-size: 0.9rem; }
+    .validation-item.valid .icon { color: var(--accent-green); }
+    .validation-item.invalid .icon { color: var(--accent-red); }
+    .validation-item.warning .icon { color: var(--accent-yellow); }
+    .validation-item .message { color: var(--text-secondary); }
+    .validation-item .count {
+      margin-left: auto;
+      background: var(--bg-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .stat-item {
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      padding: 8px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Actions */
+    .sidebar-actions {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-actions .btn { width: 100%; justify-content: center; }
+
+    /* MAIN */
+    #main {
+      grid-area: main;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .editor-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .editor-pane {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pane-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-header-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .preview-header-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .preview-header-btn:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--accent-blue);
+    }
+    .preview-header-btn.copied {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    #monaco-container {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .resizer {
+      width: 4px;
+      background: var(--border-color);
+      cursor: col-resize;
+      transition: background 0.2s;
+    }
+    .resizer:hover { background: var(--accent-blue); }
+
+    .preview-pane {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===========================================
+       PREVIEW PANEL - Visual Hierarchy System
+       Based on typographic scale 1.25 (Major Third)
+       =========================================== */
+
+    /* Base Container - Dark Mode (default) */
+    #preview-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      background: #0a0a0a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #a3a3a3;  /* Muted for body text */
+    }
+
+    /* Light Mode */
+    .preview-pane.light-mode #preview-content {
+      background: #faf8f5;
+      color: #57534e;  /* Muted brown for body */
+    }
+
+    /* --- LEVEL 1: Primary Heading (H1) ---
+       Largest, most prominent, section divider */
+    #preview-content h1 {
+      font-size: 1.5rem;      /* 24px - largest */
+      font-weight: 700;       /* Bold */
+      line-height: 1.3;
+      margin: 32px 0 12px 0;  /* Large top margin = new section */
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2a2a2a;
+      color: #f5f5f5;         /* High contrast */
+      letter-spacing: -0.01em;
+    }
+    #preview-content h1:first-child {
+      margin-top: 0;          /* No top margin for first H1 */
+    }
+    .preview-pane.light-mode #preview-content h1 {
+      border-bottom-color: #d6d3d1;
+      color: #1c1917;
+    }
+
+    /* --- LEVEL 2: Secondary Heading (H2) ---
+       Sub-sections, prominent but subordinate */
+    #preview-content h2 {
+      font-size: 1.2rem;      /* 19px */
+      font-weight: 600;       /* Semibold */
+      line-height: 1.35;
+      margin: 28px 0 8px 0;   /* Good separation */
+      color: #fbbf24;         /* Amber accent - draws attention */
+      letter-spacing: -0.005em;
+    }
+    .preview-pane.light-mode #preview-content h2 {
+      color: #b45309;         /* Dark amber */
+    }
+
+    /* --- LEVEL 3: Tertiary Heading (H3) ---
+       Minor sections, less prominent */
+    #preview-content h3 {
+      font-size: 1rem;        /* 16px */
+      font-weight: 600;
+      line-height: 1.4;
+      margin: 20px 0 6px 0;
+      color: #d4a855;         /* Softer amber */
+    }
+    .preview-pane.light-mode #preview-content h3 {
+      color: #a16207;
+    }
+
+    /* --- LEVEL 4: Quaternary Heading (H4) ---
+       Minimal emphasis */
+    #preview-content h4 {
+      font-size: 0.9rem;      /* 14px */
+      font-weight: 600;
+      line-height: 1.4;
+      margin: 16px 0 4px 0;
+      color: #c9b896;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .preview-pane.light-mode #preview-content h4 {
+      color: #78716c;
+    }
+
+    /* --- BODY TEXT: Paragraphs ---
+       Readable, slightly muted */
+    #preview-content p {
+      margin: 0 0 12px 0;
+      line-height: 1.65;
+    }
+
+    /* --- LISTS ---
+       Aligned with body text, compact spacing */
+    #preview-content ul, #preview-content ol {
+      margin: 0 0 12px 0;
+      padding-left: 20px;
+    }
+    #preview-content li {
+      margin-bottom: 4px;
+      line-height: 1.55;
+    }
+    #preview-content li::marker {
+      color: #525252;
+    }
+    .preview-pane.light-mode #preview-content li::marker {
+      color: #a8a29e;
+    }
+
+    /* --- EMPHASIS: Strong/Bold ---
+       Slightly brighter than body */
+    #preview-content strong {
+      font-weight: 600;
+      color: #e5e5e5;
+    }
+    .preview-pane.light-mode #preview-content strong {
+      color: #292524;
+    }
+
+    /* --- EMPHASIS: Italic --- */
+    #preview-content em {
+      font-style: italic;
+      color: #b5b5b5;
+    }
+    .preview-pane.light-mode #preview-content em {
+      color: #44403c;
+    }
+
+    /* Hide horizontal rules */
+    #preview-content hr {
+      display: none;
+    }
+
+    /* Hide br tags after headings */
+    #preview-content h1 + br,
+    #preview-content h2 + br,
+    #preview-content h3 + br,
+    #preview-content h4 + br {
+      display: none;
+    }
+
+    /* --- CODE: Inline ---
+       Distinct background, accent color */
+    #preview-content code {
+      background: #1a1a1a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+      font-size: 0.85em;
+      color: #f59e0b;
+    }
+    .preview-pane.light-mode #preview-content code {
+      background: #f5f0e8;
+      color: #c2410c;
+    }
+
+    /* --- CODE: Block ---
+       Prominent container */
+    #preview-content pre {
+      background: #111111;
+      padding: 14px 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid #1f1f1f;
+    }
+    #preview-content pre code {
+      background: transparent;
+      padding: 0;
+      color: #d4d4d4;
+    }
+    .preview-pane.light-mode #preview-content pre {
+      background: #f5f0e8;
+      border-color: #e7e5e4;
+    }
+    .preview-pane.light-mode #preview-content pre code {
+      color: #44403c;
+    }
+
+    /* --- BLOCKQUOTE ---
+       Distinct, indented, subdued */
+    #preview-content blockquote {
+      border-left: 3px solid #404040;
+      padding-left: 16px;
+      margin: 16px 0;
+      color: #737373;
+      font-style: italic;
+    }
+    .preview-pane.light-mode #preview-content blockquote {
+      border-left-color: #d6d3d1;
+      color: #78716c;
+    }
+
+    #preview-content .protected-token {
+      background: #6b5b3e;
+      color: #fef3c7;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 0.85em;
+    }
+
+    /* Section delimiters in preview - subtle styling */
+    #preview-content .section-delimiter {
+      display: none;
+    }
+
+    /* DIFF PANEL */
+    #diff-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: none;
+      flex-direction: column;
+      background: var(--bg-secondary);
+      z-index: 50;
+    }
+    #diff-panel.open { display: flex; }
+
+    .diff-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .diff-title {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .diff-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .diff-close:hover { color: var(--text-primary); }
+
+    #diff-container {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 600; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    .modal-close:hover { color: var(--text-primary); }
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* TOAST */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1001;
+    }
+    .toast {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease;
+      min-width: 280px;
+    }
+    .toast.success { border-color: var(--accent-green); }
+    .toast.error { border-color: var(--accent-red); }
+    .toast.warning { border-color: var(--accent-yellow); }
+    .toast-icon { font-size: 1.2rem; }
+    .toast.success .toast-icon { color: var(--accent-green); }
+    .toast.error .toast-icon { color: var(--accent-red); }
+    .toast.warning .toast-icon { color: var(--accent-yellow); }
+    .toast-message { flex: 1; font-size: 0.9rem; }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* LOADING */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .loading-overlay.show { display: flex; }
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-text {
+      color: var(--text-primary);
+      margin-top: 16px;
+      font-size: 0.9rem;
+    }
+
+    /* Section Actions */
+    .section-item .section-actions {
+      display: none;
+      gap: 2px;
+      margin-left: auto;
+    }
+    .section-item:hover .section-actions { display: flex; }
+    .section-item.active .section-actions { display: flex; }
+
+    .section-action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      line-height: 1;
+      transition: all 0.15s;
+    }
+    .section-action-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    .section-item.active .section-action-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .section-action-btn.danger:hover {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    /* Add Section Button */
+    .add-section-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      background: var(--bg-tertiary);
+      border: 1px dashed var(--border-color);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .add-section-btn:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Modal Input */
+    .modal-input {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    .modal-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+    .modal-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .modal-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: -8px;
+      margin-bottom: 12px;
+    }
+
+    /* Monaco Editor Section Decorations */
+    .section-delimiter-line {
+      background: linear-gradient(90deg, var(--accent-purple) 0%, transparent 100%) !important;
+      opacity: 0.15;
+    }
+    .section-glyph-marker {
+      background: var(--accent-purple);
+      width: 4px !important;
+      margin-left: 3px;
+    }
+    .section-highlight-flash {
+      background: var(--accent-yellow) !important;
+      opacity: 0.3;
+      animation: flashHighlight 1.5s ease-out;
+    }
+    @keyframes flashHighlight {
+      0% { opacity: 0.5; }
+      100% { opacity: 0; }
+    }
+
+    /* Monaco Editor Include Decorations */
+    .include-start-line, .include-end-line {
+      background: linear-gradient(90deg, var(--accent-green) 0%, transparent 100%) !important;
+      opacity: 0.2;
+    }
+    .include-glyph-start, .include-glyph-end {
+      background: var(--accent-green);
+      width: 4px !important;
+      margin-left: 3px;
+    }
+
+    /* Collapse Buttons */
+    .collapse-btn {
+      position: absolute;
+      z-index: 20;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+    .collapse-btn:hover {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .collapse-sidebar-btn {
+      top: 50%;
+      left: var(--sidebar-width);
+      transform: translate(-50%, -50%);
+      z-index: 100;
+    }
+
+    .collapse-preview-btn {
+      top: 50%;
+      right: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Sidebar collapse transition */
+    #sidebar {
+      transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+      min-width: var(--sidebar-width);
+    }
+    #sidebar.collapsed {
+      width: 0 !important;
+      min-width: 0 !important;
+      padding: 0 !important;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    /* Preview collapse transition */
+    .preview-pane {
+      transition: flex 0.3s ease, width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+      min-width: 200px;
+      position: relative;
+    }
+    .preview-pane.collapsed {
+      flex: 0 0 0 !important;
+      min-width: 0 !important;
+      width: 0 !important;
+      overflow: hidden;
+    }
+    .preview-pane.collapsed .pane-header,
+    .preview-pane.collapsed #preview-content {
+      display: none;
+    }
+    /* Keep collapse button visible when preview is collapsed */
+    .preview-pane.collapsed .collapse-preview-btn {
+      display: flex;
+      position: fixed;
+      right: 8px;
+      top: calc(var(--header-height) + 50%);
+      transform: translateY(-50%);
+      z-index: 150;
+    }
+
+    /* Resizer hidden when preview collapsed */
+    .resizer.hidden {
+      display: none;
+    }
+
+    /* Grid adjustment when sidebar collapsed */
+    #app.sidebar-collapsed {
+      grid-template-columns: 0 1fr;
+    }
+    #app.sidebar-collapsed .collapse-sidebar-btn {
+      left: 0;
+      transform: translate(0, -50%);
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-left">
-            <span class="logo">📝 Prompt Studio</span>
-            <div class="selectors">
-                <select id="projectSelect">
-                    <option value="">-- Projet --</option>
-                </select>
-                <select id="agentSelect">
-                    <option value="">-- Agent --</option>
-                </select>
-            </div>
-        </div>
-        <div class="header-right">
-            <button class="btn btn-secondary" onclick="openIncludeModal()">
-                📎 Include
-                <span class="shortcut-hint">Ctrl+I</span>
-            </button>
-            <button class="btn btn-secondary" onclick="openAddSectionModal()">+ Section</button>
-            <button class="btn btn-primary" onclick="saveSection()">💾 Sauvegarder</button>
-            <button class="btn btn-success" onclick="buildProject()">🔨 Build</button>
-        </div>
+  <div id="app">
+    <header>
+      <div class="logo">
+        <span class="logo-icon">&#128221;</span>
+        <span>Prompt Studio</span>
+      </div>
+
+      <select id="project-select" class="agent-selector" style="min-width: 160px;">
+        <option value="">Projet...</option>
+      </select>
+
+      <select id="agent-select" class="agent-selector">
+        <option value="">Agent...</option>
+      </select>
+
+      <div id="current-file" class="current-file" style="display: none;">
+        <span class="file-icon">&#128196;</span>
+        <span id="current-file-name">-</span>
+      </div>
+
+      <div class="lang-toggle">
+        <button id="lang-fr" class="active">FR</button>
+        <button id="lang-en">EN</button>
+      </div>
+
+      <div class="modified-indicator" id="modified-indicator"></div>
+
+      <div class="header-spacer"></div>
+
+      <div class="header-actions">
+        <button class="btn btn-expand" id="btn-toggle-expand" style="display: none;" title="Basculer entre includes expandés et collapsés">
+          <span>&#128230;</span> Collapse Includes
+        </button>
+        <button class="btn" id="btn-diff" title="Voir les différences (Ctrl+D)">
+          <span>&#128203;</span> Diff
+        </button>
+        <button class="btn btn-warning" id="btn-translate" title="Traduire FR vers EN">
+          <span>&#127760;</span> Traduire
+        </button>
+        <button class="btn btn-primary" id="btn-generate" title="Générer le prompt final">
+          <span>&#9881;</span> Générer
+        </button>
+      </div>
     </header>
 
-    <!-- Main -->
-    <main class="main">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3>Sections</h3>
-                <div class="sidebar-actions">
-                    <button class="btn btn-small btn-secondary" onclick="syncTranslations()" title="Synchroniser les traductions">🔄</button>
-                </div>
-            </div>
-            <div class="section-list" id="sectionList">
-                <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
-                    Sélectionnez un projet et un agent
-                </div>
-            </div>
-        </aside>
+    <!-- Collapse Sidebar Button -->
+    <button class="collapse-btn collapse-sidebar-btn" id="collapse-sidebar-btn" title="Masquer/Afficher la sidebar">
+      ◀
+    </button>
 
-        <!-- Editor -->
-        <div class="editor-container">
-            <div class="editor-header">
-                <span class="editor-path" id="editorPath">Aucun fichier sélectionné</span>
-                <div class="editor-actions">
-                    <button class="btn btn-small btn-warning" onclick="translateSection()" id="translateBtn" style="display: none;">
-                        🌐 Traduire vers <span id="targetLang">EN</span>
-                    </button>
-                    <div class="lang-toggle">
-                        <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
-                        <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
-                    </div>
-                </div>
-            </div>
-            <div id="editor"></div>
+    <aside id="sidebar">
+      <div class="sidebar-section">
+        <div class="section-title">
+          <span>&#128196;</span> Sections
         </div>
+        <ul id="sections-list" class="sections-list">
+          <li class="section-item" style="color: var(--text-muted); font-style: italic;">
+            Sélectionnez un agent
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">
+          <span>&#9989;</span> Validation
+        </div>
+        <div id="validation-panel" class="validation-panel">
+          <div class="validation-item" style="color: var(--text-muted); font-style: italic;">
+            Aucun fichier chargé
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">
+          <span>&#128200;</span> Statistiques
+        </div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="stat-lines">-</div>
+            <div class="stat-label">Lignes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-chars">-</div>
+            <div class="stat-label">Caractères</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-tokens">-</div>
+            <div class="stat-label">Tokens (est.)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-protected">-</div>
+            <div class="stat-label">Protégés</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn btn-success" id="btn-save" disabled title="Sauvegarder (Ctrl+S)">
+          <span>&#128190;</span> Sauvegarder
+        </button>
+      </div>
+    </aside>
+
+    <main id="main">
+      <div class="editor-container">
+        <div class="editor-pane">
+          <div class="pane-header">Éditeur Markdown</div>
+          <div id="monaco-container"></div>
+        </div>
+
+        <div class="resizer hidden" id="resizer"></div>
+
+        <div class="preview-pane collapsed" id="preview-pane">
+          <!-- Collapse Preview Button -->
+          <button class="collapse-btn collapse-preview-btn" id="collapse-preview-btn" title="Masquer/Afficher l'aperçu">
+            ◀
+          </button>
+          <div class="pane-header">
+            <span>Aperçu</span>
+            <div class="preview-header-actions">
+              <button class="preview-header-btn" id="preview-copy-btn" title="Copier le markdown">
+                📋
+              </button>
+              <button class="preview-header-btn" id="preview-mode-toggle" title="Basculer Light/Dark mode">
+                ☀️
+              </button>
+            </div>
+          </div>
+          <div id="preview-content">
+            <p style="color: var(--text-muted); font-style: italic;">
+              Sélectionnez un agent et une section pour commencer l'édition.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="diff-panel">
+        <div class="diff-header">
+          <span class="diff-title">Comparaison des modifications</span>
+          <button class="diff-close" id="diff-close">&times;</button>
+        </div>
+        <div id="diff-container"></div>
+      </div>
     </main>
+  </div>
 
-    <!-- Status bar -->
-    <footer class="status-bar">
-        <span id="statusLeft">Prêt</span>
-        <span id="statusRight">0 mots</span>
-    </footer>
-
-    <!-- Include Modal -->
-    <div class="modal-overlay" id="includeModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>📎 Insérer un include</h2>
-                <button class="modal-close" onclick="closeIncludeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" class="include-search" id="includeSearch" placeholder="Rechercher...">
-                <div class="include-list" id="includeList">
-                    <!-- Populated dynamically -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeIncludeModal()">Annuler</button>
-                <button class="btn btn-primary" onclick="insertSelectedInclude()">Insérer</button>
-            </div>
+  <!-- Modal Traduction -->
+  <div class="modal-overlay" id="translate-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">&#127760; Traduction FR &rarr; EN</span>
+        <button class="modal-close" onclick="closeTranslateModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="translate-content">
+          <p>Cliquez sur "Traduire" pour lancer la traduction automatique.</p>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeTranslateModal()">Annuler</button>
+        <button class="btn btn-success" id="btn-accept-translation" disabled>
+          Accepter et sauvegarder
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- Add Section Modal -->
-    <div class="modal-overlay" id="addSectionModal">
-        <div class="modal small">
-            <div class="modal-header">
-                <h2>➕ Nouvelle section</h2>
-                <button class="modal-close" onclick="closeAddSectionModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Numéro de la section</label>
-                    <input type="number" class="form-input" id="sectionNumber" min="1" max="99" value="1" placeholder="01">
-                    <div class="help-text">Le numéro définit l'ordre d'apparition</div>
-                </div>
-                <div class="form-group">
-                    <label>Nom de la section</label>
-                    <input type="text" class="form-input" id="sectionName" placeholder="ex: context, instructions, examples">
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="createBothLangs" checked> Créer dans les deux langues (FR + EN)
-                    </label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeAddSectionModal()">Annuler</button>
-                <button class="btn btn-primary" onclick="createSection()">Créer</button>
-            </div>
+  <!-- Modal Création Section -->
+  <div class="modal-overlay" id="create-section-modal">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <span class="modal-title">&#10133; Nouvelle Section</span>
+        <button class="modal-close" onclick="closeCreateSectionModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label class="modal-label">Nom de la section</label>
+        <input type="text" id="new-section-name" class="modal-input" placeholder="ex: instructions" autocomplete="off">
+        <p class="modal-hint">Le numéro sera attribué automatiquement (ex: 12-instructions.md)</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeCreateSectionModal()">Annuler</button>
+        <button class="btn btn-primary" id="btn-confirm-create" onclick="confirmCreateSection()">
+          Créer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmation Suppression -->
+  <div class="modal-overlay" id="delete-confirm-modal">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <span class="modal-title">&#128465; Supprimer la section</span>
+        <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Voulez-vous vraiment supprimer <strong id="delete-section-name"></strong> ?</p>
+        <p style="color: var(--accent-red); margin-top: 12px; font-size: 0.85rem;">
+          &#9888; Cette action est irréversible.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeDeleteModal()">Annuler</button>
+        <button class="btn" style="background: var(--accent-red); border-color: var(--accent-red);" onclick="confirmDeleteSection()">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading">
+    <div style="text-align: center;">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loading-text">Chargement...</div>
+    </div>
+  </div>
+
+  <!-- Monaco Editor CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <!-- markdown-it for Markdown (cleaner than marked) -->
+  <script type="module">
+    import markdownIt from 'https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/+esm';
+
+    // Initialize and expose globally
+    window.md = markdownIt({
+      html: true,
+      linkify: true,
+      typographer: false,
+      breaks: false  // Don't convert \n to <br>
+    });
+
+    console.log('markdown-it initialized successfully');
+
+    // Dispatch event to notify that md is ready
+    window.dispatchEvent(new Event('markdown-ready'));
+  </script>
+
+  <script>
+    // ============================================
+    // MARKDOWN HELPER (waits for ESM module)
+    // ============================================
+    function renderMarkdown(text) {
+      if (window.md && window.md.render) {
+        return window.md.render(text);
+      }
+      // Fallback if markdown-it not yet loaded
+      return text
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+        .replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>')
+        .replace(/`([^`]+)`/gim, '<code>$1</code>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+    }
+
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const CONFIG = {
+      apiBase: '/api',  // Relatif - fonctionne sur n'importe quel port
+      promptsPath: 'projects',
+      distPath: 'projects',
+    };
+
+    // ============================================
+    // STATE
+    // ============================================
+    const state = {
+      projects: [],
+      currentProject: null,
+      agents: {},
+      protectedTokens: [],
+      currentAgent: null,
+      currentSection: null,  // Currently highlighted section in sidebar
+      currentLang: 'fr',
+      originalContent: '',   // Original concatenated content
+      originalSections: {},  // Original content per section { sectionName: content }
+      sectionBoundaries: [], // Array of { section, startLine, endLine }
+      isModified: false,
+      editor: null,
+      diffEditor: null,
+      isExpanded: true,      // Track if includes are expanded
+      hasIncludes: false,    // Track if content has includes
+    };
+
+    // Section delimiter pattern
+    const SECTION_DELIMITER_START = '<!-- ══════════════════════════════════════════════════════════════════════════ -->';
+    const SECTION_DELIMITER_PATTERN = /<!-- 📄 SECTION: (.+\.md) -->/;
+
+    // ============================================
+    // API CALLS (Multi-projet)
+    // ============================================
+    const api = {
+      // Projets
+      async getProjects() {
+        const res = await fetch(`${CONFIG.apiBase}/projects`);
+        if (!res.ok) throw new Error('Failed to load projects');
+        return res.json();
+      },
+
+      // Agents (requires project)
+      async getAgents(project) {
+        if (!project) throw new Error('No project selected');
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents`);
+        if (!res.ok) throw new Error('Failed to load agents');
+        return res.json();
+      },
+
+      // Sections
+      async getSection(project, agent, lang, section) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/${lang}/${section}`);
+        if (!res.ok) throw new Error('Failed to load section');
+        return res.json();
+      },
+
+      async saveSection(project, agent, lang, section, content) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/${lang}/${section}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content }),
+        });
+        if (!res.ok) throw new Error('Failed to save section');
+        return res.json();
+      },
+
+      async deleteSection(project, agent, lang, section) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/delete-section`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lang, section }),
+        });
+        if (!res.ok) throw new Error('Failed to delete section');
+        return res.json();
+      },
+
+      async createSection(project, agent, lang, name) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/${lang}/${name}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: `# ${name}\n\nContenu de la section...` }),
+        });
+        if (!res.ok) throw new Error('Failed to create section');
+        return res.json();
+      },
+
+      // Opérations
+      async buildPrompt(project, agent, lang) {
+        const res = await fetch(`${CONFIG.apiBase}/build`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ project, agent, lang }),
+        });
+        if (!res.ok) throw new Error('Failed to build prompt');
+        return res.json();
+      },
+
+      async translate(project, agent, data) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/translate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('Failed to translate');
+        return res.json();
+      },
+
+      async getProtectedTokens() {
+        const res = await fetch(`${CONFIG.apiBase}/protected-tokens`);
+        if (!res.ok) return { tokens: ['{% include', '{%', '%}', '{{', '}}', '$state', '$derived', '$effect'] };
+        return res.json();
+      },
+
+      async reorderSections(project, agent, lang, sections) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/reorder`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lang, sections }),
+        });
+        if (!res.ok) throw new Error('Failed to reorder sections');
+        return res.json();
+      },
+
+      async getAllSections(project, agent, lang) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/${lang}/all`);
+        if (!res.ok) throw new Error('Failed to load all sections');
+        return res.json();
+      },
+
+      async saveAllSections(project, agent, lang, sections) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/${lang}/save-all`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sections),
+        });
+        if (!res.ok) throw new Error('Failed to save sections');
+        return res.json();
+      },
+
+      async expandIncludes(project, agent, lang, section) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/expand?lang=${lang}&section=${section}`);
+        if (!res.ok) throw new Error('Failed to expand includes');
+        return res.json();
+      },
+
+      async collapseIncludes(project, agent, data) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/collapse`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('Failed to collapse includes');
+        return res.json();
+      },
+
+      async saveWithIncludes(project, agent, lang, section, content) {
+        const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/${lang}/${section}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content, collapse: true }),
+        });
+        if (!res.ok) throw new Error('Failed to save with includes');
+        return res.json();
+      },
+    };
+
+    // ============================================
+    // HELPER FUNCTIONS FOR API CALLS
+    // ============================================
+    async function expandContentWithIncludes(content, lang) {
+      const res = await fetch(`${CONFIG.apiBase}/expand`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, lang, project: state.currentProject }),
+      });
+      if (!res.ok) return { expanded: content, has_includes: false };
+      return res.json();
+    }
+
+    // ============================================
+    // UI HELPERS
+    // ============================================
+    function showLoading(show, text = 'Chargement...') {
+      const el = document.getElementById('loading');
+      document.getElementById('loading-text').textContent = text;
+      el.classList.toggle('show', show);
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const icons = {
+        success: '&#10004;',
+        error: '&#10006;',
+        warning: '&#9888;',
+        info: '&#8505;',
+      };
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span class="toast-icon">${icons[type] || icons.info}</span>
+        <span class="toast-message">${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    function setModified(modified) {
+      state.isModified = modified;
+      document.getElementById('modified-indicator').classList.toggle('show', modified);
+      document.getElementById('btn-save').disabled = !modified;
+    }
+
+    // ============================================
+    // EDITOR FUNCTIONS
+    // ============================================
+    function initMonaco(callback) {
+      require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+        // Define custom theme
+        monaco.editor.defineTheme('cowai-dark', {
+          base: 'vs-dark',
+          inherit: true,
+          rules: [],
+          colors: {
+            'editor.background': '#1e1e1e',
+          }
+        });
+
+        // Create main editor
+        state.editor = monaco.editor.create(document.getElementById('monaco-container'), {
+          value: '',
+          language: 'markdown',
+          theme: 'cowai-dark',
+          minimap: { enabled: true },
+          wordWrap: 'on',
+          lineNumbers: 'on',
+          fontSize: 14,
+          automaticLayout: true,
+          scrollBeyondLastLine: false,
+          renderWhitespace: 'selection',
+          glyphMargin: true,  // Enable glyph margin for section markers
+          folding: true,      // Enable code folding
+        });
+
+        // Listen for changes
+        state.editor.onDidChangeModelContent(() => {
+          if (state.currentAgent) {
+            const content = state.editor.getValue();
+            if (content !== state.originalContent) {
+              setModified(true);
+              // Update stats
+              updateStats(content);
+              runValidation(content);
+              // Update preview with the full concatenated content
+              updatePreviewFromEditor(content);
+            } else {
+              setModified(false);
+            }
+          }
+        });
+
+        // Track cursor position to update current section highlight
+        state.editor.onDidChangeCursorPosition((e) => {
+          if (state.sectionBoundaries.length > 0) {
+            const line = e.position.lineNumber;
+            for (const boundary of state.sectionBoundaries) {
+              if (line >= boundary.delimiterLine && line <= boundary.endLine) {
+                if (state.currentSection !== boundary.section) {
+                  state.currentSection = boundary.section;
+                  // Update sidebar highlighting
+                  document.querySelectorAll('.section-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.section === boundary.section);
+                  });
+                }
+                break;
+              }
+            }
+          }
+        });
+
+        if (callback) callback();
+      });
+    }
+
+    function updatePreviewFromEditor(content) {
+      // Strip section delimiters for clean preview
+      const cleanContent = content
+        .replace(/<!-- ═+[^>]*-->/g, '')  // Remove all ═══ comment lines
+        .replace(/<!-- 📄 SECTION:[^>]*-->/g, '')  // Remove section markers
+        .replace(/^---\s*$/gm, '')  // Remove standalone --- lines
+        .replace(/^\s*[\r\n]/gm, '\n')  // Clean empty lines
+        .replace(/\n{3,}/g, '\n\n')  // Normalize multiple newlines
+        .trim();
+
+      let html = renderMarkdown(cleanContent || '');
+      let highlighted = html;
+      state.protectedTokens.forEach(token => {
+        const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escaped})`, 'g');
+        highlighted = highlighted.replace(regex, '<span class="protected-token">$1</span>');
+      });
+      document.getElementById('preview-content').innerHTML = highlighted;
+    }
+
+    async function updatePreview(content) {
+      // Helper to clean content for preview
+      function cleanForPreview(text) {
+        return (text || '')
+          .replace(/<!-- ═+[^>]*-->/g, '')  // Remove all ═══ comment lines
+          .replace(/<!-- 📄 SECTION:[^>]*-->/g, '')  // Remove section markers
+          .replace(/^---\s*$/gm, '')  // Remove standalone --- lines
+          .replace(/^\s*[\r\n]/gm, '\n')  // Clean empty lines
+          .replace(/\n{3,}/g, '\n\n')  // Normalize multiple newlines
+          .trim();
+      }
+
+      // Load full compiled prompt if available, otherwise show current section
+      if (state.currentAgent && state.currentLang) {
+        try {
+          const res = await fetch(`${CONFIG.apiBase}/dist/${state.currentLang}/${state.currentAgent}`);
+          if (res.ok) {
+            const data = await res.json();
+            const cleanContent = cleanForPreview(data.content);
+            let html = renderMarkdown(cleanContent);
+
+            // Highlight protected tokens in preview
+            state.protectedTokens.forEach(token => {
+              const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const regex = new RegExp(`(${escaped})`, 'g');
+              html = html.replace(regex, '<span class="protected-token">$1</span>');
+            });
+
+            document.getElementById('preview-content').innerHTML = html;
+
+            // Auto-scroll to current section if loaded
+            if (state.currentSection) {
+              scrollToSectionInPreview();
+            }
+            return;
+          }
+        } catch (e) {
+          console.warn('Could not load compiled prompt, showing section preview');
+        }
+      }
+
+      // Fallback: show current section content
+      const cleanContent = cleanForPreview(content);
+      let html = renderMarkdown(cleanContent);
+      let highlighted = html;
+      state.protectedTokens.forEach(token => {
+        const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escaped})`, 'g');
+        highlighted = highlighted.replace(regex, '<span class="protected-token">$1</span>');
+      });
+      document.getElementById('preview-content').innerHTML = highlighted;
+    }
+
+    function scrollToSectionInPreview() {
+      // Find the section heading in the preview based on section filename
+      const sectionName = state.currentSection?.replace(/^\d+-/, '').replace('.md', '');
+      if (!sectionName) return;
+
+      const preview = document.getElementById('preview-content');
+      const headings = preview.querySelectorAll('h1, h2, h3');
+
+      for (const h of headings) {
+        const text = h.textContent.toLowerCase().replace(/[^a-z0-9àâäéèêëïîôùûüç]/g, '');
+        const sectionLower = sectionName.toLowerCase().replace(/[^a-z0-9àâäéèêëïîôùûüç]/g, '');
+
+        if (text.includes(sectionLower) || sectionLower.includes(text)) {
+          // Highlight the section
+          h.style.background = 'var(--accent-yellow)';
+          h.style.color = 'var(--bg-primary)';
+          h.style.padding = '4px 8px';
+          h.style.borderRadius = '4px';
+
+          // Scroll to it
+          setTimeout(() => {
+            h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+
+          // Remove highlight after 3 seconds
+          setTimeout(() => {
+            h.style.background = '';
+            h.style.color = '';
+            h.style.padding = '';
+          }, 3000);
+
+          break;
+        }
+      }
+    }
+
+    function updateStats(content) {
+      const lines = (content.match(/\n/g) || []).length + 1;
+      const chars = content.length;
+      const tokens = Math.round(chars / 4);
+
+      let protectedCount = 0;
+      state.protectedTokens.forEach(token => {
+        const regex = new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        const matches = content.match(regex);
+        if (matches) protectedCount += matches.length;
+      });
+
+      document.getElementById('stat-lines').textContent = lines.toLocaleString();
+      document.getElementById('stat-chars').textContent = chars.toLocaleString();
+      document.getElementById('stat-tokens').textContent = tokens.toLocaleString();
+      document.getElementById('stat-protected').textContent = protectedCount;
+    }
+
+    // ============================================
+    // VALIDATION
+    // ============================================
+    function runValidation(content) {
+      const results = [];
+
+      // 1. Check structure
+      const hasH1 = /^# .+/m.test(content);
+      const hasH2 = /^## .+/m.test(content);
+      results.push({
+        valid: hasH1,
+        type: hasH1 ? 'valid' : 'invalid',
+        message: hasH1 ? 'Structure H1 présente' : 'H1 manquant',
+      });
+
+      // 2. Count protected tokens
+      let tokenCount = 0;
+      state.protectedTokens.forEach(token => {
+        if (content.includes(token)) tokenCount++;
+      });
+      results.push({
+        valid: true,
+        type: 'valid',
+        message: 'Tokens protégés',
+        count: tokenCount,
+      });
+
+      // 3. Check for residual markers
+      const markers = content.match(/<<<TOKEN_\d+>>>/g) || [];
+      if (markers.length > 0) {
+        results.push({
+          valid: false,
+          type: 'invalid',
+          message: 'Marqueurs résiduels',
+          count: markers.length,
+        });
+      }
+
+      // 4. Markdown well-formed
+      const unclosedCode = (content.match(/```/g) || []).length % 2 !== 0;
+      if (unclosedCode) {
+        results.push({
+          valid: false,
+          type: 'warning',
+          message: 'Bloc code non fermé',
+        });
+      }
+
+      renderValidation(results);
+    }
+
+    function renderValidation(results) {
+      const container = document.getElementById('validation-panel');
+      container.innerHTML = results.map(r => `
+        <div class="validation-item ${r.type}">
+          <span class="icon">${r.type === 'valid' ? '&#10004;' : r.type === 'warning' ? '&#9888;' : '&#10006;'}</span>
+          <span class="message">${r.message}</span>
+          ${r.count !== undefined ? `<span class="count">${r.count}</span>` : ''}
         </div>
-    </div>
+      `).join('');
+    }
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    // ============================================
+    // DIFF
+    // ============================================
+    function showDiff() {
+      const panel = document.getElementById('diff-panel');
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        return;
+      }
 
-    <!-- Monaco Editor -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
-    <script>
-        // State
-        const state = {
-            project: null,
-            agent: null,
-            section: null,
-            lang: 'fr',
-            editor: null,
-            modified: false,
-            includes: [],
-            selectedInclude: null,
-            sections: { fr: [], en: [] },
-            draggedItem: null
+      panel.classList.add('open');
+
+      if (state.diffEditor) {
+        state.diffEditor.dispose();
+      }
+
+      state.diffEditor = monaco.editor.createDiffEditor(document.getElementById('diff-container'), {
+        automaticLayout: true,
+        theme: 'cowai-dark',
+        readOnly: true,
+      });
+
+      state.diffEditor.setModel({
+        original: monaco.editor.createModel(state.originalContent, 'markdown'),
+        modified: monaco.editor.createModel(state.editor.getValue(), 'markdown'),
+      });
+    }
+
+    function closeDiff() {
+      document.getElementById('diff-panel').classList.remove('open');
+    }
+
+    // ============================================
+    // SECTIONS MANAGEMENT
+    // ============================================
+    // Agent categories configuration
+    const AGENT_CATEGORIES = {
+      main: {
+        label: '📋 Agents Principaux',
+        agents: ['common', 'executive'],
+        descriptions: {
+          common: 'Partie commune à tous les agents',
+          executive: 'Executive Assistant (agent principal)'
+        }
+      },
+      utility: {
+        label: '🔧 Agents Utilitaires',
+        agents: ['planner', 'executor', 'hitl', 'artifact', 'respondtouser', 'toolenrichment', 'projectinfo'],
+        descriptions: {
+          planner: 'Planificateur de tâches',
+          executor: 'Exécuteur de plans',
+          hitl: 'Human-in-the-Loop (interactions)',
+          artifact: 'Gestion des artifacts',
+          respondtouser: 'Formatage des réponses',
+          toolenrichment: 'Enrichissement des outils',
+          projectinfo: 'Informations projet'
+        }
+      }
+    };
+
+    // ============================================
+    // LOAD PROJECTS (Multi-projet)
+    // ============================================
+    async function loadProjects() {
+      try {
+        showLoading(true, 'Chargement des projets...');
+        const data = await api.getProjects();
+        state.projects = data.projects || [];
+
+        const select = document.getElementById('project-select');
+        select.innerHTML = '<option value="">Projet...</option>';
+
+        state.projects.forEach(proj => {
+          const option = document.createElement('option');
+          option.value = proj.name;
+          option.textContent = `${proj.name} (${proj.agents_count || 0} agents)`;
+          select.appendChild(option);
+        });
+
+        // Restore last selected project
+        const savedProject = localStorage.getItem('prompt-studio-project');
+        if (savedProject && state.projects.find(p => p.name === savedProject)) {
+          select.value = savedProject;
+          state.currentProject = savedProject;
+          await loadAgents();
+        }
+
+        showLoading(false);
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur projets: ${error.message}`, 'error');
+      }
+    }
+
+    async function loadAgents() {
+      if (!state.currentProject) {
+        const select = document.getElementById('agent-select');
+        select.innerHTML = '<option value="">Sélectionnez un projet d\'abord</option>';
+        return;
+      }
+
+      try {
+        showLoading(true, 'Chargement des agents...');
+        const data = await api.getAgents(state.currentProject);
+        const agents = data.agents || [];
+
+        // Convert to state.agents format { agentName: { fr: [...], en: [...] } }
+        state.agents = {};
+        agents.forEach(a => {
+          state.agents[a.name] = {
+            fr: a.sections?.fr || [],
+            en: a.sections?.en || []
+          };
+        });
+
+        state.protectedTokens = (await api.getProtectedTokens()).tokens || [];
+
+        const select = document.getElementById('agent-select');
+        select.innerHTML = '<option value="">Agent...</option>';
+
+        // Simple list (no categories for prompt-studio)
+        Object.keys(state.agents).sort().forEach(agentName => {
+          const option = document.createElement('option');
+          option.value = agentName;
+          const frCount = state.agents[agentName].fr?.length || 0;
+          const enCount = state.agents[agentName].en?.length || 0;
+          option.textContent = `${agentName} (${frCount} FR / ${enCount} EN)`;
+          select.appendChild(option);
+        });
+
+        // Restore last selected agent
+        const savedAgent = localStorage.getItem('prompt-studio-agent');
+        if (savedAgent && state.agents[savedAgent]) {
+          select.value = savedAgent;
+          state.currentAgent = savedAgent;
+          renderSections(savedAgent, state.currentLang);
+          await loadAllSections(savedAgent, state.currentLang);
+        }
+
+        showLoading(false);
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur agents: ${error.message}`, 'error');
+      }
+    }
+
+    function renderSections(agent, lang) {
+      const sections = state.agents[agent]?.[lang] || [];
+      const list = document.getElementById('sections-list');
+
+      if (sections.length === 0) {
+        list.innerHTML = `<li class="section-item" style="color: var(--text-muted);">
+          Aucune section ${lang.toUpperCase()}
+        </li>`;
+        // Add create button even if no sections
+        list.innerHTML += `
+          <button class="add-section-btn" onclick="openCreateSectionModal()">
+            <span>&#10133;</span> Ajouter une section
+          </button>
+        `;
+        return;
+      }
+
+      list.innerHTML = sections.map((section, index) => {
+        const num = section.match(/^(\d+)/)?.[1] || '';
+        const name = section.replace(/^\d+-/, '').replace('.md', '');
+        const otherLang = lang === 'fr' ? 'en' : 'fr';
+        const hasOther = state.agents[agent]?.[otherLang]?.includes(section);
+        const isFirst = index === 0;
+        const isLast = index === sections.length - 1;
+
+        return `
+          <li class="section-item" data-section="${section}" data-index="${index}">
+            <span class="section-num">${num}</span>
+            <span class="section-name">${name}</span>
+            <span class="lang-badge ${hasOther ? '' : 'missing'}">${hasOther ? otherLang.toUpperCase() : '!'}</span>
+            <span class="section-actions">
+              <button class="section-action-btn" title="Monter" onclick="event.stopPropagation(); moveSection(${index}, -1)" ${isFirst ? 'disabled style="opacity:0.3"' : ''}>&#9650;</button>
+              <button class="section-action-btn" title="Descendre" onclick="event.stopPropagation(); moveSection(${index}, 1)" ${isLast ? 'disabled style="opacity:0.3"' : ''}>&#9660;</button>
+              <button class="section-action-btn danger" title="Supprimer" onclick="event.stopPropagation(); openDeleteModal('${section}')">&#128465;</button>
+            </span>
+          </li>
+        `;
+      }).join('');
+
+      // Add create button at the end
+      list.innerHTML += `
+        <button class="add-section-btn" onclick="openCreateSectionModal()">
+          <span>&#10133;</span> Ajouter une section
+        </button>
+      `;
+
+      // Add click handlers for loading sections
+      list.querySelectorAll('.section-item[data-section]').forEach(item => {
+        item.addEventListener('click', (e) => {
+          // Don't trigger if clicking on action buttons
+          if (e.target.closest('.section-actions')) return;
+          loadSection(agent, lang, item.dataset.section);
+        });
+      });
+    }
+
+    // ============================================
+    // SECTION CONCATENATION & PARSING
+    // ============================================
+    function createSectionDelimiter(sectionName) {
+      return `${SECTION_DELIMITER_START}\n<!-- 📄 SECTION: ${sectionName} -->\n${SECTION_DELIMITER_START}`;
+    }
+
+    function concatenateSections(sectionsData, order) {
+      const parts = [];
+      const boundaries = [];
+      let currentLine = 1;
+
+      order.forEach((sectionName, index) => {
+        const content = sectionsData[sectionName] || '';
+
+        // Add delimiter
+        const delimiter = createSectionDelimiter(sectionName);
+        parts.push(delimiter);
+
+        const delimiterLines = delimiter.split('\n').length;
+        const startLine = currentLine + delimiterLines;
+
+        // Add content
+        parts.push(content);
+
+        const contentLines = content.split('\n').length;
+        const endLine = startLine + contentLines - 1;
+
+        boundaries.push({
+          section: sectionName,
+          delimiterLine: currentLine,
+          startLine: startLine,
+          endLine: endLine,
+        });
+
+        currentLine = endLine + 2; // +2 for the blank line between sections
+
+        // Add blank line between sections (except last)
+        if (index < order.length - 1) {
+          parts.push('');
+        }
+      });
+
+      return {
+        content: parts.join('\n'),
+        boundaries: boundaries,
+      };
+    }
+
+    function parseSectionsFromContent(content) {
+      const sections = {};
+      const lines = content.split('\n');
+
+      let currentSection = null;
+      let currentContent = [];
+
+      for (const line of lines) {
+        const match = line.match(SECTION_DELIMITER_PATTERN);
+        if (match) {
+          // Save previous section if exists
+          if (currentSection) {
+            sections[currentSection] = currentContent.join('\n').trim();
+          }
+          currentSection = match[1];
+          currentContent = [];
+        } else if (currentSection && !line.startsWith('<!-- ═')) {
+          currentContent.push(line);
+        }
+      }
+
+      // Save last section
+      if (currentSection) {
+        sections[currentSection] = currentContent.join('\n').trim();
+      }
+
+      return sections;
+    }
+
+    async function loadAllSections(agent, lang) {
+      console.log('[loadAllSections] Called with agent:', agent, 'lang:', lang);
+
+      if (state.isModified) {
+        if (!confirm('Vous avez des modifications non sauvegardées. Continuer ?')) {
+          return;
+        }
+      }
+
+      try {
+        showLoading(true, 'Chargement des sections...');
+        const data = await api.getAllSections(state.currentProject, agent, lang);
+
+        if (!data.order || data.order.length === 0) {
+          state.editor.setValue('// Aucune section trouvée pour cet agent');
+          showLoading(false);
+          return;
+        }
+
+        // Store original sections
+        state.originalSections = { ...data.sections };
+
+        // Concatenate all sections
+        const { content, boundaries } = concatenateSections(data.sections, data.order);
+
+        // Expand includes automatiquement
+        showLoading(true, 'Résolution des includes...');
+        const expandResult = await expandContentWithIncludes(content, lang);
+        const displayContent = expandResult.expanded;
+        state.hasIncludes = expandResult.has_includes;
+        state.isExpanded = true;
+
+        console.log('[loadAllSections] Setting state.currentAgent to:', agent);
+        state.currentAgent = agent;
+        state.currentLang = lang;
+        state.currentSection = data.order[0]; // First section by default
+        state.originalContent = displayContent;  // Store expanded content as original
+        state.collapsedContent = content;  // Keep collapsed version for reference
+        state.sectionBoundaries = boundaries;
+
+        state.editor.setValue(displayContent);
+        setModified(false);
+
+        // Update UI
+        document.getElementById('current-file').style.display = 'flex';
+        document.getElementById('current-file-name').textContent = `${agent}/${lang}/ (${data.order.length} sections)`;
+
+        // Update expand toggle button visibility and state
+        updateExpandToggleButton();
+
+        // Update sidebar - highlight first section
+        document.querySelectorAll('.section-item').forEach(item => {
+          item.classList.toggle('active', item.dataset.section === state.currentSection);
+        });
+
+        // Add Monaco decorations for section delimiters
+        addSectionDecorations();
+        // Add decorations for include markers
+        addIncludeDecorations();
+
+        // Stats and validation
+        updateStats(displayContent);
+        runValidation(displayContent);
+        await updatePreview(displayContent);
+
+        showLoading(false);
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    function scrollToSectionInEditor(sectionName) {
+      const boundary = state.sectionBoundaries.find(b => b.section === sectionName);
+      if (!boundary) return;
+
+      // Update current section
+      state.currentSection = sectionName;
+
+      // Update sidebar highlighting
+      document.querySelectorAll('.section-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.section === sectionName);
+      });
+
+      // Scroll editor to section
+      state.editor.revealLineInCenter(boundary.startLine);
+
+      // Highlight the section header briefly
+      const decorations = state.editor.deltaDecorations([], [{
+        range: new monaco.Range(boundary.delimiterLine, 1, boundary.delimiterLine + 2, 1),
+        options: {
+          isWholeLine: true,
+          className: 'section-highlight-flash',
+          glyphMarginClassName: 'section-glyph'
+        }
+      }]);
+
+      // Remove highlight after animation
+      setTimeout(() => {
+        state.editor.deltaDecorations(decorations, []);
+      }, 1500);
+    }
+
+    function addSectionDecorations() {
+      if (!state.editor || !state.sectionBoundaries.length) return;
+
+      const decorations = state.sectionBoundaries.map(b => ({
+        range: new monaco.Range(b.delimiterLine, 1, b.delimiterLine + 2, 100),
+        options: {
+          isWholeLine: true,
+          className: 'section-delimiter-line',
+          glyphMarginClassName: 'section-glyph-marker',
+        }
+      }));
+
+      state.editor.deltaDecorations([], decorations);
+    }
+
+    function addIncludeDecorations() {
+      if (!state.editor || !state.hasIncludes) return;
+
+      const content = state.editor.getValue();
+      const lines = content.split('\n');
+      const decorations = [];
+
+      lines.forEach((line, index) => {
+        const lineNum = index + 1;
+        if (line.includes('<!-- @include-start:')) {
+          // Start of include block - green decoration
+          decorations.push({
+            range: new monaco.Range(lineNum, 1, lineNum, 100),
+            options: {
+              isWholeLine: true,
+              className: 'include-start-line',
+              glyphMarginClassName: 'include-glyph-start',
+            }
+          });
+        } else if (line.includes('<!-- @include-end:')) {
+          // End of include block - green decoration
+          decorations.push({
+            range: new monaco.Range(lineNum, 1, lineNum, 100),
+            options: {
+              isWholeLine: true,
+              className: 'include-end-line',
+              glyphMarginClassName: 'include-glyph-end',
+            }
+          });
+        }
+      });
+
+      state.editor.deltaDecorations([], decorations);
+    }
+
+    function updateExpandToggleButton() {
+      const btn = document.getElementById('btn-toggle-expand');
+      if (!btn) return;
+
+      if (state.hasIncludes) {
+        btn.style.display = 'flex';
+        btn.innerHTML = state.isExpanded
+          ? '<span>&#128230;</span> Collapse Includes'
+          : '<span>&#128194;</span> Expand Includes';
+        btn.title = state.isExpanded
+          ? 'Remettre les {% include %} au lieu du contenu'
+          : 'Afficher le contenu des includes';
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    async function toggleExpandIncludes() {
+      if (!state.currentAgent || !state.hasIncludes) return;
+
+      try {
+        showLoading(true, state.isExpanded ? 'Collapsing includes...' : 'Expanding includes...');
+        const content = state.editor.getValue();
+
+        if (state.isExpanded) {
+          // Collapse: replace expanded content with {% include %}
+          const result = await api.collapseIncludes(state.currentProject, content, state.currentLang);
+          state.editor.setValue(result.collapsed);
+          state.isExpanded = false;
+        } else {
+          // Expand: replace {% include %} with actual content
+          const result = await expandContentWithIncludes(content, state.currentLang);
+          state.editor.setValue(result.expanded);
+          state.isExpanded = true;
+        }
+
+        updateExpandToggleButton();
+        addIncludeDecorations();
+        setModified(true);
+        showLoading(false);
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    // Keep loadSection for backwards compatibility (single section load)
+    async function loadSection(agent, lang, section) {
+      // If we already have all sections loaded, just scroll
+      if (state.currentAgent === agent && state.currentLang === lang && state.sectionBoundaries.length > 0) {
+        scrollToSectionInEditor(section);
+        return;
+      }
+
+      // Otherwise load all sections then scroll
+      await loadAllSections(agent, lang);
+      scrollToSectionInEditor(section);
+    }
+
+    // ============================================
+    // SAVE
+    // ============================================
+    async function saveSection() {
+      console.log('[saveSection] Called with state.currentAgent:', state.currentAgent);
+      console.log('[saveSection] state.isModified:', state.isModified);
+      console.log('[saveSection] state.currentProject:', state.currentProject);
+      console.log('[saveSection] state.currentLang:', state.currentLang);
+      if (!state.currentAgent || !state.isModified) {
+        console.log('[saveSection] Early return: currentAgent=', state.currentAgent, 'isModified=', state.isModified);
+        return;
+      }
+
+      // Validate state.currentAgent is a valid agent name (not content)
+      if (state.currentAgent.includes('<!--') || state.currentAgent.includes('\n')) {
+        console.error('[saveSection] Invalid state.currentAgent detected:', state.currentAgent.substring(0, 100));
+        showToast('Erreur: Agent invalide. Rechargez la page.', 'error');
+        return;
+      }
+
+      try {
+        showLoading(true, 'Sauvegarde de toutes les sections...');
+        const content = state.editor.getValue();
+
+        console.log('[saveSection] Content length:', content.length);
+        console.log('[saveSection] Content preview:', content.substring(0, 200));
+
+        // Check if content has expanded includes (with markers)
+        const hasExpandedIncludes = content.includes('<!-- @include-start:');
+        console.log('[saveSection] hasExpandedIncludes:', hasExpandedIncludes);
+
+        if (hasExpandedIncludes) {
+          // First collapse to extract include contents
+          showLoading(true, 'Extraction des includes modifiés...');
+          const collapseResult = await api.collapseIncludes(state.currentProject, content, state.currentLang);
+          const collapsedContent = collapseResult.collapsed;
+          const modifiedIncludeFiles = collapseResult.modified_files;
+
+          // Save include files directly via the API
+          if (Object.keys(modifiedIncludeFiles).length > 0) {
+            showLoading(true, 'Sauvegarde des fichiers inclus...');
+            for (const [includeRef, includeContent] of Object.entries(modifiedIncludeFiles)) {
+              // includeRef is like 'common/01-contexte.md'
+              const [agent, filename] = includeRef.split('/');
+              await api.saveSection(state.currentProject, agent, state.currentLang, filename, includeContent);
+            }
+            showToast(`${Object.keys(modifiedIncludeFiles).length} fichier(s) include sauvegardé(s)`, 'success');
+          }
+
+          // Parse sections from collapsed content
+          const parsedSections = parseSectionsFromContent(collapsedContent);
+
+          console.log('[saveSection-expanded] Parsed sections from collapsed:', Object.keys(parsedSections));
+          console.log('[saveSection-expanded] Original sections:', Object.keys(state.originalSections));
+
+          // Find which main sections changed
+          const changedSections = {};
+          for (const [name, newContent] of Object.entries(parsedSections)) {
+            const originalContent = state.originalSections[name];
+            const trimmedOriginal = originalContent ? originalContent.trim() : '';
+            const trimmedNew = newContent ? newContent.trim() : '';
+
+            console.log(`[saveSection-expanded] Section "${name}": original length=${trimmedOriginal.length}, new length=${trimmedNew.length}, equal=${trimmedOriginal === trimmedNew}`);
+
+            if (trimmedOriginal !== trimmedNew) {
+              changedSections[name] = newContent;
+              console.log(`[saveSection-expanded] Section "${name}" marked as changed`);
+            }
+          }
+
+          console.log('[saveSection-expanded] Changed sections count:', Object.keys(changedSections).length);
+
+          if (Object.keys(changedSections).length > 0) {
+            console.log('[saveSection-expanded] Calling api.saveAllSections with:', {
+              project: state.currentProject,
+              agent: state.currentAgent,
+              lang: state.currentLang,
+              sectionsCount: Object.keys(changedSections).length
+            });
+            await api.saveAllSections(state.currentProject, state.currentAgent, state.currentLang, changedSections);
+            showToast(`${Object.keys(changedSections).length} section(s) principale(s) sauvegardée(s) !`, 'success');
+          } else {
+            console.log('[saveSection-expanded] No changed sections detected');
+          }
+
+          // Update original state - keep it expanded
+          state.originalContent = content;
+          state.originalSections = parsedSections;
+
+        } else {
+          // No expanded includes - save normally
+          const parsedSections = parseSectionsFromContent(content);
+
+          console.log('[saveSection] Parsed sections:', Object.keys(parsedSections));
+          console.log('[saveSection] Original sections:', Object.keys(state.originalSections));
+
+          // Find which sections changed
+          const changedSections = {};
+          for (const [name, newContent] of Object.entries(parsedSections)) {
+            const originalContent = state.originalSections[name];
+            const trimmedOriginal = originalContent ? originalContent.trim() : '';
+            const trimmedNew = newContent ? newContent.trim() : '';
+
+            console.log(`[saveSection] Section "${name}": original length=${trimmedOriginal.length}, new length=${trimmedNew.length}, equal=${trimmedOriginal === trimmedNew}`);
+
+            if (trimmedOriginal !== trimmedNew) {
+              changedSections[name] = newContent;
+              console.log(`[saveSection] Section "${name}" marked as changed`);
+            }
+          }
+
+          console.log('[saveSection] Changed sections count:', Object.keys(changedSections).length);
+          console.log('[saveSection] Changed sections:', Object.keys(changedSections));
+
+          if (Object.keys(changedSections).length === 0) {
+            showLoading(false);
+            showToast('Aucune modification détectée', 'info');
+            setModified(false);
+            return;
+          }
+
+          // Save only changed sections
+          console.log('[saveSection] Calling api.saveAllSections with:', {
+            project: state.currentProject,
+            agent: state.currentAgent,
+            lang: state.currentLang,
+            sectionsCount: Object.keys(changedSections).length
+          });
+          await api.saveAllSections(state.currentProject, state.currentAgent, state.currentLang, changedSections);
+
+          // Update original state
+          state.originalContent = content;
+          state.originalSections = parsedSections;
+
+          showToast(`${Object.keys(changedSections).length} section(s) sauvegardée(s) !`, 'success');
+        }
+
+        setModified(false);
+        showLoading(false);
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    // ============================================
+    // GENERATE
+    // ============================================
+    async function generatePrompt() {
+      if (!state.currentAgent) {
+        showToast('Sélectionnez d\'abord un agent', 'warning');
+        return;
+      }
+
+      try {
+        showLoading(true, `Génération ${state.currentLang.toUpperCase()}...`);
+        const result = await api.buildPrompt(state.currentProject, state.currentAgent, state.currentLang);
+
+        showLoading(false);
+        if (result.success) {
+          showToast(`Prompt ${state.currentLang.toUpperCase()} généré !`, 'success');
+        } else {
+          showToast(`Erreur: ${result.stderr}`, 'error');
+        }
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    // ============================================
+    // TRANSLATE
+    // ============================================
+    function openTranslateModal() {
+      if (!state.currentSection || state.currentLang !== 'fr') {
+        showToast('Traduction disponible uniquement depuis FR', 'warning');
+        return;
+      }
+      document.getElementById('translate-modal').classList.add('open');
+      document.getElementById('translate-content').innerHTML = `
+        <p>Traduire <strong>${state.currentSection}</strong> de FR vers EN ?</p>
+        <p>Les tokens protégés seront préservés.</p>
+        <button class="btn btn-primary" onclick="doTranslate()" style="margin-top: 16px;">
+          Lancer la traduction
+        </button>
+      `;
+    }
+
+    function closeTranslateModal() {
+      document.getElementById('translate-modal').classList.remove('open');
+    }
+
+    async function doTranslate() {
+      try {
+        document.getElementById('translate-content').innerHTML = `
+          <div style="text-align: center; padding: 40px;">
+            <div class="loading-spinner" style="margin: 0 auto;"></div>
+            <p style="margin-top: 16px;">Traduction en cours...</p>
+          </div>
+        `;
+
+        const result = await api.translate(state.currentProject, state.currentAgent, state.currentSection);
+
+        document.getElementById('translate-content').innerHTML = `
+          <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 8px; max-height: 400px; overflow-y: auto;">
+            <pre style="white-space: pre-wrap; font-size: 0.85rem;">${escapeHtml(result.translated)}</pre>
+          </div>
+        `;
+
+        document.getElementById('btn-accept-translation').disabled = false;
+        document.getElementById('btn-accept-translation').onclick = async () => {
+          await api.saveSection(state.currentProject, state.currentAgent, 'en', state.currentSection, result.translated);
+          showToast('Traduction sauvegardée !', 'success');
+          closeTranslateModal();
+          // Reload agents to update counts
+          await loadAgents();
+          if (state.currentAgent) {
+            renderSections(state.currentAgent, state.currentLang);
+          }
         };
+      } catch (error) {
+        document.getElementById('translate-content').innerHTML = `
+          <p style="color: var(--accent-red);">Erreur: ${error.message}</p>
+        `;
+      }
+    }
 
-        // API helpers
-        const API = {
-            async get(path) {
-                const res = await fetch(`/api${path}`);
-                return res.json();
-            },
-            async post(path, data) {
-                const res = await fetch(`/api${path}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                return res.json();
-            }
-        };
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
-        // Initialize Monaco
-        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+    // ============================================
+    // SECTION MANAGEMENT
+    // ============================================
+    let sectionToDelete = null;
 
-        require(['vs/editor/editor.main'], function() {
-            // Define custom theme
-            monaco.editor.defineTheme('prompt-studio', {
-                base: 'vs-dark',
-                inherit: true,
-                rules: [],
-                colors: {
-                    'editor.background': '#0f172a',
-                    'editor.foreground': '#f1f5f9',
-                    'editorLineNumber.foreground': '#64748b',
-                    'editor.selectionBackground': '#3b82f644',
-                    'editor.lineHighlightBackground': '#1e293b'
-                }
-            });
+    function openCreateSectionModal() {
+      if (!state.currentAgent) {
+        showToast('Sélectionnez d\'abord un agent', 'warning');
+        return;
+      }
+      document.getElementById('create-section-modal').classList.add('open');
+      document.getElementById('new-section-name').value = '';
+      document.getElementById('new-section-name').focus();
+    }
 
-            // Create editor
-            state.editor = monaco.editor.create(document.getElementById('editor'), {
-                value: '# Sélectionnez une section à éditer',
-                language: 'markdown',
-                theme: 'prompt-studio',
-                fontSize: 14,
-                lineHeight: 24,
-                minimap: { enabled: false },
-                wordWrap: 'on',
-                padding: { top: 15 }
-            });
+    function closeCreateSectionModal() {
+      document.getElementById('create-section-modal').classList.remove('open');
+    }
 
-            // Track modifications
-            state.editor.onDidChangeModelContent(() => {
-                state.modified = true;
-                updateWordCount();
-            });
+    async function confirmCreateSection() {
+      const name = document.getElementById('new-section-name').value.trim();
+      if (!name) {
+        showToast('Veuillez entrer un nom', 'warning');
+        return;
+      }
 
-            // Add keyboard shortcut for include
-            state.editor.addAction({
-                id: 'insert-include',
-                label: 'Insert Include',
-                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyI],
-                run: openIncludeModal
-            });
+      // Sanitize name: lowercase, replace spaces with dashes, remove special chars
+      const sanitizedName = name
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
 
-            // Add context menu action
-            state.editor.addAction({
-                id: 'insert-include-context',
-                label: '📎 Insérer un include...',
-                contextMenuGroupId: 'navigation',
-                run: openIncludeModal
-            });
-        });
+      if (!sanitizedName) {
+        showToast('Nom invalide', 'error');
+        return;
+      }
 
-        // Load projects
-        async function loadProjects() {
-            const data = await API.get('/projects');
-            const select = document.getElementById('projectSelect');
-            select.innerHTML = '<option value="">-- Projet --</option>';
-            data.projects.forEach(p => {
-                select.innerHTML += `<option value="${p.name}">${p.name} (v${p.version})</option>`;
-            });
+      try {
+        showLoading(true, 'Création de la section...');
+        const result = await api.createSection(state.currentProject, state.currentAgent, state.currentLang, sanitizedName);
+
+        // Update local state
+        if (!state.agents[state.currentAgent][state.currentLang]) {
+          state.agents[state.currentAgent][state.currentLang] = [];
+        }
+        state.agents[state.currentAgent][state.currentLang].push(result.section);
+        state.agents[state.currentAgent][state.currentLang].sort();
+
+        // Re-render and load the new section
+        renderSections(state.currentAgent, state.currentLang);
+        closeCreateSectionModal();
+        showLoading(false);
+        showToast(`Section ${result.section} créée !`, 'success');
+
+        // Load the newly created section
+        await loadSection(state.currentAgent, state.currentLang, result.section);
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    function openDeleteModal(section) {
+      sectionToDelete = section;
+      document.getElementById('delete-section-name').textContent = section;
+      document.getElementById('delete-confirm-modal').classList.add('open');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-confirm-modal').classList.remove('open');
+      sectionToDelete = null;
+    }
+
+    async function confirmDeleteSection() {
+      if (!sectionToDelete) return;
+
+      try {
+        showLoading(true, 'Suppression...');
+        await api.deleteSection(state.currentProject, state.currentAgent, state.currentLang, sectionToDelete);
+
+        // Update local state
+        const idx = state.agents[state.currentAgent][state.currentLang].indexOf(sectionToDelete);
+        if (idx > -1) {
+          state.agents[state.currentAgent][state.currentLang].splice(idx, 1);
         }
 
-        // Load agents for project
-        async function loadAgents(project) {
-            if (!project) {
-                document.getElementById('agentSelect').innerHTML = '<option value="">-- Agent --</option>';
-                return;
-            }
-
-            const data = await API.get(`/projects/${project}/agents`);
-            const select = document.getElementById('agentSelect');
-            select.innerHTML = '<option value="">-- Agent --</option>';
-            data.agents.forEach(a => {
-                select.innerHTML += `<option value="${a.name}">${a.name} (${a.languages.join(', ')})</option>`;
-            });
+        // Clear editor if we deleted the current section
+        if (state.currentSection === sectionToDelete) {
+          state.currentSection = null;
+          state.editor.setValue('');
+          state.originalContent = '';
+          setModified(false);
+          document.getElementById('current-file').style.display = 'none';
+          document.getElementById('preview-content').innerHTML = '<p style="color: var(--text-muted);">Section supprimée</p>';
         }
 
-        // Load sections for agent
-        async function loadSections(project, agent) {
-            if (!project || !agent) {
-                document.getElementById('sectionList').innerHTML =
-                    '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Sélectionnez un projet et un agent</div>';
-                return;
-            }
+        closeDeleteModal();
+        renderSections(state.currentAgent, state.currentLang);
+        showLoading(false);
+        showToast('Section supprimée !', 'success');
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
 
-            const data = await API.get(`/projects/${project}/agents/${agent}`);
-            state.sections = data.sections;
-            renderSectionList();
+    async function moveSection(index, direction) {
+      const sections = state.agents[state.currentAgent]?.[state.currentLang] || [];
+      const newIndex = index + direction;
+
+      if (newIndex < 0 || newIndex >= sections.length) return;
+
+      // Swap sections in the array
+      const newOrder = [...sections];
+      [newOrder[index], newOrder[newIndex]] = [newOrder[newIndex], newOrder[index]];
+
+      try {
+        showLoading(true, 'Réorganisation...');
+        const result = await api.reorderSections(state.currentProject, state.currentAgent, state.currentLang, newOrder);
+
+        // Update local state with new names from mapping
+        const updatedSections = newOrder.map(oldName => result.mapping[oldName] || oldName);
+        state.agents[state.currentAgent][state.currentLang] = updatedSections;
+
+        // Update current section name if it was renamed
+        if (state.currentSection && result.mapping[state.currentSection]) {
+          state.currentSection = result.mapping[state.currentSection];
+          document.getElementById('current-file-name').textContent =
+            `${state.currentAgent}/${state.currentLang}/${state.currentSection}`;
         }
 
-        // Render section list with drag & drop
-        function renderSectionList() {
-            const list = document.getElementById('sectionList');
-            list.innerHTML = '';
+        renderSections(state.currentAgent, state.currentLang);
+        showLoading(false);
+        showToast('Ordre mis à jour !', 'success');
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
 
-            const sections = state.sections[state.lang] || [];
-            if (sections.length === 0) {
-                list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Aucune section</div>';
-                return;
-            }
+    // ============================================
+    // COLLAPSE SIDEBAR & PREVIEW
+    // ============================================
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const app = document.getElementById('app');
+      const btn = document.getElementById('collapse-sidebar-btn');
 
-            // Get sections from other language for comparison
-            const otherLang = state.lang === 'fr' ? 'en' : 'fr';
-            const otherSections = (state.sections[otherLang] || []).map(s => s.name);
+      const isCollapsed = sidebar.classList.toggle('collapsed');
+      app.classList.toggle('sidebar-collapsed', isCollapsed);
 
-            sections.forEach((s, index) => {
-                const item = document.createElement('div');
-                item.className = 'section-item' + (s.name === state.section ? ' active' : '');
-                item.draggable = true;
-                item.dataset.index = index;
-                item.dataset.name = s.name;
+      // Update button icon
+      btn.textContent = isCollapsed ? '▶' : '◀';
 
-                const hasTranslation = otherSections.includes(s.name);
-                const translationBadge = hasTranslation
-                    ? `<span class="translation-status exists" title="Traduction ${otherLang.toUpperCase()} existe">✓</span>`
-                    : `<span class="translation-status missing" title="Pas de traduction ${otherLang.toUpperCase()}">!</span>`;
+      // Trigger Monaco layout refresh
+      setTimeout(() => {
+        state.editor?.layout();
+      }, 350); // After CSS transition
+    }
 
-                item.innerHTML = `
-                    <div class="section-info">
-                        <span class="drag-handle" title="Glisser pour réordonner">⠿</span>
-                        <span class="section-name">${s.name}</span>
-                        ${translationBadge}
-                    </div>
-                    <div class="section-actions">
-                        <span class="section-meta">${s.words} mots</span>
-                        <button class="section-btn" onclick="event.stopPropagation(); deleteSection('${s.name}')" title="Supprimer">🗑️</button>
-                    </div>
-                `;
+    function togglePreview() {
+      const preview = document.getElementById('preview-pane');
+      const resizer = document.getElementById('resizer');
+      const btn = document.getElementById('collapse-preview-btn');
 
-                // Click to select
-                item.onclick = (e) => {
-                    if (!e.target.classList.contains('section-btn')) {
-                        selectSection(s.name, item);
-                    }
-                };
+      const isCollapsed = preview.classList.toggle('collapsed');
+      resizer.classList.toggle('hidden', isCollapsed);
 
-                // Drag events
-                item.addEventListener('dragstart', handleDragStart);
-                item.addEventListener('dragend', handleDragEnd);
-                item.addEventListener('dragover', handleDragOver);
-                item.addEventListener('drop', handleDrop);
-                item.addEventListener('dragleave', handleDragLeave);
+      // Update button icon
+      btn.textContent = isCollapsed ? '◀' : '▶';
 
-                list.appendChild(item);
-            });
+      // Trigger Monaco layout refresh
+      setTimeout(() => {
+        state.editor?.layout();
+      }, 350); // After CSS transition
+    }
+
+    // ============================================
+    // SCROLL SYNCHRONIZATION
+    // ============================================
+    let isSyncingScroll = false;
+    let scrollSyncEnabled = true; // Can be toggled if needed
+
+    function initScrollSync() {
+      if (!state.editor) return;
+
+      // Sync editor → preview
+      state.editor.onDidScrollChange((e) => {
+        if (isSyncingScroll || !scrollSyncEnabled) return;
+
+        const previewPane = document.getElementById('preview-pane');
+        const preview = document.getElementById('preview-content');
+        if (!preview || previewPane?.classList.contains('collapsed')) return;
+
+        const scrollTop = e.scrollTop;
+        const scrollHeight = state.editor.getScrollHeight();
+        const clientHeight = state.editor.getLayoutInfo().height;
+
+        // Avoid division by zero
+        const maxScroll = scrollHeight - clientHeight;
+        if (maxScroll <= 0) return;
+
+        // Calculate scroll percentage
+        const scrollPercent = Math.min(1, Math.max(0, scrollTop / maxScroll));
+
+        // Apply to preview
+        const previewMaxScroll = preview.scrollHeight - preview.clientHeight;
+
+        if (previewMaxScroll > 0) {
+          isSyncingScroll = true;
+          preview.scrollTop = Math.round(scrollPercent * previewMaxScroll);
+          setTimeout(() => isSyncingScroll = false, 100);
+        }
+      });
+
+      // Sync preview → editor
+      const previewEl = document.getElementById('preview-content');
+      if (previewEl) {
+        previewEl.addEventListener('scroll', (e) => {
+          if (isSyncingScroll || !scrollSyncEnabled) return;
+          if (!state.editor) return;
+
+          const preview = e.target;
+          const previewMaxScroll = preview.scrollHeight - preview.clientHeight;
+
+          // Avoid division by zero
+          if (previewMaxScroll <= 0) return;
+
+          const scrollPercent = Math.min(1, Math.max(0, preview.scrollTop / previewMaxScroll));
+
+          const editorScrollHeight = state.editor.getScrollHeight();
+          const editorClientHeight = state.editor.getLayoutInfo().height;
+          const editorMaxScroll = editorScrollHeight - editorClientHeight;
+
+          if (editorMaxScroll > 0) {
+            isSyncingScroll = true;
+            state.editor.setScrollTop(Math.round(scrollPercent * editorMaxScroll));
+            setTimeout(() => isSyncingScroll = false, 100);
+          }
+        }, { passive: true });
+      }
+    }
+
+    // ============================================
+    // RESIZER
+    // ============================================
+    function initResizer() {
+      const resizer = document.getElementById('resizer');
+      const editorPane = document.querySelector('.editor-pane');
+      const previewPane = document.querySelector('.preview-pane');
+      let isResizing = false;
+
+      resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        document.body.style.cursor = 'col-resize';
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        const container = document.querySelector('.editor-container');
+        const containerRect = container.getBoundingClientRect();
+        const percent = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+
+        if (percent > 20 && percent < 80) {
+          editorPane.style.flex = `0 0 ${percent}%`;
+          previewPane.style.flex = `0 0 ${100 - percent}%`;
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isResizing = false;
+        document.body.style.cursor = '';
+      });
+    }
+
+    // ============================================
+    // KEYBOARD SHORTCUTS
+    // ============================================
+    document.addEventListener('keydown', (e) => {
+      // Ctrl+S: Save
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveSection();
+      }
+      // Ctrl+D: Diff
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        showDiff();
+      }
+      // Escape: Close panels
+      if (e.key === 'Escape') {
+        closeDiff();
+        closeTranslateModal();
+        closeCreateSectionModal();
+        closeDeleteModal();
+      }
+      // Enter in create section modal
+      if (e.key === 'Enter' && document.getElementById('create-section-modal').classList.contains('open')) {
+        e.preventDefault();
+        confirmCreateSection();
+      }
+    });
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      initMonaco(() => {
+        loadProjects();  // Load projects first (multi-projet)
+        initScrollSync();
+      });
+      initResizer();
+
+      // Collapse buttons
+      document.getElementById('collapse-sidebar-btn').addEventListener('click', toggleSidebar);
+      document.getElementById('collapse-preview-btn').addEventListener('click', togglePreview);
+
+      // Preview Light/Dark mode toggle
+      document.getElementById('preview-mode-toggle').addEventListener('click', () => {
+        const previewPane = document.getElementById('preview-pane');
+        const toggleBtn = document.getElementById('preview-mode-toggle');
+        previewPane.classList.toggle('light-mode');
+        toggleBtn.textContent = previewPane.classList.contains('light-mode') ? '🌙' : '☀️';
+      });
+
+      // Copy markdown to clipboard
+      document.getElementById('preview-copy-btn').addEventListener('click', async () => {
+        const copyBtn = document.getElementById('preview-copy-btn');
+
+        // Get markdown content from editor
+        let markdownContent = '';
+        if (state.editor) {
+          markdownContent = state.editor.getValue();
         }
 
-        // Drag and drop handlers
-        function handleDragStart(e) {
-            state.draggedItem = e.target;
-            e.target.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
+        if (!markdownContent) {
+          console.warn('No content to copy');
+          return;
         }
 
-        function handleDragEnd(e) {
-            e.target.classList.remove('dragging');
-            document.querySelectorAll('.section-item').forEach(item => {
-                item.classList.remove('drag-over');
-            });
-            state.draggedItem = null;
+        try {
+          await navigator.clipboard.writeText(markdownContent);
+
+          // Visual feedback
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = '✓';
+          copyBtn.classList.add('copied');
+
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('copied');
+          }, 1500);
+        } catch (err) {
+          console.error('Failed to copy:', err);
         }
+      });
 
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            if (e.target.closest('.section-item') && e.target.closest('.section-item') !== state.draggedItem) {
-                e.target.closest('.section-item').classList.add('drag-over');
-            }
+      // Project selector
+      document.getElementById('project-select').addEventListener('change', async (e) => {
+        const project = e.target.value;
+        state.currentProject = project;
+        state.currentAgent = null;
+        state.agents = {};
+        if (project) {
+          localStorage.setItem('prompt-studio-project', project);
+          await loadAgents();
+        } else {
+          const agentSelect = document.getElementById('agent-select');
+          agentSelect.innerHTML = '<option value="">Sélectionnez un projet d\'abord</option>';
         }
+        // Clear editor
+        if (state.editor) state.editor.setValue('');
+        document.getElementById('sections-list').innerHTML = '';
+      });
 
-        function handleDragLeave(e) {
-            e.target.closest('.section-item')?.classList.remove('drag-over');
+      // Agent selector - auto-load all sections
+      document.getElementById('agent-select').addEventListener('change', async (e) => {
+        const agent = e.target.value;
+        console.log('[Agent Select] Selected agent:', agent);
+        if (agent && !agent.includes('<!--')) {
+          state.currentAgent = agent;
+          localStorage.setItem('prompt-studio-agent', agent);
+          renderSections(agent, state.currentLang);
+          await loadAllSections(agent, state.currentLang);
+        } else if (agent.includes('<!--')) {
+          console.error('[Agent Select] Invalid agent value:', agent);
         }
+      });
 
-        async function handleDrop(e) {
-            e.preventDefault();
-            const targetItem = e.target.closest('.section-item');
-            if (!targetItem || targetItem === state.draggedItem) return;
-
-            targetItem.classList.remove('drag-over');
-
-            // Get new order
-            const items = [...document.querySelectorAll('.section-item')];
-            const draggedIndex = parseInt(state.draggedItem.dataset.index);
-            const targetIndex = parseInt(targetItem.dataset.index);
-
-            // Reorder the array
-            const sections = state.sections[state.lang].map(s => s.name);
-            const [removed] = sections.splice(draggedIndex, 1);
-            sections.splice(targetIndex, 0, removed);
-
-            // Call API to reorder
-            updateStatus('Réorganisation...');
-            const result = await API.post(`/projects/${state.project}/agents/${state.agent}/reorder`, {
-                lang: state.lang,
-                order: sections
-            });
-
-            if (result.success) {
-                showToast('Sections réorganisées ✓', 'success');
-                await loadSections(state.project, state.agent);
-            } else {
-                showToast('Erreur lors de la réorganisation', 'error');
-            }
+      // Language toggle
+      document.getElementById('lang-fr').addEventListener('click', async () => {
+        if (state.currentLang === 'fr') return; // Already FR
+        state.currentLang = 'fr';
+        document.getElementById('lang-fr').classList.add('active');
+        document.getElementById('lang-en').classList.remove('active');
+        if (state.currentAgent) {
+          renderSections(state.currentAgent, 'fr');
+          // Reload all sections in new language
+          await loadAllSections(state.currentAgent, 'fr');
         }
+      });
 
-        // Select section
-        async function selectSection(name, element) {
-            if (state.modified && !confirm('Changements non sauvegardés. Continuer ?')) {
-                return;
-            }
-
-            state.section = name;
-            state.modified = false;
-
-            // Update UI
-            document.querySelectorAll('.section-item').forEach(el => el.classList.remove('active'));
-            element?.classList.add('active');
-
-            // Load content
-            const data = await API.get(`/projects/${state.project}/agents/${state.agent}/${state.lang}/${name}`);
-            state.editor.setValue(data.content || '');
-
-            document.getElementById('editorPath').textContent =
-                `${state.project} / ${state.agent} / ${state.lang} / ${name}`;
-
-            // Update translate button
-            updateTranslateButton();
-
-            updateStatus('Section chargée');
+      document.getElementById('lang-en').addEventListener('click', async () => {
+        if (state.currentLang === 'en') return; // Already EN
+        state.currentLang = 'en';
+        document.getElementById('lang-en').classList.add('active');
+        document.getElementById('lang-fr').classList.remove('active');
+        if (state.currentAgent) {
+          renderSections(state.currentAgent, 'en');
+          // Reload all sections in new language
+          await loadAllSections(state.currentAgent, 'en');
         }
+      });
 
-        // Update translate button visibility and text
-        function updateTranslateButton() {
-            const btn = document.getElementById('translateBtn');
-            const targetLang = document.getElementById('targetLang');
-
-            if (!state.section) {
-                btn.style.display = 'none';
-                return;
-            }
-
-            const otherLang = state.lang === 'fr' ? 'en' : 'fr';
-            const otherSections = (state.sections[otherLang] || []).map(s => s.name);
-            const hasTranslation = otherSections.includes(state.section);
-
-            btn.style.display = 'flex';
-            targetLang.textContent = otherLang.toUpperCase();
-
-            if (hasTranslation) {
-                btn.textContent = `🌐 Voir ${otherLang.toUpperCase()}`;
-            } else {
-                btn.innerHTML = `🌐 Traduire vers <span id="targetLang">${otherLang.toUpperCase()}</span>`;
-            }
-        }
-
-        // Translate section to other language
-        async function translateSection() {
-            if (!state.project || !state.agent || !state.section) return;
-
-            const otherLang = state.lang === 'fr' ? 'en' : 'fr';
-            const otherSections = (state.sections[otherLang] || []).map(s => s.name);
-            const hasTranslation = otherSections.includes(state.section);
-
-            if (hasTranslation) {
-                // Just switch to other language
-                switchLang(otherLang);
-            } else {
-                // Create translation
-                if (!confirm(`Copier "${state.section}" vers ${otherLang.toUpperCase()} pour traduction ?`)) {
-                    return;
-                }
-
-                const result = await API.post(`/projects/${state.project}/agents/${state.agent}/translate`, {
-                    section: state.section,
-                    from_lang: state.lang,
-                    to_lang: otherLang
-                });
-
-                if (result.success) {
-                    showToast(`Section copiée vers ${otherLang.toUpperCase()} ✓`, 'success');
-                    await loadSections(state.project, state.agent);
-                    switchLang(otherLang);
-                } else {
-                    showToast(result.error || 'Erreur', 'error');
-                }
-            }
-        }
-
-        // Sync all translations (copy missing sections)
-        async function syncTranslations() {
-            if (!state.project || !state.agent) {
-                showToast('Sélectionnez d\'abord un agent', 'error');
-                return;
-            }
-
-            const frSections = (state.sections.fr || []).map(s => s.name);
-            const enSections = (state.sections.en || []).map(s => s.name);
-
-            // Find missing
-            const missingInEn = frSections.filter(s => !enSections.includes(s));
-            const missingInFr = enSections.filter(s => !frSections.includes(s));
-
-            if (missingInEn.length === 0 && missingInFr.length === 0) {
-                showToast('Toutes les sections sont synchronisées ✓', 'success');
-                return;
-            }
-
-            const msg = [];
-            if (missingInEn.length > 0) msg.push(`${missingInEn.length} section(s) à copier vers EN`);
-            if (missingInFr.length > 0) msg.push(`${missingInFr.length} section(s) à copier vers FR`);
-
-            if (!confirm(`Synchroniser les traductions ?\n\n${msg.join('\n')}`)) {
-                return;
-            }
-
-            // Copy missing sections
-            let copied = 0;
-            for (const section of missingInEn) {
-                await API.post(`/projects/${state.project}/agents/${state.agent}/translate`, {
-                    section, from_lang: 'fr', to_lang: 'en'
-                });
-                copied++;
-            }
-            for (const section of missingInFr) {
-                await API.post(`/projects/${state.project}/agents/${state.agent}/translate`, {
-                    section, from_lang: 'en', to_lang: 'fr'
-                });
-                copied++;
-            }
-
-            showToast(`${copied} section(s) synchronisée(s) ✓`, 'success');
-            await loadSections(state.project, state.agent);
-        }
-
-        // Switch language
-        async function switchLang(lang) {
-            if (state.modified && !confirm('Changements non sauvegardés. Continuer ?')) {
-                return;
-            }
-
-            state.lang = lang;
-            state.modified = false;
-
-            // Update buttons
-            document.querySelectorAll('.lang-btn').forEach(el => {
-                el.classList.toggle('active', el.dataset.lang === lang);
-            });
-
-            // Reload sections
-            renderSectionList();
-
-            // Reload current section if exists
-            if (state.section) {
-                const sectionExists = (state.sections[lang] || []).some(s => s.name === state.section);
-                if (sectionExists) {
-                    const data = await API.get(`/projects/${state.project}/agents/${state.agent}/${lang}/${state.section}`);
-                    state.editor.setValue(data.content || '');
-                    document.getElementById('editorPath').textContent =
-                        `${state.project} / ${state.agent} / ${lang} / ${state.section}`;
-                } else {
-                    state.editor.setValue(`# Section non traduite\n\nCette section n'existe pas encore en ${lang.toUpperCase()}.\n\nCliquez sur "Traduire" pour créer la version ${lang.toUpperCase()}.`);
-                }
-                updateTranslateButton();
-            }
-        }
-
-        // Save section
-        async function saveSection() {
-            if (!state.project || !state.agent || !state.section) {
-                showToast('Sélectionnez d\'abord une section', 'error');
-                return;
-            }
-
-            const content = state.editor.getValue();
-            await API.post(`/projects/${state.project}/agents/${state.agent}/${state.lang}/${state.section}`, {
-                content
-            });
-
-            state.modified = false;
-            showToast('Section sauvegardée ✓', 'success');
-            loadSections(state.project, state.agent);
-        }
-
-        // Add section modal
-        function openAddSectionModal() {
-            if (!state.project || !state.agent) {
-                showToast('Sélectionnez d\'abord un agent', 'error');
-                return;
-            }
-
-            // Calculate next section number
-            const sections = state.sections[state.lang] || [];
-            let maxNum = 0;
-            sections.forEach(s => {
-                const match = s.name.match(/^(\d+)-/);
-                if (match) {
-                    maxNum = Math.max(maxNum, parseInt(match[1]));
-                }
-            });
-
-            document.getElementById('sectionNumber').value = maxNum + 1;
-            document.getElementById('sectionName').value = '';
-            document.getElementById('addSectionModal').classList.add('active');
-            document.getElementById('sectionName').focus();
-        }
-
-        function closeAddSectionModal() {
-            document.getElementById('addSectionModal').classList.remove('active');
-        }
-
-        async function createSection() {
-            const number = parseInt(document.getElementById('sectionNumber').value);
-            const name = document.getElementById('sectionName').value.trim().toLowerCase().replace(/\s+/g, '-');
-            const createBoth = document.getElementById('createBothLangs').checked;
-
-            if (!name) {
-                showToast('Entrez un nom de section', 'error');
-                return;
-            }
-
-            const filename = `${number.toString().padStart(2, '0')}-${name}.md`;
-            const defaultContent = `# ${name.charAt(0).toUpperCase() + name.slice(1)}\n\n<!-- Rédiger cette section -->\n`;
-
-            // Create in current language
-            await API.post(`/projects/${state.project}/agents/${state.agent}/${state.lang}/${filename}`, {
-                content: defaultContent
-            });
-
-            // Create in other language if requested
-            if (createBoth) {
-                const otherLang = state.lang === 'fr' ? 'en' : 'fr';
-                await API.post(`/projects/${state.project}/agents/${state.agent}/${otherLang}/${filename}`, {
-                    content: `<!-- TODO: Translate from ${state.lang.toUpperCase()} -->\n\n${defaultContent}`
-                });
-            }
-
-            closeAddSectionModal();
-            showToast('Section créée ✓', 'success');
-            await loadSections(state.project, state.agent);
-        }
-
-        // Delete section
-        async function deleteSection(sectionName) {
-            if (!confirm(`Supprimer "${sectionName}" (${state.lang.toUpperCase()}) ?`)) {
-                return;
-            }
-
-            const result = await API.post(`/projects/${state.project}/agents/${state.agent}/delete-section`, {
-                section: sectionName,
-                lang: state.lang
-            });
-
-            if (result.success) {
-                showToast('Section supprimée ✓', 'success');
-                if (state.section === sectionName) {
-                    state.section = null;
-                    state.editor.setValue('# Sélectionnez une section');
-                }
-                await loadSections(state.project, state.agent);
-            } else {
-                showToast(result.error || 'Erreur', 'error');
-            }
-        }
-
-        // Build project
-        async function buildProject() {
-            if (!state.project) {
-                showToast('Sélectionnez d\'abord un projet', 'error');
-                return;
-            }
-
-            updateStatus('Build en cours...');
-            const result = await API.post('/build', {
-                project: state.project,
-                agent: state.agent || null
-            });
-
-            if (result.success) {
-                showToast('Build réussi ✓', 'success');
-                updateStatus('Build terminé');
-            } else {
-                showToast('Erreur de build', 'error');
-                console.error(result.error);
-            }
-        }
-
-        // Include modal
-        async function openIncludeModal() {
-            const data = await API.get(`/includes?project=${state.project || ''}`);
-            state.includes = data.includes;
-            renderIncludeList();
-            document.getElementById('includeModal').classList.add('active');
-            document.getElementById('includeSearch').focus();
-        }
-
-        function closeIncludeModal() {
-            document.getElementById('includeModal').classList.remove('active');
-            state.selectedInclude = null;
-        }
-
-        function renderIncludeList(filter = '') {
-            const list = document.getElementById('includeList');
-            list.innerHTML = '';
-
-            const groups = {};
-            state.includes.forEach(inc => {
-                if (filter && !inc.ref.toLowerCase().includes(filter.toLowerCase())) return;
-                const key = inc.agent;
-                if (!groups[key]) groups[key] = [];
-                groups[key].push(inc);
-            });
-
-            Object.entries(groups).forEach(([agent, items]) => {
-                const group = document.createElement('div');
-                group.className = 'include-group';
-                group.innerHTML = `<div class="include-group-title">${agent}</div>`;
-
-                items.forEach(item => {
-                    const el = document.createElement('div');
-                    el.className = 'include-item' + (state.selectedInclude === item.ref ? ' selected' : '');
-                    el.innerHTML = `<span class="include-ref">${item.ref}</span>`;
-                    el.onclick = () => selectInclude(item.ref);
-                    el.ondblclick = () => {
-                        selectInclude(item.ref);
-                        insertSelectedInclude();
-                    };
-                    group.appendChild(el);
-                });
-
-                list.appendChild(group);
-            });
-        }
-
-        function selectInclude(ref) {
-            state.selectedInclude = ref;
-            document.querySelectorAll('.include-item').forEach(el => {
-                el.classList.toggle('selected', el.querySelector('.include-ref').textContent === ref);
-            });
-        }
-
-        function insertSelectedInclude() {
-            if (!state.selectedInclude) {
-                showToast('Sélectionnez un include', 'error');
-                return;
-            }
-
-            const text = `{% include '${state.selectedInclude}' %}`;
-            const position = state.editor.getPosition();
-            state.editor.executeEdits('include', [{
-                range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
-                text: text + '\n'
-            }]);
-
-            closeIncludeModal();
-            showToast('Include inséré ✓', 'success');
-        }
-
-        // Search includes
-        document.getElementById('includeSearch')?.addEventListener('input', (e) => {
-            renderIncludeList(e.target.value);
-        });
-
-        // Utilities
-        function updateWordCount() {
-            const content = state.editor.getValue();
-            const words = content.trim().split(/\s+/).filter(w => w).length;
-            document.getElementById('statusRight').textContent = `${words} mots`;
-        }
-
-        function updateStatus(msg) {
-            document.getElementById('statusLeft').textContent = msg;
-        }
-
-        function showToast(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.className = `toast ${type} active`;
-            setTimeout(() => toast.classList.remove('active'), 3000);
-        }
-
-        // Event listeners
-        document.getElementById('projectSelect').addEventListener('change', async (e) => {
-            state.project = e.target.value;
-            state.agent = null;
-            state.section = null;
-            await loadAgents(state.project);
-            document.getElementById('sectionList').innerHTML =
-                '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Sélectionnez un agent</div>';
-            document.getElementById('translateBtn').style.display = 'none';
-        });
-
-        document.getElementById('agentSelect').addEventListener('change', async (e) => {
-            state.agent = e.target.value;
-            state.section = null;
-            await loadSections(state.project, state.agent);
-            document.getElementById('translateBtn').style.display = 'none';
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                saveSection();
-            }
-            if (e.key === 'Escape') {
-                closeIncludeModal();
-                closeAddSectionModal();
-            }
-        });
-
-        // Initialize
-        loadProjects();
-    </script>
+      // Buttons
+      document.getElementById('btn-save').addEventListener('click', saveSection);
+      document.getElementById('btn-diff').addEventListener('click', showDiff);
+      document.getElementById('diff-close').addEventListener('click', closeDiff);
+      document.getElementById('btn-generate').addEventListener('click', generatePrompt);
+      document.getElementById('btn-translate').addEventListener('click', openTranslateModal);
+      document.getElementById('btn-toggle-expand').addEventListener('click', toggleExpandIncludes);
+    });
+  </script>
 </body>
 </html>

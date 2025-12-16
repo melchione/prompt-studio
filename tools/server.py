@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """
 Prompt Studio - Serveur API pour l'éditeur web
+
+Features:
+- Project/Agent/Section CRUD
+- Real AI translation via Claude API
+- Expand/Collapse includes for editing
+- Build system integration
+- HTML preview with color-coded sections
+
 Usage: python tools/server.py [--port 8080]
 """
 
@@ -8,10 +16,14 @@ import argparse
 import json
 import mimetypes
 import os
+import sys
 from datetime import datetime, timezone
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+
+# Add tools directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
 
 
 class PromptStudioAPI(SimpleHTTPRequestHandler):
@@ -55,6 +67,11 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                 self._get_state()
             elif path == "/api/projects":
                 self._list_projects()
+            elif path == "/api/protected-tokens":
+                self._get_protected_tokens()
+            elif path == "/api/includes":
+                project = query.get("project", [None])[0]
+                self._list_available_includes(project)
             elif path.startswith("/api/projects/"):
                 parts = path.split("/")
                 project = parts[3]
@@ -67,19 +84,26 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                         agent = parts[5]
                         if len(parts) == 6:
                             self._get_agent(project, agent)
+                        elif len(parts) == 8 and parts[6] in ["fr", "en"] and parts[7] == "all":
+                            # /api/projects/{project}/agents/{agent}/{lang}/all
+                            lang = parts[6]
+                            self._get_all_sections(project, agent, lang)
                         elif len(parts) >= 8 and parts[6] in ["fr", "en"]:
                             lang = parts[6]
                             section = "/".join(parts[7:])
                             self._get_section(project, agent, lang, section)
+                        elif path.endswith("/expand"):
+                            lang = query.get("lang", ["fr"])[0]
+                            section = query.get("section", [None])[0]
+                            highlight = query.get("highlight", ["false"])[0] == "true"
+                            html_preview = query.get("html", ["false"])[0] == "true"
+                            self._expand_section(project, agent, lang, section, highlight, html_preview)
                         else:
                             self._send_json({"error": "Invalid path"}, 400)
                     else:
                         self._send_json({"error": "Invalid path"}, 400)
                 else:
                     self._send_json({"error": "Invalid path"}, 400)
-            elif path == "/api/includes":
-                project = query.get("project", [None])[0]
-                self._list_available_includes(project)
             else:
                 self._send_json({"error": "Unknown endpoint"}, 404)
         except Exception as e:
@@ -92,6 +116,19 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                 self._update_state(data)
             elif path == "/api/projects":
                 self._create_project(data)
+            elif path == "/api/build":
+                self._build(data)
+            elif path == "/api/expand":
+                # POST /api/expand - Expand includes in content
+                self._expand_content(data)
+            elif path.endswith("/save-all"):
+                # /api/projects/{project}/agents/{agent}/{lang}/save-all
+                # MUST be checked BEFORE generic section handler
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                lang = parts[6]
+                self._save_all_sections(project, agent, lang, data)
             elif path.startswith("/api/projects/") and "/agents" in path:
                 parts = path.split("/")
                 project = parts[3]
@@ -104,14 +141,25 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                     self._save_section(project, agent, lang, section, data)
                 else:
                     self._send_json({"error": "Invalid path"}, 400)
-            elif path == "/api/build":
-                self._build(data)
             elif path.endswith("/translate"):
                 # /api/projects/{project}/agents/{agent}/translate
                 parts = path.split("/")
                 project = parts[3]
                 agent = parts[5]
                 self._translate_section(project, agent, data)
+            elif path.endswith("/translate-ai"):
+                # /api/projects/{project}/agents/{agent}/translate-ai
+                # Real AI translation using Claude API
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._translate_section_ai(project, agent, data)
+            elif path.endswith("/collapse"):
+                # /api/projects/{project}/agents/{agent}/collapse
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._collapse_section(project, agent, data)
             elif path.endswith("/reorder"):
                 # /api/projects/{project}/agents/{agent}/reorder
                 parts = path.split("/")
@@ -486,7 +534,7 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
             self._send_json({"error": "Project required"}, 400)
             return
 
-        cmd = ["python", "tools/build.py", "--project", project]
+        cmd = [sys.executable, "tools/build.py", "--project", project]
         if agent:
             cmd.extend(["--agent", agent])
         else:
@@ -506,6 +554,228 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
             })
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
+
+    def _translate_section_ai(self, project: str, agent: str, data: dict):
+        """Real AI translation using Claude API."""
+        from translate import translate_with_claude, get_language_name
+
+        section = data.get("section")
+        from_lang = data.get("from_lang")
+        to_lang = data.get("to_lang")
+
+        if not all([section, from_lang, to_lang]):
+            self._send_json({"error": "section, from_lang, to_lang required"}, 400)
+            return
+
+        source_path = self.projects_dir / project / "agents" / agent / from_lang / section
+        target_path = self.projects_dir / project / "agents" / agent / to_lang / section
+
+        if not source_path.exists():
+            self._send_json({"error": f"Source section not found: {from_lang}/{section}"}, 404)
+            return
+
+        # Read source content
+        source_text = source_path.read_text(encoding="utf-8")
+
+        try:
+            # Translate using Claude API
+            source_name = get_language_name(from_lang)
+            target_name = get_language_name(to_lang)
+            translated_text = translate_with_claude(source_text, source_name, target_name)
+
+            # Create target directory if needed
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Save translated content
+            target_path.write_text(translated_text, encoding="utf-8")
+
+            self._send_json({
+                "success": True,
+                "message": f"Section traduite vers {to_lang}/{section}",
+                "from": f"{from_lang}/{section}",
+                "to": f"{to_lang}/{section}",
+                "source_chars": len(source_text),
+                "target_chars": len(translated_text),
+                "source_words": len(source_text.split()),
+                "target_words": len(translated_text.split())
+            })
+
+        except ValueError as e:
+            # API key not set
+            self._send_json({"error": str(e)}, 400)
+        except ImportError as e:
+            # anthropic package not installed
+            self._send_json({"error": str(e)}, 500)
+        except Exception as e:
+            self._send_json({"error": f"Translation failed: {str(e)}"}, 500)
+
+    def _expand_section(self, project: str, agent: str, lang: str, section: str, highlight: bool, html_preview: bool):
+        """Expand includes in a section with markers."""
+        from expand import expand_file, generate_html_preview
+
+        if not section:
+            self._send_json({"error": "section query param required"}, 400)
+            return
+
+        section_path = self.projects_dir / project / "agents" / agent / lang / section
+        if not section_path.exists():
+            self._send_json({"error": f"Section not found: {lang}/{section}"}, 404)
+            return
+
+        try:
+            expanded = expand_file(project, agent, lang, section, highlight_local=highlight)
+
+            if html_preview:
+                html_content = generate_html_preview(
+                    expanded,
+                    title=f"{project}/{agent}/{lang}/{section}"
+                )
+                self._send_json({
+                    "success": True,
+                    "expanded": expanded,
+                    "html": html_content,
+                    "format": "html"
+                })
+            else:
+                self._send_json({
+                    "success": True,
+                    "expanded": expanded,
+                    "format": "markdown"
+                })
+
+        except FileNotFoundError as e:
+            self._send_json({"error": str(e)}, 404)
+        except RecursionError as e:
+            self._send_json({"error": str(e)}, 400)
+        except Exception as e:
+            self._send_json({"error": f"Expand failed: {str(e)}"}, 500)
+
+    def _collapse_section(self, project: str, agent: str, data: dict):
+        """Collapse expanded content back to includes and save."""
+        from expand import collapse_and_save
+
+        section = data.get("section")
+        lang = data.get("lang", "fr")
+        expanded_content = data.get("content")
+        dry_run = data.get("dry_run", False)
+
+        if not section or not expanded_content:
+            self._send_json({"error": "section and content required"}, 400)
+            return
+
+        try:
+            modified_files = collapse_and_save(
+                project, agent, lang, section,
+                expanded_content,
+                dry_run=dry_run
+            )
+
+            self._send_json({
+                "success": True,
+                "section": f"{lang}/{section}",
+                "modified_includes": list(modified_files.keys()),
+                "dry_run": dry_run
+            })
+
+        except Exception as e:
+            self._send_json({"error": f"Collapse failed: {str(e)}"}, 500)
+
+    def _get_protected_tokens(self):
+        """Retourne la liste des tokens protégés pour la traduction."""
+        tokens = [
+            "{% include", "{%", "%}", "{{", "}}",
+            "$state", "$derived", "$effect", "$props",
+            "<script>", "</script>", "<style>", "</style>"
+        ]
+        self._send_json({"tokens": tokens})
+
+    def _get_all_sections(self, project: str, agent: str, lang: str):
+        """Retourne toutes les sections concaténées avec délimiteurs."""
+        agent_path = self.projects_dir / project / "agents" / agent / lang
+
+        if not agent_path.exists():
+            self._send_json({"error": f"Agent not found: {agent}/{lang}"}, 404)
+            return
+
+        sections = {}
+        order = []
+
+        # Get all markdown files sorted
+        for f in sorted(agent_path.iterdir()):
+            if f.is_file() and f.suffix == ".md":
+                order.append(f.name)
+                with open(f, encoding="utf-8") as fp:
+                    sections[f.name] = fp.read()
+
+        self._send_json({
+            "agent": agent,
+            "lang": lang,
+            "order": order,
+            "sections": sections
+        })
+
+    def _expand_content(self, data: dict):
+        """Expand includes dans un contenu fourni."""
+        from expand import expand_includes
+
+        content = data.get("content", "")
+        lang = data.get("lang", "fr")
+        project = data.get("project")
+
+        if not content:
+            self._send_json({"expanded": "", "has_includes": False})
+            return
+
+        if not project:
+            self._send_json({"error": "Project is required"}, 400)
+            return
+
+        try:
+            # Check if content has includes
+            has_includes = "{% include" in content
+
+            if has_includes:
+                expanded = expand_includes(content, project, lang)
+            else:
+                expanded = content
+
+            self._send_json({
+                "expanded": expanded,
+                "has_includes": has_includes,
+                "original": content
+            })
+        except Exception as e:
+            self._send_json({"error": f"Expand failed: {str(e)}"}, 500)
+
+    def _save_all_sections(self, project: str, agent: str, lang: str, data: dict):
+        """Sauvegarde les sections à partir d'un dictionnaire."""
+        print(f"[DEBUG _save_all_sections] project={project}, agent={agent}, lang={lang}")
+        print(f"[DEBUG _save_all_sections] data keys: {list(data.keys()) if data else 'None'}")
+        print(f"[DEBUG _save_all_sections] data type: {type(data)}")
+
+        agent_path = self.projects_dir / project / "agents" / agent / lang
+        print(f"[DEBUG _save_all_sections] agent_path: {agent_path}")
+
+        if not agent_path.exists():
+            agent_path.mkdir(parents=True, exist_ok=True)
+
+        try:
+            saved = []
+            for section_name, content in data.items():
+                section_path = agent_path / section_name
+                print(f"[DEBUG _save_all_sections] Saving {section_name} to {section_path}, content length: {len(content)}")
+                with open(section_path, "w", encoding="utf-8") as f:
+                    f.write(content)
+                saved.append(section_name)
+                print(f"[DEBUG _save_all_sections] Saved {section_name}")
+
+            self._send_json({
+                "success": True,
+                "saved": saved,
+                "count": len(saved)
+            })
+        except Exception as e:
+            self._send_json({"error": f"Save failed: {str(e)}"}, 500)
 
     def do_OPTIONS(self):
         """Gère les requêtes CORS preflight."""

@@ -127,3 +127,39 @@ Si appelé sans argument et qu'il existe des versions :
 
 💡 Utilisez /ps:version [patch|minor|major] pour créer une nouvelle version
 ```
+
+## Résumé et Prochaines Étapes
+
+À la fin de la création de version, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ VERSION CRÉÉE
+
+📋 Ce qui a été fait :
+   • Version {X.Y.Z} créée
+   • Archive générée dans versions/
+   • Changelog documenté
+   • .project.json mis à jour
+
+📁 Fichiers créés :
+   versions/{projet}/v{version}/
+   ├── CHANGELOG.md
+   ├── dist/fr/*.md
+   ├── dist/en/*.md
+   └── metadata.json
+
+📊 Contenu de la version :
+   • Agents : {N}
+   • Langues : {N}
+   • Mots totaux : {N}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+▶️  /ps:export [chemin]  Déployer cette version (RECOMMANDÉ)
+    /ps:status           Voir l'état du projet
+    /ps:version          Voir l'historique des versions
+    /ps:build            Recompiler les prompts
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

@@ -101,5 +101,40 @@ AVERTISSEMENTS :
 
 {Si tout OK}
 ✅ Validation réussie !
-💡 Prochaine étape : /ps:build pour compiler
+```
+
+## Résumé et Prochaines Étapes
+
+À la fin de la validation, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ VALIDATION TERMINÉE
+
+📋 Ce qui a été vérifié :
+   • Existence des sections
+   • Contenu non vide
+   • Syntaxe Markdown
+   • Résolution des includes
+   • Complétude des traductions
+   • Cohérence globale
+
+📊 Résultat :
+   ✅ {N} validations réussies
+   ⚠️ {N} avertissements
+   ❌ {N} erreurs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+{Si succès}
+▶️  /ps:build            Compiler le prompt (RECOMMANDÉ)
+    /ps:translate        Compléter les traductions
+    /ps:write [section]  Modifier une section
+
+{Si erreurs}
+▶️  /ps:write [section]  Corriger les erreurs (RECOMMANDÉ)
+    /ps:translate        Ajouter les traductions manquantes
+    /ps:status           Voir l'état détaillé
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

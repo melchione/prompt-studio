@@ -57,3 +57,40 @@ Lister tous les projets disponibles avec leurs informations :
    Langues : fr, en
    Export  : /path/to/export
 ```
+
+## Résumé et Prochaines Étapes
+
+À la fin de l'activation/création de projet, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ PROJET {CRÉÉ|ACTIVÉ}
+
+📋 Ce qui a été fait :
+   • Projet "{nom}" {créé|activé}
+   • .state.json mis à jour
+   {Si nouveau} • Structure de base créée
+   {Si nouveau} • .project.json initialisé
+
+📁 Structure :
+   projects/{nom}/
+   ├── .project.json
+   └── agents/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+{Si nouveau projet}
+▶️  /ps:agent [nom]      Créer un premier agent (RECOMMANDÉ)
+    /ps:status           Voir l'état du projet
+
+{Si projet existant sans agent actif}
+▶️  /ps:agent [nom]      Activer ou créer un agent (RECOMMANDÉ)
+    /ps:status           Voir les agents disponibles
+
+{Si projet existant avec agents}
+▶️  /ps:agent [nom]      Choisir un agent (RECOMMANDÉ)
+    /ps:build --all      Compiler tous les agents
+    /ps:status           Voir l'état complet
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

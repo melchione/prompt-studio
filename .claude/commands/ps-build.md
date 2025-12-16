@@ -118,3 +118,41 @@ Erreur : Include introuvable
 💡 Vérifiez que le fichier existe ou corrigez le chemin de l'include.
 💡 Utilisez /ps:validate pour vérifier tous les includes.
 ```
+
+## Résumé et Prochaines Étapes
+
+À la fin du build, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ BUILD TERMINÉ
+
+📋 Ce qui a été fait :
+   • Sections chargées et validées
+   • Includes résolus récursivement
+   • Fichiers compilés générés
+   • Marqueurs de traçabilité ajoutés
+
+📁 Fichiers créés :
+   projects/{projet}/dist/fr/{agent}.md
+   projects/{projet}/dist/en/{agent}.md
+
+📊 Statistiques :
+   • Sections : {N}
+   • Includes : {N}
+   • Mots (FR) : {N}
+   • Mots (EN) : {N}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+▶️  /ps:version [type]   Créer une release (RECOMMANDÉ)
+    /ps:export [chemin]  Exporter vers un projet externe
+    /ps:validate         Revalider le prompt
+    /ps:editor           Ouvrir l'éditeur web
+
+{Si erreurs de build}
+▶️  /ps:validate         Diagnostiquer les erreurs (RECOMMANDÉ)
+    /ps:write [section]  Corriger les sections
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

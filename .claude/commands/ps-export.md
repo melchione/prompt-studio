@@ -144,3 +144,39 @@ Sauvegarder le chemin d'export dans `.project.json` :
   "last_export_version": "{version}"
 }
 ```
+
+## Résumé et Prochaines Étapes
+
+À la fin de l'export, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ EXPORT TERMINÉ
+
+📋 Ce qui a été fait :
+   • Prompts copiés vers {destination}
+   • Structure agent/lang/ créée
+   • Manifest _manifest.json généré
+   • Chemin d'export sauvegardé
+
+📁 Fichiers créés :
+   {destination}/
+   ├── {agent}/fr/prompt.md
+   ├── {agent}/en/prompt.md
+   └── _manifest.json
+
+📊 Statistiques :
+   • Fichiers exportés : {N}
+   • Version : {X.Y.Z}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+    /ps:status           Voir l'état du projet
+    /ps:version          Créer une nouvelle version
+    /ps:build            Recompiler les prompts
+    /ps:export           Re-exporter avec les mêmes paramètres
+
+💡 Les prompts sont maintenant disponibles dans le projet cible.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

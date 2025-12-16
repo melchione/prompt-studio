@@ -6,6 +6,21 @@ Démarre ou continue la phase de conception pour l'agent actif.
 
 Un projet ET un agent doivent être actifs.
 
+## Références de Conception
+
+**IMPORTANT** : Avant de commencer la conception, consulter les guides de référence :
+
+📚 **Guides disponibles** (`refs/system-prompting/`) :
+- `01-routing-decision-strategies.md` - Stratégies de routing
+- `02-chain-of-thought-prompting.md` - Raisonnement étape par étape
+- `03-least-to-most-prompting.md` - Décomposition en sous-problèmes
+- `06-prompt-chaining.md` - Chaînage séquentiel et workflows
+- `07-react-framework.md` - Synergie raisonnement et action
+- `08-cognitive-flexibility.md` - Adaptation dynamique
+- `09-implementation-guide.md` - Guide d'implémentation
+
+Ces guides aident à choisir les meilleures techniques de prompting selon le type d'agent à concevoir.
+
 ## Instructions
 
 Mettre à jour `.state.json` avec `phase: "conceive"`.
@@ -104,7 +119,36 @@ Après avoir collecté toutes les réponses, générer un résumé :
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ✅ Conception validée !
-💡 Prochaine étape : /ps:structure pour définir les sections
 ```
 
 Sauvegarder ce résumé dans `projects/{projet}/agents/{agent}/conception.md`
+
+## Résumé et Prochaines Étapes
+
+À la fin de la commande, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ CONCEPTION TERMINÉE
+
+📋 Ce qui a été fait :
+   • Objectif de l'agent défini
+   • Contexte d'utilisation documenté
+   • Entrées/sorties identifiées
+   • Contraintes listées
+   • Exemples d'usage créés
+   • Fichier conception.md sauvegardé
+
+📁 Fichier créé :
+   projects/{projet}/agents/{agent}/conception.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+▶️  /ps:structure      Définir les sections du prompt (RECOMMANDÉ)
+    /ps:status         Voir l'état du projet
+    /ps:agent          Changer d'agent
+    /ps:project        Changer de projet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```

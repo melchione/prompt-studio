@@ -136,3 +136,34 @@ fr/
 💡 Utilisez /ps:write {section} pour éditer
 💡 Section suggérée : 03-tools.md (prochaine vide)
 ```
+
+## Résumé et Prochaines Étapes
+
+À la fin de la rédaction d'une section, afficher :
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SECTION RÉDIGÉE
+
+📋 Ce qui a été fait :
+   • Section {section} rédigée ({N} mots)
+   • Fichier sauvegardé dans {lang}/
+
+📁 Fichier modifié :
+   projects/{projet}/agents/{agent}/{lang}/{section}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PROCHAINES COMMANDES DISPONIBLES
+
+▶️  /ps:write [section]   Rédiger une autre section
+    /ps:translate         Traduire vers l'autre langue
+    /ps:validate          Valider le prompt complet
+    /ps:build             Compiler le prompt
+
+{Si toutes les sections sont complètes}
+Suggestion : /ps:validate pour vérifier avant le build
+
+{Si des sections sont vides}
+Suggestion : /ps:write {prochaine_section_vide}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
