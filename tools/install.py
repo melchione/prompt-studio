@@ -82,6 +82,52 @@ def create_project(name: str, config: dict) -> Path:
     return project_path
 
 
+def create_agent(project_path: Path, agent_name: str, default_lang: str = "fr") -> Path:
+    """Crée un nouvel agent avec un template de base."""
+    agent_path = project_path / "agents" / agent_name
+
+    # Créer la structure pour les deux langues
+    (agent_path / "fr").mkdir(parents=True, exist_ok=True)
+    (agent_path / "en").mkdir(parents=True, exist_ok=True)
+
+    # Template de base pour le premier fichier
+    template_fr = f"""# {agent_name.replace('_', ' ').title()}
+
+## Contexte
+
+Tu es un assistant spécialisé.
+
+## Instructions
+
+Décris ici les instructions pour cet agent.
+
+## Format de réponse
+
+Décris le format attendu des réponses.
+"""
+
+    template_en = f"""# {agent_name.replace('_', ' ').title()}
+
+## Context
+
+You are a specialized assistant.
+
+## Instructions
+
+Describe here the instructions for this agent.
+
+## Response Format
+
+Describe the expected response format.
+"""
+
+    # Créer les fichiers de base
+    (agent_path / "fr" / "01-context.md").write_text(template_fr, encoding="utf-8")
+    (agent_path / "en" / "01-context.md").write_text(template_en, encoding="utf-8")
+
+    return agent_path
+
+
 def update_state(studio_root: Path, active_project: str = None):
     """Met à jour le fichier .state.json."""
     state_path = studio_root / ".state.json"
@@ -170,41 +216,77 @@ def interactive_setup():
             print(colored(f"   ⚠️ Dossier invalide ou inexistant", "yellow"))
     print()
 
-    # 3. Créer un premier projet ?
+    # 3. Créer un premier projet
     print(colored("3. Premier projet", "bold"))
     print("-" * 30)
 
-    if input_yes_no("Créer un premier projet maintenant ?", True):
-        project_name = input_with_default("   Nom du projet", "main")
+    project_name = input_with_default("📁 Nom du projet", "main")
+    agent_name = None
 
-        # Chemin d'export
-        print()
-        print("   Où exporter les prompts compilés ?")
-        print(f"   (Laissez vide pour configurer plus tard)")
-        export_path = input("   Chemin d'export : ").strip()
+    # Chemin d'export (obligatoire)
+    print()
+    print("   Où exporter les prompts compilés ?")
+    print("   (Chemin absolu vers le dossier de destination)")
+    print()
 
+    while True:
+        export_path = input("   📤 Chemin d'export : ").strip()
         if export_path:
-            config["export_path"] = export_path
-            # Ajouter aux dossiers autorisés si nécessaire
-            export_parent = str(Path(export_path).parent)
-            if export_parent not in allowed_dirs:
-                allowed_dirs.append(export_parent)
+            export_path_obj = Path(export_path)
+            # Créer le dossier s'il n'existe pas
+            if not export_path_obj.exists():
+                if input_yes_no(f"   Le dossier n'existe pas. Le créer ?", True):
+                    try:
+                        export_path_obj.mkdir(parents=True, exist_ok=True)
+                        print(colored(f"   ✅ Dossier créé : {export_path}", "green"))
+                        break
+                    except Exception as e:
+                        print(colored(f"   ❌ Impossible de créer le dossier : {e}", "red"))
+                else:
+                    print("   Veuillez entrer un autre chemin.")
+            else:
+                break
+        else:
+            print(colored("   ⚠️ Le chemin d'export est obligatoire.", "yellow"))
 
-        # Créer le projet
-        project_path = create_project(project_name, config)
+    config["export_path"] = export_path
+
+    # Ajouter aux dossiers autorisés si nécessaire
+    export_parent = str(Path(export_path).parent)
+    if export_parent not in allowed_dirs:
+        allowed_dirs.append(export_parent)
+
+    # Créer le projet
+    project_path = create_project(project_name, config)
+    print()
+    print(colored(f"   ✅ Projet '{project_name}' créé !", "green"))
+
+    # 4. Créer un premier agent
+    print()
+    print(colored("4. Premier agent", "bold"))
+    print("-" * 30)
+
+    if input_yes_no("Créer un premier agent maintenant ?", True):
+        agent_name = input_with_default("🤖 Nom de l'agent", "assistant")
+
+        # Valider le nom (snake_case ou kebab-case)
+        agent_name = agent_name.lower().replace(" ", "_").replace("-", "_")
+
+        # Créer l'agent
+        agent_path = create_agent(project_path, agent_name, config.get("default_language", "fr"))
         print()
-        print(colored(f"   ✅ Projet '{project_name}' créé !", "green"))
+        print(colored(f"   ✅ Agent '{agent_name}' créé avec template de base !", "green"))
+        print(f"   📄 Fichiers créés :")
+        print(f"      - {agent_name}/fr/01-context.md")
+        print(f"      - {agent_name}/en/01-context.md")
 
-        # Activer le projet
-        update_state(studio_root, project_name)
-    else:
-        project_name = None
-        update_state(studio_root)
+    # Activer le projet
+    update_state(studio_root, project_name)
 
-    # 4. Sauvegarder les settings
+    # 5. Sauvegarder les settings
     update_settings(studio_root, allowed_dirs)
 
-    # 5. Résumé
+    # 6. Résumé
     print()
     print(colored("=" * 50, "cyan"))
     print(colored("   Installation terminée !", "bold"))
@@ -212,23 +294,26 @@ def interactive_setup():
     print()
     print(f"📁 Prompt Studio : {colored(str(studio_root), 'cyan')}")
     print(f"🌍 Langue par défaut : {colored(config['default_language'], 'cyan')}")
+    print(f"📤 Export vers : {colored(export_path, 'cyan')}")
     print(f"🔐 Dossiers autorisés :")
     for d in allowed_dirs:
         print(f"   - {d}")
 
-    if project_name:
-        print()
-        print(f"🚀 Projet actif : {colored(project_name, 'green')}")
+    print()
+    print(f"🚀 Projet actif : {colored(project_name, 'green')}")
+    if agent_name:
+        print(f"🤖 Agent créé : {colored(agent_name, 'green')}")
 
     print()
     print(colored("Prochaines étapes :", "bold"))
-    print("  1. Ouvrir Claude Code dans ce dossier :")
+    print("  1. Lancer l'éditeur web :")
+    print(f"     {colored('python tools/server.py', 'yellow')}")
+    print(f"     Puis ouvrir {colored('http://localhost:8236', 'cyan')}")
+    print()
+    print("  2. Ou utiliser Claude Code :")
     print(f"     {colored('cd ' + str(studio_root), 'yellow')}")
     print(f"     {colored('claude', 'yellow')}")
-    print()
-    print("  2. Utiliser les commandes /ps:* pour créer vos prompts")
     print(f"     {colored('/ps:status', 'cyan')} - Voir l'état actuel")
-    print(f"     {colored('/ps:agent mon-agent', 'cyan')} - Créer un agent")
     print()
 
 

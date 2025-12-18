@@ -1,280 +1,254 @@
 # Prompt Studio
 
-Système de gestion et conception de prompts pour systèmes multi-agents, intégré à Claude Code.
+Bienvenue dans Prompt Studio, votre atelier de création de prompts pour agents IA.
+
+## C'est quoi Prompt Studio ?
+
+Prompt Studio vous accompagne dans la création de prompts de qualité professionnelle. Au lieu d'écrire un prompt d'un seul bloc, vous le construisez étape par étape, guidé par Claude.
+
+**Le résultat ?** Des prompts bien structurés, faciles à maintenir, et réutilisables entre vos différents agents.
+
+---
 
 ## Installation
 
+### Prérequis
+
+- [Claude Code](https://claude.ai/code) installé sur votre machine
+- Python 3.8+ (pour l'éditeur web)
+
+### Installer Prompt Studio
+
 ```bash
-git clone https://github.com/[votre-repo]/prompt-studio.git
+# Clonez le dépôt
+git clone https://github.com/votre-repo/prompt-studio.git
+
+# Entrez dans le dossier
 cd prompt-studio
-bash install.sh
+
+# Lancez l'installation
+python tools/install.py
 ```
 
-## Conception Guidée avec Claude Code
+L'installation vous guide pour configurer votre premier projet.
 
-Prompt Studio propose un workflow en 5 phases pour concevoir des prompts de qualité :
+**Alternative rapide :** Si vous avez déjà Claude Code, vous pouvez directement ouvrir le dossier et commencer à utiliser les commandes `/ps:*`.
 
-### Phase 1 : Conception (`/ps:conceive`)
+---
 
-Claude vous guide à travers une série de questions pour comprendre :
+## Premiers pas
 
-1. **Objectif** - Quel est le but de l'agent ?
-2. **Contexte** - Dans quel système s'intègre-t-il ?
-3. **Entrées/Sorties** - Quelles données traite-t-il ?
-4. **Contraintes** - Limites techniques, format, langue ?
-5. **Exemples** - Cas d'usage concrets
+### 1. Lancez Prompt Studio
 
-Cette phase produit un document de conception qui servira de base.
-
-### Phase 2 : Structure (`/ps:structure`)
-
-Définition de l'architecture du prompt :
-
-- **Sections numérotées** : `01-context.md`, `02-instructions.md`, `03-examples.md`...
-- **Includes** : Identifier les sections réutilisables d'autres agents
-- **Variables** : Définir les placeholders `{{ variable }}`
-- **Langues** : Planifier les versions `fr/` et `en/`
-
-### Phase 3 : Rédaction (`/ps:write`)
-
-Écriture section par section avec Claude :
+Ouvrez un terminal dans le dossier `prompt-studio` et lancez Claude Code :
 
 ```bash
-/ps:write 01-context      # Rédiger le contexte
-/ps:write 02-instructions # Rédiger les instructions
-/ps:write                 # Rédiger la section suivante
+claude
 ```
 
-Bonnes pratiques appliquées automatiquement :
-- Format XML pour la structure
-- Concision sans sacrifier la clarté
-- Exemples intégrés quand pertinent
+### 2. Voyez où vous en êtes
 
-### Phase 4 : Validation (`/ps:validate`)
-
-Vérification complète :
-
-- Cohérence entre toutes les sections
-- Résolution des includes (pas de références cassées)
-- Complétude des traductions FR/EN
-- Test de build
-
-### Phase 5 : Versioning (`/ps:version`)
-
-Publication d'une version :
-
-```bash
-/ps:version patch  # 1.0.0 → 1.0.1 (corrections)
-/ps:version minor  # 1.0.0 → 1.1.0 (nouvelles fonctionnalités)
-/ps:version major  # 1.0.0 → 2.0.0 (changements majeurs)
+```
+/ps:status
 ```
 
-Chaque version est archivée avec son changelog.
+Cette commande vous montre l'état actuel : quel projet est actif, quel agent, et où vous en êtes dans le processus.
 
-## Interface Web
+### 3. Créez votre premier projet
 
-L'éditeur web permet de visualiser et modifier les prompts avec une interface graphique.
+```
+/ps:project mon-assistant
+```
 
-### Lancement
+Un projet regroupe plusieurs agents qui travaillent ensemble. Par exemple, un projet "support-client" pourrait contenir des agents pour le chat, les emails, et les FAQ.
 
-```bash
-# Via Claude Code
+### 4. Créez votre premier agent
+
+```
+/ps:agent conseiller
+```
+
+Un agent = un prompt = un rôle spécifique. Chaque agent a sa propre personnalité, ses instructions, et ses exemples.
+
+---
+
+## Le workflow en 5 étapes
+
+### Étape 1 : Concevoir
+
+```
+/ps:conceive
+```
+
+Claude vous pose des questions pour comprendre votre agent :
+- Quel est son objectif ?
+- Dans quel contexte travaille-t-il ?
+- Quelles données reçoit-il et produit-il ?
+- Quelles sont ses contraintes ?
+
+**Pourquoi c'est important ?** Cette réflexion en amont évite de réécrire le prompt 10 fois.
+
+### Étape 2 : Structurer
+
+```
+/ps:structure
+```
+
+Claude analyse votre conception et propose une structure adaptée. Il vérifie aussi quelles **techniques de prompting avancées** seraient utiles (Chain-of-Thought, ReAct, etc.) et vous suggère des sections spécifiques.
+
+Vous obtenez un plan clair :
+```
+📁 conseiller/
+├── 01-context.md        # Qui est l'agent
+├── 02-instructions.md   # Ce qu'il doit faire
+├── 03-tools.md          # Ses outils
+├── 04-examples.md       # Des exemples concrets
+└── 05-constraints.md    # Ses limites
+```
+
+### Étape 3 : Rédiger
+
+```
+/ps:write 01-context
+```
+
+Rédigez section par section. Claude vous rappelle :
+- Le contexte de conception
+- Les techniques de prompting à appliquer
+- Des templates adaptés
+
+Vous pouvez aussi simplement taper `/ps:write` pour continuer avec la prochaine section.
+
+### Étape 4 : Valider
+
+```
+/ps:validate
+```
+
+Claude vérifie que tout est cohérent :
+- Les sections se complètent bien
+- Les références entre agents fonctionnent
+- Les traductions sont complètes
+
+### Étape 5 : Compiler et exporter
+
+```
+/ps:build
+```
+
+Votre prompt est assemblé en un seul fichier, prêt à être utilisé.
+
+```
+/ps:export /chemin/vers/mon-projet
+```
+
+Exportez le résultat vers votre projet.
+
+---
+
+## L'éditeur visuel
+
+Préférez une interface graphique ? Lancez l'éditeur web :
+
+```
 /ps:editor
-
-# Ou directement
-python3 tools/server.py
-# Ouvrir http://localhost:8080
 ```
 
-### Fonctionnalités
+Ouvrez ensuite http://localhost:8236 dans votre navigateur.
 
-| Fonctionnalité | Description |
-|----------------|-------------|
-| **Monaco Editor** | Éditeur de code avec coloration syntaxique Markdown |
-| **Navigation projet** | Sélection projet → agent → section |
-| **Switch FR/EN** | Basculer entre les versions linguistiques |
-| **Traduction** | Copier une section vers l'autre langue pour traduction |
-| **Réorganisation** | Drag & drop pour réordonner les sections |
-| **Création de section** | Modal avec numérotation automatique et création bilingue |
-| **Suppression** | Supprimer une section (par langue) |
-| **Synchronisation** | Copier les sections manquantes vers l'autre langue |
-| **Insertion d'includes** | Modal pour parcourir et insérer des références |
-| **Build intégré** | Compiler et prévisualiser le résultat |
+**Ce que vous pouvez faire :**
+- Naviguer entre projets et agents
+- Éditer les sections avec coloration syntaxique
+- Réorganiser les sections par glisser-déposer
+- Basculer entre français et anglais
+- Voir le résultat compilé en temps réel
 
-### Gestion des traductions
+**Raccourcis utiles :**
+- `Ctrl+S` : Sauvegarder
+- `Ctrl+I` : Insérer une référence vers une autre section
+- `Escape` : Fermer les fenêtres
 
-L'interface affiche un indicateur visuel pour chaque section :
-- ✓ (vert) : La traduction existe dans l'autre langue
-- ! (rouge) : La section n'a pas encore été traduite
+---
 
-**Actions disponibles :**
-- **Bouton "Traduire vers EN/FR"** : Copie la section actuelle vers l'autre langue
-- **Bouton "🔄" (sidebar)** : Synchronise toutes les sections manquantes entre FR et EN
+## Réutiliser du contenu entre agents
 
-### Réorganisation des sections
-
-Glissez-déposez les sections dans la sidebar pour modifier leur ordre. Les fichiers sont automatiquement renommés avec le bon numéro (01-, 02-, etc.).
-
-### Raccourcis clavier
-
-| Raccourci | Action |
-|-----------|--------|
-| `Ctrl+S` | Sauvegarder la section |
-| `Ctrl+I` | Ouvrir le modal d'includes |
-| `Escape` | Fermer les modales |
-
-### Modal d'Includes
-
-Le modal d'includes (`Ctrl+I`) permet de :
-
-1. **Parcourir** tous les agents et leurs sections
-2. **Prévisualiser** le contenu avant insertion
-3. **Insérer** la référence au curseur
-
-Format inséré :
-```markdown
-{% include 'agent-name/fr/01-section.md' %}
-```
-
-### API REST
-
-L'éditeur communique via une API :
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/state` | État actuel (projet, agent, phase) |
-| `GET /api/projects` | Liste des projets |
-| `GET /api/projects/{name}/agents` | Agents d'un projet |
-| `GET /api/projects/{p}/agents/{a}/{lang}/{section}` | Contenu d'une section |
-| `POST /api/projects/{p}/agents/{a}/{lang}/{section}` | Sauvegarder une section |
-| `POST /api/projects/{p}/agents/{a}/translate` | Copier section vers autre langue |
-| `POST /api/projects/{p}/agents/{a}/reorder` | Réordonner les sections |
-| `POST /api/projects/{p}/agents/{a}/delete-section` | Supprimer une section |
-| `GET /api/includes` | Sections disponibles pour includes |
-| `POST /api/build` | Compiler un prompt |
-
-## Commandes Claude Code
-
-| Commande | Description |
-|----------|-------------|
-| `/ps:status` | État actuel du projet |
-| `/ps:project [name]` | Créer ou activer un projet |
-| `/ps:agent [name]` | Créer ou éditer un agent |
-| `/ps:conceive` | Démarrer la conception guidée |
-| `/ps:structure` | Définir les sections |
-| `/ps:write [section]` | Rédiger une section |
-| `/ps:validate` | Valider le prompt |
-| `/ps:build` | Compiler (résoudre includes) |
-| `/ps:version [type]` | Créer une version |
-| `/ps:export [path]` | Exporter vers un autre projet |
-| `/ps:editor` | Lancer l'interface web |
-
-## Structure des fichiers
-
-```
-prompt-studio/
-├── CLAUDE.md              # System prompt pour Claude Code
-├── .state.json            # État global (projet actif, phase)
-├── projects/
-│   └── {project}/
-│       ├── .project.json  # Configuration du projet
-│       ├── agents/
-│       │   └── {agent}/
-│       │       ├── fr/
-│       │       │   ├── 01-context.md
-│       │       │   ├── 02-instructions.md
-│       │       │   └── ...
-│       │       └── en/
-│       │           └── ...
-│       └── dist/          # Prompts compilés
-│           ├── fr/
-│           └── en/
-├── versions/
-│   └── {project}/
-│       └── v1.0.0/        # Archives versionnées
-├── tools/
-│   ├── install.py         # Installation interactive
-│   ├── build.py           # Compilation des prompts
-│   ├── server.py          # API pour l'éditeur web
-│   └── migrate.py         # Import de prompts existants
-└── editor/
-    └── index.html         # Interface web
-```
-
-## Système d'Includes
-
-Réutilisez des sections entre agents pour éviter la duplication :
+Vous avez plusieurs agents qui partagent le même contexte ? Utilisez les includes :
 
 ```markdown
 {% include 'common/fr/01-context.md' %}
-{% include 'executive/fr/03-tools.md' %}
 ```
 
-### Résolution
+Lors de la compilation, cette ligne est remplacée par le contenu de la section référencée. Modifiez une fois, propagez partout.
 
-Lors du build, les includes sont remplacés par le contenu réel :
+---
 
-```markdown
-<!-- @include-start: common/fr/01-context.md -->
-[Contenu de la section]
-<!-- @include-end: common/fr/01-context.md -->
+## Techniques de prompting intégrées
+
+Prompt Studio intègre des guides de techniques avancées dans `refs/system-prompting/` :
+
+| Technique | Quand l'utiliser |
+|-----------|------------------|
+| **Chain-of-Thought** | L'agent doit raisonner étape par étape |
+| **ReAct** | L'agent utilise des outils et doit réfléchir entre chaque action |
+| **Routing** | L'agent doit classifier et rediriger vers d'autres agents |
+| **Least-to-Most** | L'agent résout des problèmes complexes par décomposition |
+
+Ces techniques sont automatiquement suggérées lors de la phase de structure, et rappelées lors de la rédaction.
+
+---
+
+## Commandes rapides
+
+| Commande | Ce qu'elle fait |
+|----------|-----------------|
+| `/ps:status` | Voir où vous en êtes |
+| `/ps:project [nom]` | Créer ou changer de projet |
+| `/ps:agent [nom]` | Créer ou changer d'agent |
+| `/ps:conceive` | Démarrer la conception |
+| `/ps:structure` | Définir les sections |
+| `/ps:write [section]` | Rédiger une section |
+| `/ps:validate` | Vérifier la cohérence |
+| `/ps:build` | Compiler le prompt |
+| `/ps:version [type]` | Créer une version (patch/minor/major) |
+| `/ps:export [chemin]` | Exporter vers un projet |
+| `/ps:editor` | Ouvrir l'éditeur web |
+
+---
+
+## Un exemple concret
+
+Imaginons que vous créez un agent de support client :
+
 ```
-
-### Règles
-
-- **Profondeur max** : 10 niveaux d'includes imbriqués
-- **Références relatives** : Par rapport au dossier `agents/` du projet
-- **Marqueurs** : Tracabilité conservée dans le build
-
-## Migration de prompts existants
-
-Pour importer des prompts depuis un autre projet :
-
-```bash
-python3 tools/migrate.py --source /chemin/vers/prompts --project mon-projet
-```
-
-Le script détecte automatiquement la structure et crée les fichiers appropriés.
-
-## Exemple de workflow complet
-
-```bash
-# 1. Démarrer Claude Code
-cd prompt-studio
-claude
-
-# 2. Créer un projet
-/ps:project mon-saas
-
-# 3. Créer un agent
-/ps:agent support-client
-
-# 4. Conception guidée
+/ps:project support-saas
+/ps:agent chat-support
 /ps:conceive
-# → Claude pose des questions sur l'objectif, contexte, etc.
-
-# 5. Définir la structure
-/ps:structure
-# → Claude propose une architecture de sections
-
-# 6. Rédiger
-/ps:write 01-context
-/ps:write 02-instructions
-/ps:write 03-examples
-
-# 7. Valider
-/ps:validate
-
-# 8. Compiler
-/ps:build
-
-# 9. Versionner
-/ps:version minor
-
-# 10. Exporter vers votre projet
-/ps:export /chemin/vers/mon-projet/prompts
 ```
 
-## License
+Claude vous demande :
+> "Quel est le but principal de cet agent ?"
 
-MIT
+Vous répondez :
+> "Répondre aux questions des clients sur notre logiciel SaaS, les guider dans l'utilisation, et escalader vers un humain si nécessaire."
+
+Claude continue avec le contexte, les entrées/sorties, les contraintes...
+
+Puis :
+```
+/ps:structure
+```
+
+Claude analyse et propose :
+> "Pour cet agent de support, je recommande la technique **ReAct** pour la gestion des outils (base de connaissances, tickets) et **Routing** pour l'escalade. Voici la structure suggérée..."
+
+Vous validez, puis rédigez section par section. À la fin, vous avez un prompt professionnel, documenté, et versionné.
+
+---
+
+## Besoin d'aide ?
+
+- Tapez `/ps:status` pour voir où vous en êtes
+- Chaque commande affiche les prochaines étapes suggérées
+- L'éditeur web (`/ps:editor`) offre une vue d'ensemble visuelle
+
+Bonne création !

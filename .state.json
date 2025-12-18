@@ -5,6 +5,7 @@
   "current_section": null,
   "last_build": null,
   "projects": [
-    "cowai"
+    "agents_metier",
+    "tools_agents"
   ]
 }
