@@ -1,0 +1,3 @@
+# Definition du Role
+
+$role$

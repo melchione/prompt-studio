@@ -8,6 +8,7 @@ Protected tokens are wrapped in {% raw %}...{% endraw %} to prevent Jinja2 inter
 Usage:
     python tools/build.py --project cowai --agent executive
     python tools/build.py --project cowai --all
+    python tools/build.py --project cowai --all --export
     python tools/build.py --project cowai --all --dry-run
     python tools/build.py --project cowai --stats
 
@@ -15,6 +16,7 @@ Options:
     --project NAME    Project to build
     --agent NAME      Agent to build (optional, builds all if omitted)
     --all             Build all agents
+    --export          Auto-export to export_path after build
     --dry-run         Preview without writing files
     --stats           Show statistics only
     --verbose         Show wrapped tokens details
@@ -25,6 +27,7 @@ Auteur: Adapted from Cowai prompt_building scripts
 import argparse
 import json
 import re
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -170,6 +173,12 @@ def resolve_includes(content: str, project_path: Path, lang: str, visited: set =
     """
     Resolve {% include 'agent/filename.md' %} directives.
 
+    Supported formats:
+        - 'agent/filename.md' → same project, current lang
+        - 'agent/lang/filename.md' → same project, explicit lang
+        - 'project/agent/filename.md' → cross-project, current lang
+        - 'project/agent/lang/filename.md' → cross-project, explicit lang
+
     Args:
         content: Content with include directives
         project_path: Path to the project
@@ -199,26 +208,51 @@ def resolve_includes(content: str, project_path: Path, lang: str, visited: set =
         visited_copy = visited.copy()
         visited_copy.add(path)
 
-        # Parse path: 'agent/filename.md' or 'agent/lang/filename.md'
+        # Parse path
         parts = path.split('/')
+        include_path = None
+        target_project_path = project_path
 
         if len(parts) == 2:
-            # Format: agent/filename.md -> use current lang
+            # Format: agent/filename.md -> same project, current lang
             agent, filename = parts
             include_path = project_path / "agents" / agent / lang / filename
+
         elif len(parts) == 3:
-            # Format: agent/lang/filename.md -> explicit lang
-            agent, include_lang, filename = parts
-            include_path = project_path / "agents" / agent / include_lang / filename
+            # Could be:
+            # - agent/lang/filename.md (same project, explicit lang)
+            # - project/agent/filename.md (cross-project, current lang)
+            first, second, third = parts
+
+            # Check if first part is a project name
+            potential_project = PROJECTS_DIR / first
+            if potential_project.exists() and potential_project.is_dir():
+                # Cross-project include: project/agent/filename.md
+                target_project_path = potential_project
+                agent, filename = second, third
+                include_path = target_project_path / "agents" / agent / lang / filename
+            else:
+                # Same project with explicit lang: agent/lang/filename.md
+                agent, include_lang, filename = first, second, third
+                include_path = project_path / "agents" / agent / include_lang / filename
+
+        elif len(parts) == 4:
+            # Format: project/agent/lang/filename.md -> cross-project, explicit lang
+            project_name, agent, include_lang, filename = parts
+            target_project_path = PROJECTS_DIR / project_name
+            if not target_project_path.exists():
+                raise ValueError(f"Project not found: {project_name}")
+            include_path = target_project_path / "agents" / agent / include_lang / filename
+
         else:
-            raise ValueError(f"Invalid include path format: {path}. Expected 'agent/filename.md' or 'agent/lang/filename.md'")
+            raise ValueError(f"Invalid include path format: {path}. Expected 'agent/filename.md', 'agent/lang/filename.md', 'project/agent/filename.md', or 'project/agent/lang/filename.md'")
 
         if not include_path.exists():
             raise FileNotFoundError(f"Include not found: {include_path}")
 
-        # Read and recursively resolve
+        # Read and recursively resolve (use target project path for nested includes)
         included_content = include_path.read_text(encoding="utf-8")
-        return resolve_includes(included_content, project_path, lang, visited_copy)
+        return resolve_includes(included_content, target_project_path, lang, visited_copy)
 
     return re.sub(pattern, replace_include, content)
 
@@ -529,6 +563,86 @@ def update_state(project_path: Path, last_build: str):
         json.dump(config, f, indent=2, ensure_ascii=False)
 
 
+def export_to_destination(project_path: Path, dry_run: bool = False) -> dict:
+    """
+    Export built prompts to the configured export_path.
+
+    Args:
+        project_path: Path to the project
+        dry_run: Don't actually copy files
+
+    Returns:
+        Dict with export stats
+    """
+    config_path = project_path / ".project.json"
+
+    if not config_path.exists():
+        raise FileNotFoundError(f"Project config not found: {config_path}")
+
+    with open(config_path, encoding="utf-8") as f:
+        config = json.load(f)
+
+    export_path = config.get("export_path")
+    if not export_path:
+        raise ValueError("No export_path configured in .project.json")
+
+    export_path = Path(export_path)
+    dist_path = project_path / "dist"
+
+    # Optional suffix for exported files (e.g., "_prompt" -> "common_prompt.md")
+    export_suffix = config.get("export_suffix", "")
+
+    if not dist_path.exists():
+        raise FileNotFoundError(f"No dist/ folder found. Run build first.")
+
+    print(f"\n📤 Exporting to: {export_path}")
+    if export_suffix:
+        print(f"   📎 Adding suffix: {export_suffix}")
+
+    exported = []
+    for lang in SUPPORTED_LANGS:
+        lang_dist = dist_path / lang
+        lang_export = export_path / lang
+
+        if not lang_dist.exists():
+            continue
+
+        if not dry_run:
+            lang_export.mkdir(parents=True, exist_ok=True)
+
+        for md_file in lang_dist.glob("*.md"):
+            # Apply suffix: common.md -> common_prompt.md
+            if export_suffix:
+                new_name = md_file.stem + export_suffix + md_file.suffix
+            else:
+                new_name = md_file.name
+
+            dest_file = lang_export / new_name
+
+            if not dry_run:
+                # Read content and remove Jinja2 comments {# ... #}
+                content = md_file.read_text(encoding="utf-8")
+                # Remove multi-line comments {# ... #}
+                content = re.sub(r'\{#[^#]*#\}\n?', '', content)
+                # Remove empty lines at the start
+                content = content.lstrip('\n')
+                # Write cleaned content
+                dest_file.write_text(content, encoding="utf-8")
+                print(f"   ✓ {lang}/{md_file.name} → {new_name}")
+            else:
+                print(f"   → DRY RUN: Would copy {lang}/{md_file.name} → {new_name}")
+
+            exported.append(f"{lang}/{new_name}")
+
+    print(f"\n✅ Exported {len(exported)} files to {export_path}")
+
+    return {
+        "export_path": str(export_path),
+        "files": exported,
+        "count": len(exported)
+    }
+
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
@@ -545,6 +659,7 @@ Examples:
     parser.add_argument("--project", "-p", required=True, help="Project name")
     parser.add_argument("--agent", "-a", help="Agent name (optional, builds all if omitted)")
     parser.add_argument("--all", action="store_true", help="Build all agents")
+    parser.add_argument("--export", "-e", action="store_true", help="Auto-export to export_path after build")
     parser.add_argument("--dry-run", action="store_true", help="Preview without writing files")
     parser.add_argument("--stats", action="store_true", help="Show statistics only")
     parser.add_argument("--verbose", "-v", action="store_true", help="Show wrapped tokens details")
@@ -577,6 +692,10 @@ Examples:
             if not args.dry_run:
                 timestamp = datetime.now(timezone.utc).isoformat()
                 update_state(project_path, timestamp)
+
+            # Auto-export if requested
+            if args.export:
+                export_to_destination(project_path, dry_run=args.dry_run)
         else:
             print(f"🤖 Agent: {args.agent}")
             build_agent(
@@ -587,6 +706,11 @@ Examples:
                 dry_run=args.dry_run,
                 verbose=args.verbose
             )
+
+            # Auto-export if requested
+            if args.export:
+                export_to_destination(project_path, dry_run=args.dry_run)
+
             print("\n✅ Build complete!")
 
     except FileNotFoundError as e:

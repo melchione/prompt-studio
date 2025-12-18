@@ -1,8 +1,6 @@
 # State files (user-specific)
-.state.json
 
 # Projects data (user-specific)
-projects/*/
 
 # Versions (user-specific)
 versions/*/

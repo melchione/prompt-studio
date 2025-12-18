@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,11 @@
       --diff-panel-height: 200px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -64,9 +69,13 @@
       align-items: center;
       gap: 8px;
     }
-    .logo-icon { font-size: 1.4rem; }
 
-    .agent-selector, .lang-toggle {
+    .logo-icon {
+      font-size: 1.4rem;
+    }
+
+    .agent-selector,
+    .lang-toggle {
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
       border-radius: 6px;
@@ -75,12 +84,22 @@
       font-size: 0.875rem;
       cursor: pointer;
     }
-    .agent-selector:focus, .lang-toggle:focus {
+
+    .agent-selector:focus,
+    .lang-toggle:focus {
       outline: none;
       border-color: var(--accent-blue);
     }
-    .agent-selector { min-width: 220px; }
-    .agent-selector option { background: var(--bg-secondary); padding: 4px 8px; }
+
+    .agent-selector {
+      min-width: 220px;
+    }
+
+    .agent-selector option {
+      background: var(--bg-secondary);
+      padding: 4px 8px;
+    }
+
     .agent-selector optgroup {
       background: var(--bg-tertiary);
       color: var(--text-secondary);
@@ -88,6 +107,7 @@
       font-size: 0.85rem;
       padding: 8px 4px 4px 4px;
     }
+
     .agent-selector optgroup option {
       font-weight: 400;
       color: var(--text-primary);
@@ -104,7 +124,10 @@
       align-items: center;
       gap: 6px;
     }
-    .current-file .file-icon { opacity: 0.7; }
+
+    .current-file .file-icon {
+      opacity: 0.7;
+    }
 
     .lang-toggle {
       display: flex;
@@ -112,6 +135,7 @@
       padding: 0;
       overflow: hidden;
     }
+
     .lang-toggle button {
       background: transparent;
       border: none;
@@ -121,17 +145,24 @@
       font-size: 0.875rem;
       transition: all 0.2s;
     }
+
     .lang-toggle button.active {
       background: var(--accent-blue);
       color: white;
     }
+
     .lang-toggle button:hover:not(.active) {
       background: var(--bg-secondary);
     }
 
-    .header-spacer { flex: 1; }
+    .header-spacer {
+      flex: 1;
+    }
 
-    .header-actions { display: flex; gap: 8px; }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
 
     .btn {
       background: var(--bg-tertiary);
@@ -146,16 +177,53 @@
       align-items: center;
       gap: 6px;
     }
-    .btn:hover { background: var(--border-color); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-primary { background: var(--accent-blue); border-color: var(--accent-blue); }
-    .btn-primary:hover { background: #2563eb; }
-    .btn-success { background: var(--accent-green); border-color: var(--accent-green); color: #000; }
-    .btn-success:hover { background: #16a34a; }
-    .btn-warning { background: var(--accent-yellow); border-color: var(--accent-yellow); color: #000; }
-    .btn-warning:hover { background: #eab308; }
-    .btn-expand { background: var(--accent-purple); border-color: var(--accent-purple); }
-    .btn-expand:hover { background: #7c3aed; }
+
+    .btn:hover {
+      background: var(--border-color);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-success {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: #000;
+    }
+
+    .btn-success:hover {
+      background: #16a34a;
+    }
+
+    .btn-warning {
+      background: var(--accent-yellow);
+      border-color: var(--accent-yellow);
+      color: #000;
+    }
+
+    .btn-warning:hover {
+      background: #eab308;
+    }
+
+    .btn-expand {
+      background: var(--accent-purple);
+      border-color: var(--accent-purple);
+    }
+
+    .btn-expand:hover {
+      background: #7c3aed;
+    }
 
     .modified-indicator {
       display: none;
@@ -164,7 +232,10 @@
       background: var(--accent-yellow);
       border-radius: 50%;
     }
-    .modified-indicator.show { display: block; }
+
+    .modified-indicator.show {
+      display: block;
+    }
 
     /* SIDEBAR */
     #sidebar {
@@ -176,8 +247,13 @@
       flex-direction: column;
     }
 
-    .sidebar-section { padding: 12px; }
-    .sidebar-section + .sidebar-section { border-top: 1px solid var(--border-color); }
+    .sidebar-section {
+      padding: 12px;
+    }
+
+    .sidebar-section+.sidebar-section {
+      border-top: 1px solid var(--border-color);
+    }
 
     .section-title {
       font-size: 0.7rem;
@@ -193,6 +269,7 @@
     .sections-list {
       list-style: none;
     }
+
     .section-item {
       padding: 8px 10px;
       border-radius: 6px;
@@ -204,30 +281,43 @@
       gap: 8px;
       transition: all 0.15s;
     }
-    .section-item:hover { background: var(--bg-tertiary); }
+
+    .section-item:hover {
+      background: var(--bg-tertiary);
+    }
+
     .section-item.active {
       background: var(--accent-blue);
       color: white;
     }
+
     .section-item .section-num {
       font-size: 0.7rem;
       opacity: 0.7;
       min-width: 20px;
     }
+
     .section-item .section-name {
       flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .section-item .lang-badge {
       font-size: 0.65rem;
       padding: 2px 5px;
       border-radius: 3px;
       background: var(--bg-tertiary);
     }
-    .section-item.active .lang-badge { background: rgba(255,255,255,0.2); }
-    .section-item .lang-badge.missing { color: var(--accent-red); }
+
+    .section-item.active .lang-badge {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .section-item .lang-badge.missing {
+      color: var(--accent-red);
+    }
 
     /* Validation Panel */
     .validation-panel {
@@ -235,6 +325,7 @@
       border-radius: 8px;
       padding: 10px;
     }
+
     .validation-item {
       display: flex;
       align-items: center;
@@ -242,11 +333,27 @@
       font-size: 0.8rem;
       padding: 4px 0;
     }
-    .validation-item .icon { font-size: 0.9rem; }
-    .validation-item.valid .icon { color: var(--accent-green); }
-    .validation-item.invalid .icon { color: var(--accent-red); }
-    .validation-item.warning .icon { color: var(--accent-yellow); }
-    .validation-item .message { color: var(--text-secondary); }
+
+    .validation-item .icon {
+      font-size: 0.9rem;
+    }
+
+    .validation-item.valid .icon {
+      color: var(--accent-green);
+    }
+
+    .validation-item.invalid .icon {
+      color: var(--accent-red);
+    }
+
+    .validation-item.warning .icon {
+      color: var(--accent-yellow);
+    }
+
+    .validation-item .message {
+      color: var(--text-secondary);
+    }
+
     .validation-item .count {
       margin-left: auto;
       background: var(--bg-secondary);
@@ -261,17 +368,20 @@
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
+
     .stat-item {
       background: var(--bg-tertiary);
       border-radius: 6px;
       padding: 8px;
       text-align: center;
     }
+
     .stat-value {
       font-size: 1.1rem;
       font-weight: 600;
       color: var(--text-primary);
     }
+
     .stat-label {
       font-size: 0.65rem;
       color: var(--text-muted);
@@ -287,7 +397,11 @@
       flex-direction: column;
       gap: 8px;
     }
-    .sidebar-actions .btn { width: 100%; justify-content: center; }
+
+    .sidebar-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
 
     /* MAIN */
     #main {
@@ -338,10 +452,12 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .preview-header-btn:hover {
       background: var(--bg-tertiary);
       border-color: var(--accent-blue);
     }
+
     .preview-header-btn.copied {
       background: var(--accent-green);
       border-color: var(--accent-green);
@@ -358,7 +474,10 @@
       cursor: col-resize;
       transition: background 0.2s;
     }
-    .resizer:hover { background: var(--accent-blue); }
+
+    .resizer:hover {
+      background: var(--accent-blue);
+    }
 
     .preview-pane {
       flex: 1;
@@ -381,30 +500,39 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 14px;
       line-height: 1.65;
-      color: #a3a3a3;  /* Muted for body text */
+      color: #a3a3a3;
+      /* Muted for body text */
     }
 
     /* Light Mode */
     .preview-pane.light-mode #preview-content {
       background: #faf8f5;
-      color: #57534e;  /* Muted brown for body */
+      color: #57534e;
+      /* Muted brown for body */
     }
 
     /* --- LEVEL 1: Primary Heading (H1) ---
        Largest, most prominent, section divider */
     #preview-content h1 {
-      font-size: 1.5rem;      /* 24px - largest */
-      font-weight: 700;       /* Bold */
+      font-size: 1.5rem;
+      /* 24px - largest */
+      font-weight: 700;
+      /* Bold */
       line-height: 1.3;
-      margin: 32px 0 12px 0;  /* Large top margin = new section */
+      margin: 32px 0 12px 0;
+      /* Large top margin = new section */
       padding-bottom: 8px;
       border-bottom: 1px solid #2a2a2a;
-      color: #f5f5f5;         /* High contrast */
+      color: #f5f5f5;
+      /* High contrast */
       letter-spacing: -0.01em;
     }
+
     #preview-content h1:first-child {
-      margin-top: 0;          /* No top margin for first H1 */
+      margin-top: 0;
+      /* No top margin for first H1 */
     }
+
     .preview-pane.light-mode #preview-content h1 {
       border-bottom-color: #d6d3d1;
       color: #1c1917;
@@ -413,26 +541,35 @@
     /* --- LEVEL 2: Secondary Heading (H2) ---
        Sub-sections, prominent but subordinate */
     #preview-content h2 {
-      font-size: 1.2rem;      /* 19px */
-      font-weight: 600;       /* Semibold */
+      font-size: 1.2rem;
+      /* 19px */
+      font-weight: 600;
+      /* Semibold */
       line-height: 1.35;
-      margin: 28px 0 8px 0;   /* Good separation */
-      color: #fbbf24;         /* Amber accent - draws attention */
+      margin: 28px 0 8px 0;
+      /* Good separation */
+      color: #fbbf24;
+      /* Amber accent - draws attention */
       letter-spacing: -0.005em;
     }
+
     .preview-pane.light-mode #preview-content h2 {
-      color: #b45309;         /* Dark amber */
+      color: #b45309;
+      /* Dark amber */
     }
 
     /* --- LEVEL 3: Tertiary Heading (H3) ---
        Minor sections, less prominent */
     #preview-content h3 {
-      font-size: 1rem;        /* 16px */
+      font-size: 1rem;
+      /* 16px */
       font-weight: 600;
       line-height: 1.4;
       margin: 20px 0 6px 0;
-      color: #d4a855;         /* Softer amber */
+      color: #d4a855;
+      /* Softer amber */
     }
+
     .preview-pane.light-mode #preview-content h3 {
       color: #a16207;
     }
@@ -440,7 +577,8 @@
     /* --- LEVEL 4: Quaternary Heading (H4) ---
        Minimal emphasis */
     #preview-content h4 {
-      font-size: 0.9rem;      /* 14px */
+      font-size: 0.9rem;
+      /* 14px */
       font-weight: 600;
       line-height: 1.4;
       margin: 16px 0 4px 0;
@@ -448,6 +586,7 @@
       text-transform: uppercase;
       letter-spacing: 0.03em;
     }
+
     .preview-pane.light-mode #preview-content h4 {
       color: #78716c;
     }
@@ -461,17 +600,21 @@
 
     /* --- LISTS ---
        Aligned with body text, compact spacing */
-    #preview-content ul, #preview-content ol {
+    #preview-content ul,
+    #preview-content ol {
       margin: 0 0 12px 0;
       padding-left: 20px;
     }
+
     #preview-content li {
       margin-bottom: 4px;
       line-height: 1.55;
     }
+
     #preview-content li::marker {
       color: #525252;
     }
+
     .preview-pane.light-mode #preview-content li::marker {
       color: #a8a29e;
     }
@@ -482,6 +625,7 @@
       font-weight: 600;
       color: #e5e5e5;
     }
+
     .preview-pane.light-mode #preview-content strong {
       color: #292524;
     }
@@ -491,6 +635,7 @@
       font-style: italic;
       color: #b5b5b5;
     }
+
     .preview-pane.light-mode #preview-content em {
       color: #44403c;
     }
@@ -501,10 +646,10 @@
     }
 
     /* Hide br tags after headings */
-    #preview-content h1 + br,
-    #preview-content h2 + br,
-    #preview-content h3 + br,
-    #preview-content h4 + br {
+    #preview-content h1+br,
+    #preview-content h2+br,
+    #preview-content h3+br,
+    #preview-content h4+br {
       display: none;
     }
 
@@ -518,6 +663,7 @@
       font-size: 0.85em;
       color: #f59e0b;
     }
+
     .preview-pane.light-mode #preview-content code {
       background: #f5f0e8;
       color: #c2410c;
@@ -533,15 +679,18 @@
       margin: 16px 0;
       border: 1px solid #1f1f1f;
     }
+
     #preview-content pre code {
       background: transparent;
       padding: 0;
       color: #d4d4d4;
     }
+
     .preview-pane.light-mode #preview-content pre {
       background: #f5f0e8;
       border-color: #e7e5e4;
     }
+
     .preview-pane.light-mode #preview-content pre code {
       color: #44403c;
     }
@@ -555,6 +704,7 @@
       color: #737373;
       font-style: italic;
     }
+
     .preview-pane.light-mode #preview-content blockquote {
       border-left-color: #d6d3d1;
       color: #78716c;
@@ -586,7 +736,10 @@
       background: var(--bg-secondary);
       z-index: 50;
     }
-    #diff-panel.open { display: flex; }
+
+    #diff-panel.open {
+      display: flex;
+    }
 
     .diff-header {
       display: flex;
@@ -597,10 +750,12 @@
       border-bottom: 1px solid var(--border-color);
       flex-shrink: 0;
     }
+
     .diff-title {
       font-size: 0.8rem;
       color: var(--text-secondary);
     }
+
     .diff-close {
       background: none;
       border: none;
@@ -608,7 +763,10 @@
       cursor: pointer;
       font-size: 1.2rem;
     }
-    .diff-close:hover { color: var(--text-primary); }
+
+    .diff-close:hover {
+      color: var(--text-primary);
+    }
 
     #diff-container {
       flex: 1;
@@ -619,13 +777,16 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.7);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 1000;
     }
-    .modal-overlay.open { display: flex; }
+
+    .modal-overlay.open {
+      display: flex;
+    }
 
     .modal {
       background: var(--bg-secondary);
@@ -637,6 +798,7 @@
       display: flex;
       flex-direction: column;
     }
+
     .modal-header {
       padding: 16px 20px;
       border-bottom: 1px solid var(--border-color);
@@ -644,7 +806,12 @@
       align-items: center;
       justify-content: space-between;
     }
-    .modal-title { font-size: 1.1rem; font-weight: 600; }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
     .modal-close {
       background: none;
       border: none;
@@ -652,12 +819,17 @@
       font-size: 1.4rem;
       cursor: pointer;
     }
-    .modal-close:hover { color: var(--text-primary); }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+    }
+
     .modal-body {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
     }
+
     .modal-footer {
       padding: 16px 20px;
       border-top: 1px solid var(--border-color);
@@ -676,6 +848,7 @@
       gap: 8px;
       z-index: 1001;
     }
+
     .toast {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
@@ -687,31 +860,67 @@
       animation: slideIn 0.3s ease;
       min-width: 280px;
     }
-    .toast.success { border-color: var(--accent-green); }
-    .toast.error { border-color: var(--accent-red); }
-    .toast.warning { border-color: var(--accent-yellow); }
-    .toast-icon { font-size: 1.2rem; }
-    .toast.success .toast-icon { color: var(--accent-green); }
-    .toast.error .toast-icon { color: var(--accent-red); }
-    .toast.warning .toast-icon { color: var(--accent-yellow); }
-    .toast-message { flex: 1; font-size: 0.9rem; }
+
+    .toast.success {
+      border-color: var(--accent-green);
+    }
+
+    .toast.error {
+      border-color: var(--accent-red);
+    }
+
+    .toast.warning {
+      border-color: var(--accent-yellow);
+    }
+
+    .toast-icon {
+      font-size: 1.2rem;
+    }
+
+    .toast.success .toast-icon {
+      color: var(--accent-green);
+    }
+
+    .toast.error .toast-icon {
+      color: var(--accent-red);
+    }
+
+    .toast.warning .toast-icon {
+      color: var(--accent-yellow);
+    }
+
+    .toast-message {
+      flex: 1;
+      font-size: 0.9rem;
+    }
 
     @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
 
     /* LOADING */
     .loading-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 999;
     }
-    .loading-overlay.show { display: flex; }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
     .loading-spinner {
       width: 48px;
       height: 48px;
@@ -720,9 +929,13 @@
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
+
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
+
     .loading-text {
       color: var(--text-primary);
       margin-top: 16px;
@@ -735,8 +948,14 @@
       gap: 2px;
       margin-left: auto;
     }
-    .section-item:hover .section-actions { display: flex; }
-    .section-item.active .section-actions { display: flex; }
+
+    .section-item:hover .section-actions {
+      display: flex;
+    }
+
+    .section-item.active .section-actions {
+      display: flex;
+    }
 
     .section-action-btn {
       background: transparent;
@@ -749,13 +968,16 @@
       line-height: 1;
       transition: all 0.15s;
     }
+
     .section-action-btn:hover {
       background: var(--bg-secondary);
       color: var(--text-primary);
     }
+
     .section-item.active .section-action-btn:hover {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
     }
+
     .section-action-btn.danger:hover {
       background: var(--accent-red);
       color: white;
@@ -778,6 +1000,7 @@
       cursor: pointer;
       transition: all 0.15s;
     }
+
     .add-section-btn:hover {
       border-color: var(--accent-blue);
       color: var(--accent-blue);
@@ -795,16 +1018,19 @@
       font-size: 0.9rem;
       margin-bottom: 12px;
     }
+
     .modal-input:focus {
       outline: none;
       border-color: var(--accent-blue);
     }
+
     .modal-label {
       display: block;
       margin-bottom: 6px;
       font-size: 0.85rem;
       color: var(--text-secondary);
     }
+
     .modal-hint {
       font-size: 0.75rem;
       color: var(--text-muted);
@@ -812,32 +1038,79 @@
       margin-bottom: 12px;
     }
 
+    .modal-select {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .modal-select:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .modal-select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .include-preview {
+      display: block;
+      background: var(--bg-tertiary);
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+      color: var(--accent-green);
+      border: 1px solid var(--border-color);
+    }
+
     /* Monaco Editor Section Decorations */
     .section-delimiter-line {
       background: linear-gradient(90deg, var(--accent-purple) 0%, transparent 100%) !important;
       opacity: 0.15;
     }
+
     .section-glyph-marker {
       background: var(--accent-purple);
       width: 4px !important;
       margin-left: 3px;
     }
+
     .section-highlight-flash {
       background: var(--accent-yellow) !important;
       opacity: 0.3;
       animation: flashHighlight 1.5s ease-out;
     }
+
     @keyframes flashHighlight {
-      0% { opacity: 0.5; }
-      100% { opacity: 0; }
+      0% {
+        opacity: 0.5;
+      }
+
+      100% {
+        opacity: 0;
+      }
     }
 
     /* Monaco Editor Include Decorations */
-    .include-start-line, .include-end-line {
+    .include-start-line,
+    .include-end-line {
       background: linear-gradient(90deg, var(--accent-green) 0%, transparent 100%) !important;
       opacity: 0.2;
     }
-    .include-glyph-start, .include-glyph-end {
+
+    .include-glyph-start,
+    .include-glyph-end {
       background: var(--accent-green);
       width: 4px !important;
       margin-left: 3px;
@@ -857,6 +1130,7 @@
       font-size: 0.75rem;
       line-height: 1;
     }
+
     .collapse-btn:hover {
       background: var(--border-color);
       color: var(--text-primary);
@@ -880,6 +1154,7 @@
       transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
       min-width: var(--sidebar-width);
     }
+
     #sidebar.collapsed {
       width: 0 !important;
       min-width: 0 !important;
@@ -894,16 +1169,19 @@
       min-width: 200px;
       position: relative;
     }
+
     .preview-pane.collapsed {
       flex: 0 0 0 !important;
       min-width: 0 !important;
       width: 0 !important;
       overflow: hidden;
     }
+
     .preview-pane.collapsed .pane-header,
     .preview-pane.collapsed #preview-content {
       display: none;
     }
+
     /* Keep collapse button visible when preview is collapsed */
     .preview-pane.collapsed .collapse-preview-btn {
       display: flex;
@@ -923,6 +1201,7 @@
     #app.sidebar-collapsed {
       grid-template-columns: 0 1fr;
     }
+
     #app.sidebar-collapsed .collapse-sidebar-btn {
       left: 0;
       transform: translate(0, -50%);
@@ -931,6 +1210,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="app">
     <header>
@@ -940,11 +1220,9 @@
       </div>
 
       <select id="project-select" class="agent-selector" style="min-width: 160px;">
-        <option value="">Projet...</option>
       </select>
 
       <select id="agent-select" class="agent-selector">
-        <option value="">Agent...</option>
       </select>
 
       <div id="current-file" class="current-file" style="display: none;">
@@ -962,14 +1240,12 @@
       <div class="header-spacer"></div>
 
       <div class="header-actions">
-        <button class="btn btn-expand" id="btn-toggle-expand" style="display: none;" title="Basculer entre includes expandés et collapsés">
+        <button class="btn btn-expand" id="btn-toggle-expand" style="display: none;"
+          title="Basculer entre includes expandés et collapsés">
           <span>&#128230;</span> Collapse Includes
         </button>
         <button class="btn" id="btn-diff" title="Voir les différences (Ctrl+D)">
           <span>&#128203;</span> Diff
-        </button>
-        <button class="btn btn-warning" id="btn-translate" title="Traduire FR vers EN">
-          <span>&#127760;</span> Traduire
         </button>
         <button class="btn btn-primary" id="btn-generate" title="Générer le prompt final">
           <span>&#9881;</span> Générer
@@ -1079,27 +1355,6 @@
     </main>
   </div>
 
-  <!-- Modal Traduction -->
-  <div class="modal-overlay" id="translate-modal">
-    <div class="modal">
-      <div class="modal-header">
-        <span class="modal-title">&#127760; Traduction FR &rarr; EN</span>
-        <button class="modal-close" onclick="closeTranslateModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div id="translate-content">
-          <p>Cliquez sur "Traduire" pour lancer la traduction automatique.</p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" onclick="closeTranslateModal()">Annuler</button>
-        <button class="btn btn-success" id="btn-accept-translation" disabled>
-          Accepter et sauvegarder
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal Création Section -->
   <div class="modal-overlay" id="create-section-modal">
     <div class="modal" style="max-width: 400px;">
@@ -1136,8 +1391,49 @@
       </div>
       <div class="modal-footer">
         <button class="btn" onclick="closeDeleteModal()">Annuler</button>
-        <button class="btn" style="background: var(--accent-red); border-color: var(--accent-red);" onclick="confirmDeleteSection()">
+        <button class="btn" style="background: var(--accent-red); border-color: var(--accent-red);"
+          onclick="confirmDeleteSection()">
           Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insert Include Modal -->
+  <div id="insert-include-modal" class="modal-overlay">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <span class="modal-title">&#128194; Insérer un Include</span>
+        <button class="modal-close" onclick="closeInsertIncludeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="modal-label">Projet source</label>
+          <select id="include-project-select" class="modal-select" onchange="onIncludeProjectChange()">
+            <option value="">-- Sélectionner un projet --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="modal-label">Agent source</label>
+          <select id="include-agent-select" class="modal-select" onchange="onIncludeAgentChange()" disabled>
+            <option value="">-- Sélectionner un agent --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="modal-label">Section</label>
+          <select id="include-section-select" class="modal-select" disabled>
+            <option value="">-- Sélectionner une section --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="modal-label">Aperçu</label>
+          <code id="include-preview" class="include-preview">{% include '' %}</code>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeInsertIncludeModal()">Annuler</button>
+        <button class="btn btn-primary" id="btn-insert-include" onclick="insertIncludeAtCursor()" disabled>
+          Insérer
         </button>
       </div>
     </div>
@@ -1224,6 +1520,9 @@
       diffEditor: null,
       isExpanded: true,      // Track if includes are expanded
       hasIncludes: false,    // Track if content has includes
+      insertIncludePosition: null,  // Store cursor position for include insertion
+      availableIncludes: {},        // Cache of available includes by agent
+      includeCompletions: [],       // Cache for autocompletion suggestions
     };
 
     // Section delimiter pattern
@@ -1379,6 +1678,16 @@
       return res.json();
     }
 
+    async function collapseContentWithIncludes(content, lang) {
+      const res = await fetch(`${CONFIG.apiBase}/collapse-content`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, lang }),
+      });
+      if (!res.ok) throw new Error('Failed to collapse includes');
+      return res.json();
+    }
+
     // ============================================
     // UI HELPERS
     // ============================================
@@ -1477,6 +1786,71 @@
                 break;
               }
             }
+          }
+        });
+
+        // Add custom context menu action for inserting includes
+        state.editor.addAction({
+          id: 'insert-include',
+          label: 'Insérer un Include',
+          keybindings: [
+            monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyI
+          ],
+          contextMenuGroupId: 'navigation',
+          contextMenuOrder: 1.5,
+          run: function (ed) {
+            openInsertIncludeModal();
+          }
+        });
+
+        // Register completion provider for includes
+        monaco.languages.registerCompletionItemProvider('markdown', {
+          triggerCharacters: ["'", '"'],
+          provideCompletionItems: async function (model, position) {
+            // Get text before cursor on current line
+            const textUntilPosition = model.getValueInRange({
+              startLineNumber: position.lineNumber,
+              startColumn: 1,
+              endLineNumber: position.lineNumber,
+              endColumn: position.column
+            });
+
+            // Check if we're inside an include directive
+            const includeMatch = textUntilPosition.match(/\{%\s*include\s+['"]([^'"]*)$/);
+            if (!includeMatch) {
+              return { suggestions: [] };
+            }
+
+            const partialInput = includeMatch[1] || '';
+
+            // Load available includes if not cached
+            if (!state.includeCompletions || state.includeCompletions.length === 0) {
+              await loadIncludeCompletions();
+            }
+
+            // Filter and map suggestions
+            const range = {
+              startLineNumber: position.lineNumber,
+              endLineNumber: position.lineNumber,
+              startColumn: position.column - partialInput.length,
+              endColumn: position.column
+            };
+
+            const suggestions = state.includeCompletions
+              .filter(item => item.ref.toLowerCase().includes(partialInput.toLowerCase()))
+              .map(item => ({
+                label: item.ref,
+                kind: monaco.languages.CompletionItemKind.File,
+                detail: item.isCurrentProject
+                  ? `${item.agent} / ${item.section}`
+                  : `[${item.project}] ${item.agent} / ${item.section}`,
+                insertText: item.ref,
+                range: range,
+                // Current project items first
+                sortText: item.isCurrentProject ? `0_${item.ref}` : `1_${item.ref}`
+              }));
+
+            return { suggestions };
           }
         });
 
@@ -2132,7 +2506,7 @@
 
         if (state.isExpanded) {
           // Collapse: replace expanded content with {% include %}
-          const result = await api.collapseIncludes(state.currentProject, content, state.currentLang);
+          const result = await collapseContentWithIncludes(content, state.currentLang);
           state.editor.setValue(result.collapsed);
           state.isExpanded = false;
         } else {
@@ -2144,7 +2518,7 @@
 
         updateExpandToggleButton();
         addIncludeDecorations();
-        setModified(true);
+        setModified(false);  // Don't mark as modified, just display change
         showLoading(false);
       } catch (error) {
         showLoading(false);
@@ -2199,7 +2573,7 @@
         if (hasExpandedIncludes) {
           // First collapse to extract include contents
           showLoading(true, 'Extraction des includes modifiés...');
-          const collapseResult = await api.collapseIncludes(state.currentProject, content, state.currentLang);
+          const collapseResult = await collapseContentWithIncludes(content, state.currentLang);
           const collapsedContent = collapseResult.collapsed;
           const modifiedIncludeFiles = collapseResult.modified_files;
 
@@ -2504,6 +2878,243 @@
       }
     }
 
+    // ============================================
+    // INSERT INCLUDE MODAL
+    // ============================================
+    async function openInsertIncludeModal() {
+      // Store cursor position before opening modal
+      state.insertIncludePosition = state.editor.getPosition();
+
+      try {
+        // Load all projects
+        const projectsData = await api.getProjects();
+
+        const projectSelect = document.getElementById('include-project-select');
+        projectSelect.innerHTML = '<option value="">-- Sélectionner un projet --</option>';
+
+        // Populate project dropdown
+        for (const project of projectsData.projects) {
+          const opt = document.createElement('option');
+          opt.value = project.name;
+          opt.textContent = project.name;
+          // Pre-select current project if available
+          if (project.name === state.currentProject) {
+            opt.selected = true;
+          }
+          projectSelect.appendChild(opt);
+        }
+
+        // Reset agent and section dropdowns
+        const agentSelect = document.getElementById('include-agent-select');
+        agentSelect.innerHTML = '<option value="">-- Sélectionner un agent --</option>';
+        agentSelect.disabled = true;
+
+        document.getElementById('include-section-select').innerHTML =
+          '<option value="">-- Sélectionner une section --</option>';
+        document.getElementById('include-section-select').disabled = true;
+        document.getElementById('btn-insert-include').disabled = true;
+
+        // If current project is pre-selected, load its agents
+        if (state.currentProject) {
+          await onIncludeProjectChange();
+        }
+
+        updateIncludePreview();
+
+        // Show modal
+        document.getElementById('insert-include-modal').classList.add('open');
+      } catch (error) {
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    function closeInsertIncludeModal() {
+      document.getElementById('insert-include-modal').classList.remove('open');
+    }
+
+    async function onIncludeProjectChange() {
+      const projectSelect = document.getElementById('include-project-select');
+      const agentSelect = document.getElementById('include-agent-select');
+      const sectionSelect = document.getElementById('include-section-select');
+      const selectedProject = projectSelect.value;
+
+      // Reset agent and section dropdowns
+      agentSelect.innerHTML = '<option value="">-- Sélectionner un agent --</option>';
+      sectionSelect.innerHTML = '<option value="">-- Sélectionner une section --</option>';
+      sectionSelect.disabled = true;
+      document.getElementById('btn-insert-include').disabled = true;
+
+      if (selectedProject) {
+        try {
+          // Load agents for selected project
+          const agentsData = await api.getAgents(selectedProject);
+
+          // Group sections by agent
+          state.availableIncludes = {};
+          for (const agent of agentsData.agents) {
+            state.availableIncludes[agent.name] = agent.sections[state.currentLang] || [];
+          }
+
+          // Populate agent dropdown
+          for (const agent of agentsData.agents) {
+            const opt = document.createElement('option');
+            opt.value = agent.name;
+            opt.textContent = agent.name;
+            agentSelect.appendChild(opt);
+          }
+
+          agentSelect.disabled = false;
+        } catch (error) {
+          showToast(`Erreur: ${error.message}`, 'error');
+          agentSelect.disabled = true;
+        }
+      } else {
+        agentSelect.disabled = true;
+      }
+
+      updateIncludePreview();
+    }
+
+    function onIncludeAgentChange() {
+      const agentSelect = document.getElementById('include-agent-select');
+      const sectionSelect = document.getElementById('include-section-select');
+      const selectedAgent = agentSelect.value;
+
+      sectionSelect.innerHTML = '<option value="">-- Sélectionner une section --</option>';
+
+      if (selectedAgent && state.availableIncludes[selectedAgent]) {
+        const sections = state.availableIncludes[selectedAgent];
+        for (const section of sections) {
+          const opt = document.createElement('option');
+          opt.value = section;
+          opt.textContent = section;
+          sectionSelect.appendChild(opt);
+        }
+        sectionSelect.disabled = false;
+      } else {
+        sectionSelect.disabled = true;
+      }
+
+      document.getElementById('btn-insert-include').disabled = true;
+      updateIncludePreview();
+    }
+
+    function onIncludeSectionChange() {
+      const sectionSelect = document.getElementById('include-section-select');
+      document.getElementById('btn-insert-include').disabled = !sectionSelect.value;
+      updateIncludePreview();
+    }
+
+    function updateIncludePreview() {
+      const project = document.getElementById('include-project-select').value;
+      const agent = document.getElementById('include-agent-select').value;
+      const section = document.getElementById('include-section-select').value;
+      const preview = document.getElementById('include-preview');
+
+      if (project && agent && section) {
+        // If same project, use short format: agent/section.md
+        // If different project, use full format: project/agent/section.md
+        if (project === state.currentProject) {
+          preview.textContent = `{% include '${agent}/${section}' %}`;
+        } else {
+          preview.textContent = `{% include '${project}/${agent}/${section}' %}`;
+        }
+      } else {
+        preview.textContent = `{% include '' %}`;
+      }
+    }
+
+    function insertIncludeAtCursor() {
+      const project = document.getElementById('include-project-select').value;
+      const agent = document.getElementById('include-agent-select').value;
+      const section = document.getElementById('include-section-select').value;
+
+      if (!project || !agent || !section) return;
+
+      // If same project, use short format: agent/section.md
+      // If different project, use full format: project/agent/section.md
+      let includePath;
+      if (project === state.currentProject) {
+        includePath = `${agent}/${section}`;
+      } else {
+        includePath = `${project}/${agent}/${section}`;
+      }
+
+      const includeText = `{% include '${includePath}' %}`;
+      const position = state.insertIncludePosition || state.editor.getPosition();
+
+      // Insert text at cursor position
+      state.editor.executeEdits('insert-include', [{
+        range: new monaco.Range(
+          position.lineNumber,
+          position.column,
+          position.lineNumber,
+          position.column
+        ),
+        text: includeText,
+        forceMoveMarkers: true
+      }]);
+
+      // Focus editor and move cursor after inserted text
+      state.editor.focus();
+      const newColumn = position.column + includeText.length;
+      state.editor.setPosition({ lineNumber: position.lineNumber, column: newColumn });
+
+      // Mark as modified
+      setModified(true);
+
+      // Close modal
+      closeInsertIncludeModal();
+
+      showToast('Include inséré', 'success');
+    }
+
+    // Helper function to load include completions from ALL projects
+    async function loadIncludeCompletions() {
+      try {
+        // Load all projects
+        const projectsData = await api.getProjects();
+        state.includeCompletions = [];
+
+        for (const project of projectsData.projects) {
+          const projectName = project.name;
+          try {
+            const agentsData = await api.getAgents(projectName);
+
+            for (const agent of agentsData.agents) {
+              const sections = agent.sections[state.currentLang] || [];
+              for (const section of sections) {
+                // For current project, use short format
+                // For other projects, use full format
+                const ref = (projectName === state.currentProject)
+                  ? `${agent.name}/${section}`
+                  : `${projectName}/${agent.name}/${section}`;
+
+                state.includeCompletions.push({
+                  project: projectName,
+                  agent: agent.name,
+                  section: section,
+                  ref: ref,
+                  isCurrentProject: projectName === state.currentProject
+                });
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to load agents for project ${projectName}:`, error);
+          }
+        }
+
+        // Sort: current project first, then alphabetically
+        state.includeCompletions.sort((a, b) => {
+          if (a.isCurrentProject && !b.isCurrentProject) return -1;
+          if (!a.isCurrentProject && b.isCurrentProject) return 1;
+          return a.ref.localeCompare(b.ref);
+        });
+      } catch (error) {
+        console.error('Failed to load include completions:', error);
+      }
+    }
+
     async function moveSection(index, direction) {
       const sections = state.agents[state.currentAgent]?.[state.currentLang] || [];
       const newIndex = index + direction;
@@ -2739,8 +3350,15 @@
           return;
         }
 
+        // Clean section delimiters before copying
+        const cleanContent = markdownContent
+          .replace(/<!-- ═+[^>]*-->\n?/g, '')  // Remove ═══ lines
+          .replace(/<!-- 📄 SECTION:[^>]*-->\n?/g, '')  // Remove section markers
+          .replace(/\n{3,}/g, '\n\n')  // Normalize multiple newlines
+          .trim();
+
         try {
-          await navigator.clipboard.writeText(markdownContent);
+          await navigator.clipboard.writeText(cleanContent);
 
           // Visual feedback
           const originalText = copyBtn.textContent;
@@ -2762,6 +3380,9 @@
         state.currentProject = project;
         state.currentAgent = null;
         state.agents = {};
+        // Reset include completions cache when project changes
+        state.includeCompletions = [];
+        state.availableIncludes = {};
         if (project) {
           localStorage.setItem('prompt-studio-project', project);
           await loadAgents();
@@ -2783,10 +3404,15 @@
           localStorage.setItem('prompt-studio-agent', agent);
           renderSections(agent, state.currentLang);
           await loadAllSections(agent, state.currentLang);
+          // Reset include completions cache when agent changes
+          state.includeCompletions = [];
         } else if (agent.includes('<!--')) {
           console.error('[Agent Select] Invalid agent value:', agent);
         }
       });
+
+      // Include section select - for insert include modal
+      document.getElementById('include-section-select').addEventListener('change', onIncludeSectionChange);
 
       // Language toggle
       document.getElementById('lang-fr').addEventListener('click', async () => {
@@ -2818,9 +3444,9 @@
       document.getElementById('btn-diff').addEventListener('click', showDiff);
       document.getElementById('diff-close').addEventListener('click', closeDiff);
       document.getElementById('btn-generate').addEventListener('click', generatePrompt);
-      document.getElementById('btn-translate').addEventListener('click', openTranslateModal);
       document.getElementById('btn-toggle-expand').addEventListener('click', toggleExpandIncludes);
     });
   </script>
 </body>
+
 </html>

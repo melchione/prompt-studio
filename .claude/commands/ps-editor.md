@@ -13,7 +13,7 @@ Lance le serveur de l'éditeur web Prompt Studio.
 Exécuter la commande suivante :
 
 ```bash
-python tools/server.py --port 8080
+python tools/server.py --port 8236
 ```
 
 Afficher ensuite :
@@ -24,7 +24,7 @@ Afficher ensuite :
 
 ✅ Serveur démarré !
 
-📍 URL : http://localhost:8080
+📍 URL : http://localhost:8236
 
 Fonctionnalités :
 - Sélection projet/agent
@@ -43,7 +43,7 @@ Pour arrêter : Ctrl+C
 
 ## Notes
 
-- Le serveur utilise le port 8080 par défaut
+- Le serveur utilise le port 8236 par défaut
 - L'API est disponible sur `/api/`
 - Les fichiers statiques sont servis depuis `editor/`
 

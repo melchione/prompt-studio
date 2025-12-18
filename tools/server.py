@@ -121,6 +121,9 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
             elif path == "/api/expand":
                 # POST /api/expand - Expand includes in content
                 self._expand_content(data)
+            elif path == "/api/collapse-content":
+                # POST /api/collapse-content - Collapse expanded content back to includes
+                self._collapse_content(data)
             elif path.endswith("/save-all"):
                 # /api/projects/{project}/agents/{agent}/{lang}/save-all
                 # MUST be checked BEFORE generic section handler
@@ -524,11 +527,12 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
         })
 
     def _build(self, data: dict):
-        """Lance un build via le script build.py."""
+        """Lance un build via le script build.py avec export automatique."""
         import subprocess
 
         project = data.get("project")
         agent = data.get("agent")
+        auto_export = data.get("export", True)  # Export par défaut
 
         if not project:
             self._send_json({"error": "Project required"}, 400)
@@ -540,6 +544,10 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
         else:
             cmd.append("--all")
 
+        # Auto-export activé par défaut
+        if auto_export:
+            cmd.append("--export")
+
         try:
             result = subprocess.run(
                 cmd,
@@ -550,7 +558,8 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
             self._send_json({
                 "success": result.returncode == 0,
                 "output": result.stdout,
-                "error": result.stderr
+                "error": result.stderr,
+                "exported": auto_export
             })
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
@@ -746,6 +755,28 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
             })
         except Exception as e:
             self._send_json({"error": f"Expand failed: {str(e)}"}, 500)
+
+    def _collapse_content(self, data: dict):
+        """Collapse expanded content back to {% include %} directives."""
+        from expand import collapse_includes
+
+        content = data.get("content", "")
+        lang = data.get("lang", "fr")
+
+        if not content:
+            self._send_json({"collapsed": "", "modified_files": {}})
+            return
+
+        try:
+            collapsed, modified_files = collapse_includes(content, lang)
+
+            self._send_json({
+                "collapsed": collapsed,
+                "modified_files": modified_files,
+                "original": content
+            })
+        except Exception as e:
+            self._send_json({"error": f"Collapse failed: {str(e)}"}, 500)
 
     def _save_all_sections(self, project: str, agent: str, lang: str, data: dict):
         """Sauvegarde les sections à partir d'un dictionnaire."""
