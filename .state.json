@@ -1,8 +1,8 @@
 {
   "active_project": "agents_metier",
-  "active_agent": "processdesigner",
+  "active_agent": "common",
   "phase": "write",
-  "current_section": null,
+  "current_section": "04-phases.md",
   "last_build": null,
   "projects": [
     "agents_metier",

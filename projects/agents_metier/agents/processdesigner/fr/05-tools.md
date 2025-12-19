@@ -13,7 +13,7 @@ Modifie les informations generales du process.
 - **Retour** : Confirmation de mise a jour
 
 ## update_phases
-Definit ou modifie les phases du workflow.
+Definit ou modifie les phases du process.
 - **Parametres** : process_id, phases (liste)
 - Chaque phase : id, name, order, description, prompt_phase
 - **Retour** : Confirmation de mise a jour

@@ -126,26 +126,35 @@ def expand_includes(
 
         # Resolve the include
         include_ref = match.group(1)
-        include_path = get_include_path(include_ref, project, lang)
+        try:
+            include_path = get_include_path(include_ref, project, lang)
 
-        if not include_path.exists():
-            raise FileNotFoundError(f"Include not found: {include_path}")
+            if not include_path.exists():
+                # Include not found - keep original directive with error comment
+                error_msg = f"<!-- ⚠️ INCLUDE NOT FOUND: {include_ref} -->"
+                result_parts.append(f"\n{error_msg}\n{match.group(0)}")
+                last_end = match.end()
+                continue
 
-        included_content = include_path.read_text(encoding="utf-8").rstrip()
+            included_content = include_path.read_text(encoding="utf-8").rstrip()
 
-        # Recursively expand nested includes
-        included_content = expand_includes(
-            included_content, project, lang,
-            highlight_local=False,  # Don't highlight nested includes
-            depth=depth + 1,
-            max_depth=max_depth
-        )
+            # Recursively expand nested includes
+            included_content = expand_includes(
+                included_content, project, lang,
+                highlight_local=False,  # Don't highlight nested includes
+                depth=depth + 1,
+                max_depth=max_depth
+            )
 
-        # Add markers
-        start_marker = INCLUDE_START.format(path=include_ref)
-        end_marker = INCLUDE_END.format(path=include_ref)
+            # Add markers
+            start_marker = INCLUDE_START.format(path=include_ref)
+            end_marker = INCLUDE_END.format(path=include_ref)
 
-        result_parts.append(f"\n{start_marker}\n{included_content}\n{end_marker}")
+            result_parts.append(f"\n{start_marker}\n{included_content}\n{end_marker}")
+        except Exception as e:
+            # On error, keep original directive with error comment
+            error_msg = f"<!-- ⚠️ INCLUDE ERROR ({include_ref}): {str(e)} -->"
+            result_parts.append(f"\n{error_msg}\n{match.group(0)}")
 
         last_end = match.end()
 

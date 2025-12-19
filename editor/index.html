@@ -1669,13 +1669,21 @@
     // HELPER FUNCTIONS FOR API CALLS
     // ============================================
     async function expandContentWithIncludes(content, lang) {
+      console.log('[expandContentWithIncludes] project:', state.currentProject, 'lang:', lang);
+      console.log('[expandContentWithIncludes] content has includes:', content.includes('{% include'));
       const res = await fetch(`${CONFIG.apiBase}/expand`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content, lang, project: state.currentProject }),
       });
-      if (!res.ok) return { expanded: content, has_includes: false };
-      return res.json();
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('[expandContentWithIncludes] API error:', res.status, errorText);
+        return { expanded: content, has_includes: false };
+      }
+      const result = await res.json();
+      console.log('[expandContentWithIncludes] result has_includes:', result.has_includes);
+      return result;
     }
 
     async function collapseContentWithIncludes(content, lang) {
@@ -2833,14 +2841,13 @@
         state.agents[state.currentAgent][state.currentLang].push(result.section);
         state.agents[state.currentAgent][state.currentLang].sort();
 
-        // Re-render and load the new section
+        // Re-render sidebar
         renderSections(state.currentAgent, state.currentLang);
         closeCreateSectionModal();
-        showLoading(false);
         showToast(`Section ${result.section} créée !`, 'success');
 
-        // Load the newly created section
-        await loadSection(state.currentAgent, state.currentLang, result.section);
+        // Reload all sections in editor to include the new one
+        await loadAllSections(state.currentAgent, state.currentLang);
       } catch (error) {
         showLoading(false);
         showToast(`Erreur: ${error.message}`, 'error');
@@ -3154,8 +3161,10 @@
         }
 
         renderSections(state.currentAgent, state.currentLang);
-        showLoading(false);
         showToast('Ordre mis à jour !', 'success');
+
+        // Reload all sections in editor with new order
+        await loadAllSections(state.currentAgent, state.currentLang);
       } catch (error) {
         showLoading(false);
         showToast(`Erreur: ${error.message}`, 'error');

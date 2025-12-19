@@ -72,6 +72,15 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
             elif path == "/api/includes":
                 project = query.get("project", [None])[0]
                 self._list_available_includes(project)
+            elif path.startswith("/api/dist/"):
+                # /api/dist/{lang}/{agent} - Get compiled prompt from dist folder
+                parts = path.split("/")
+                if len(parts) == 5:
+                    lang = parts[3]
+                    agent = parts[4]
+                    self._get_dist(lang, agent)
+                else:
+                    self._send_json({"error": "Invalid dist path"}, 400)
             elif path.startswith("/api/projects/"):
                 parts = path.split("/")
                 project = parts[3]
@@ -241,6 +250,35 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                                 "agents_count": len(list((p / "agents").iterdir())) if (p / "agents").exists() else 0
                             })
         self._send_json({"projects": projects})
+
+    def _get_dist(self, lang: str, agent: str):
+        """Retourne le prompt compilé depuis le dossier dist."""
+        # Get active project from state
+        state_path = self.studio_root / ".state.json"
+        if state_path.exists():
+            with open(state_path, encoding="utf-8") as f:
+                state = json.load(f)
+            project = state.get("active_project")
+        else:
+            project = None
+
+        if not project:
+            self._send_json({"error": "No active project"}, 400)
+            return
+
+        dist_path = self.projects_dir / project / "dist" / lang / f"{agent}.md"
+
+        if not dist_path.exists():
+            self._send_json({"error": f"Compiled prompt not found: {dist_path.name}"}, 404)
+            return
+
+        content = dist_path.read_text(encoding="utf-8")
+        self._send_json({
+            "content": content,
+            "path": str(dist_path),
+            "agent": agent,
+            "lang": lang
+        })
 
     def _get_project(self, project_name: str):
         """Retourne les détails d'un projet."""
