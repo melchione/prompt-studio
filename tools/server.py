@@ -132,6 +132,41 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                 agent = parts[5]
                 lang = parts[6]
                 self._save_all_sections(project, agent, lang, data)
+            elif path.endswith("/reorder"):
+                # /api/projects/{project}/agents/{agent}/reorder
+                # MUST be checked BEFORE generic section handler
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._reorder_sections(project, agent, data)
+            elif path.endswith("/translate"):
+                # /api/projects/{project}/agents/{agent}/translate
+                # MUST be checked BEFORE generic section handler
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._translate_section(project, agent, data)
+            elif path.endswith("/translate-ai"):
+                # /api/projects/{project}/agents/{agent}/translate-ai
+                # MUST be checked BEFORE generic section handler
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._translate_section_ai(project, agent, data)
+            elif path.endswith("/collapse"):
+                # /api/projects/{project}/agents/{agent}/collapse
+                # MUST be checked BEFORE generic section handler
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._collapse_section(project, agent, data)
+            elif path.endswith("/delete-section"):
+                # /api/projects/{project}/agents/{agent}/delete-section
+                # MUST be checked BEFORE generic section handler
+                parts = path.split("/")
+                project = parts[3]
+                agent = parts[5]
+                self._delete_section(project, agent, data)
             elif path.startswith("/api/projects/") and "/agents" in path:
                 parts = path.split("/")
                 project = parts[3]
@@ -144,37 +179,6 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
                     self._save_section(project, agent, lang, section, data)
                 else:
                     self._send_json({"error": "Invalid path"}, 400)
-            elif path.endswith("/translate"):
-                # /api/projects/{project}/agents/{agent}/translate
-                parts = path.split("/")
-                project = parts[3]
-                agent = parts[5]
-                self._translate_section(project, agent, data)
-            elif path.endswith("/translate-ai"):
-                # /api/projects/{project}/agents/{agent}/translate-ai
-                # Real AI translation using Claude API
-                parts = path.split("/")
-                project = parts[3]
-                agent = parts[5]
-                self._translate_section_ai(project, agent, data)
-            elif path.endswith("/collapse"):
-                # /api/projects/{project}/agents/{agent}/collapse
-                parts = path.split("/")
-                project = parts[3]
-                agent = parts[5]
-                self._collapse_section(project, agent, data)
-            elif path.endswith("/reorder"):
-                # /api/projects/{project}/agents/{agent}/reorder
-                parts = path.split("/")
-                project = parts[3]
-                agent = parts[5]
-                self._reorder_sections(project, agent, data)
-            elif path.endswith("/delete-section"):
-                # /api/projects/{project}/agents/{agent}/delete-section
-                parts = path.split("/")
-                project = parts[3]
-                agent = parts[5]
-                self._delete_section(project, agent, data)
             else:
                 self._send_json({"error": "Unknown endpoint"}, 404)
         except Exception as e:
@@ -495,14 +499,18 @@ class PromptStudioAPI(SimpleHTTPRequestHandler):
 
         # Phase 2: Créer les nouveaux fichiers
         renamed = []
+        mapping = {}  # old_name -> new_name for frontend compatibility
         for temp_name, (new_name, content) in temp_files.items():
             new_path = lang_path / new_name
             new_path.write_text(content, encoding="utf-8")
-            renamed.append({"old": temp_name.replace("_temp_", "").split("_", 1)[1], "new": new_name})
+            old_name = temp_name.replace("_temp_", "").split("_", 1)[1]
+            renamed.append({"old": old_name, "new": new_name})
+            mapping[old_name] = new_name
 
         self._send_json({
             "success": True,
-            "renamed": renamed
+            "renamed": renamed,
+            "mapping": mapping
         })
 
     def _delete_section(self, project: str, agent: str, data: dict):

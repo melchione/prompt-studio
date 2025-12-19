@@ -1,7 +1,7 @@
 {
-  "active_project": "cowai",
-  "active_agent": null,
-  "phase": null,
+  "active_project": "agents_metier",
+  "active_agent": "processdesigner",
+  "phase": "write",
   "current_section": null,
   "last_build": null,
   "projects": [

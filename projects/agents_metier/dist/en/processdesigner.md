@@ -1,10 +1,10 @@
 {#
 Prompt Studio Build
-Project: cowai
+Project: agents_metier
 Agent: processdesigner
 Version: 0.0.0
 Language: en
-Built: 2025-12-16 09:11 UTC
+Built: 2025-12-19 11:09 UTC
 
 GENERATED AUTOMATICALLY - DO NOT EDIT DIRECTLY
 Protected tokens are wrapped in {% raw %}...{% endraw %} for Jinja2.

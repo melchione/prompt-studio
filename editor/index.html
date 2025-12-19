@@ -1616,7 +1616,7 @@
         const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/reorder`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lang, sections }),
+          body: JSON.stringify({ lang, order: sections }),
         });
         if (!res.ok) throw new Error('Failed to reorder sections');
         return res.json();
@@ -2799,15 +2799,28 @@
       }
 
       // Sanitize name: lowercase, replace spaces with dashes, remove special chars
-      const sanitizedName = name
+      const baseName = name
         .toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9-]/g, '');
 
-      if (!sanitizedName) {
+      if (!baseName) {
         showToast('Nom invalide', 'error');
         return;
       }
+
+      // Calculate next number based on existing sections
+      const existingSections = state.agents[state.currentAgent]?.[state.currentLang] || [];
+      let maxNum = 0;
+      existingSections.forEach(s => {
+        const match = s.match(/^(\d+)-/);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      });
+      const nextNum = String(maxNum + 1).padStart(2, '0');
+      const sanitizedName = `${nextNum}-${baseName}.md`;
 
       try {
         showLoading(true, 'Création de la section...');

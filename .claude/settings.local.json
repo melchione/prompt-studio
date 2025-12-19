@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(cat:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(for f in projects/agents_metier/agents/processdesigner/fr/*.md projects/agents_metier/agents/processdesigner/en/*.md)",
+      "Bash(do wc -w \"$f\")",
+      "Bash(pkill:*)",
+      "Bash(open http://localhost:8421)",
+      "Bash(lsof:*)"
     ]
   }
 }

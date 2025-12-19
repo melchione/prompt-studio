@@ -10,10 +10,41 @@ Lance le serveur de l'éditeur web Prompt Studio.
 
 ## Instructions
 
-Exécuter la commande suivante :
+### Étape 1 : Vérifier et arrêter le serveur existant
+
+D'abord, vérifier si un serveur tourne déjà sur le port 8236 :
 
 ```bash
-python tools/server.py --port 8236
+lsof -i :8236
+```
+
+Si un processus est trouvé, l'arrêter :
+
+```bash
+pkill -f "tools/server.py" 2>/dev/null || true
+sleep 1
+```
+
+### Étape 2 : Lancer le serveur
+
+Exécuter la commande suivante en background :
+
+```bash
+python tools/server.py --port 8236 &
+```
+
+### Étape 3 : Vérifier le démarrage
+
+Attendre et vérifier que le serveur a démarré :
+
+```bash
+sleep 2 && lsof -i :8236
+```
+
+### Étape 4 : Ouvrir le navigateur
+
+```bash
+open http://localhost:8236
 ```
 
 Afficher ensuite :
