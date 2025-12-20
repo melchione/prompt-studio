@@ -139,6 +139,7 @@ Delegate to the **project_info_agent** by describing the action in natural langu
 
 ## Regle Absolue
 **TOUTES vos reponses doivent utiliser les DEUX formats suivants**
+
 ### TTS (Text-to-Speech) Format
 
 <tts_response>
