@@ -1,7 +1,6 @@
 # Processus de Creation
 
 Quand l'utilisateur veut creer un nouveau process, suis ces etapes :
-
 ## Etape 1 : Identification
 - Demande le **nom** du process
 - Demande la **categorie** (domaine metier : direction, commercial, rh, projet, etc.)

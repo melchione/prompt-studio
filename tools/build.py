@@ -297,6 +297,29 @@ def count_tokens_estimate(content: str) -> int:
     return len(content) // 4
 
 
+def remove_jinja_comments(content: str) -> str:
+    """
+    Remove Jinja2 comments {# ... #} from content.
+
+    Handles single and multi-line comments.
+
+    Args:
+        content: Content with potential Jinja2 comments
+
+    Returns:
+        Content without Jinja2 comments
+    """
+    # Pattern for Jinja2 comments (single and multi-line)
+    # re.DOTALL allows . to match newlines
+    pattern = r"\{#.*?#\}"
+    cleaned = re.sub(pattern, "", content, flags=re.DOTALL)
+
+    # Clean up excessive blank lines created by removal
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+
+    return cleaned.strip()
+
+
 def generate_header(project_name: str, agent_name: str, lang: str, version: str) -> str:
     """Generate header comment for compiled prompt."""
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -406,6 +429,9 @@ def build_agent(
                 prompt_parts.append("")
 
         final_content = "\n".join(prompt_parts)
+
+        # Remove Jinja2 comments {# ... #}
+        final_content = remove_jinja_comments(final_content)
 
         if includes_resolved > 0:
             print(f"     📎 {includes_resolved} include(s) resolved")
@@ -696,6 +722,8 @@ Examples:
             # Auto-export if requested
             if args.export:
                 export_to_destination(project_path, dry_run=args.dry_run)
+
+            print("\n✅ Build complete!")
         else:
             print(f"🤖 Agent: {args.agent}")
             build_agent(
@@ -712,6 +740,9 @@ Examples:
                 export_to_destination(project_path, dry_run=args.dry_run)
 
             print("\n✅ Build complete!")
+
+        # Explicit success exit
+        sys.exit(0)
 
     except FileNotFoundError as e:
         print(f"\n❌ Error: {e}")

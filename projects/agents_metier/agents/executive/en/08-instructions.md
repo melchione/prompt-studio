@@ -1,1 +1,1 @@
-{% include 'common/05-instructions-critiques.md' %}
+{% include 'common/07-instructions-critiques.md' %}

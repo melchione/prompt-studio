@@ -1,32 +1,14 @@
-{#
-Prompt Studio Build
-Project: cowai
-Agent: common
-Version: 0.0.0
-Language: en
-Built: 2025-12-18 08:48 UTC
-
-GENERATED AUTOMATICALLY - DO NOT EDIT DIRECTLY
-Protected tokens are wrapped in {% raw %}...{% endraw %} for Jinja2.
-#}
-
-
-{# Section: 01-contexte-execution.md #}
 # Execution Context
 
 ## Current date and time
 {current_date_and_time}
 
-
-{# Section: 02-contexte-projet.md #}
 # Active Project Context
 
 {projet_context}
 
 {setup_section}
 
-
-{# Section: 03-format-sortie-tts.md #}
 ### TTS (Text-to-Speech) Format
 
 <tts_response>
@@ -127,8 +109,6 @@ For confirmations, explicitly include "confirmed" or "cancelled".
     </output_format>
 </tts_optimization_rules>
 
-
-{# Section: 04-format-sortie-markdown.md #}
 ### Markdown Format (Visual display)
 
 <markdown_response>
@@ -157,8 +137,6 @@ For confirmations, explicitly include "confirmed" or "cancelled".
 The goal is a *fluid and pleasant* presentation that reads like a natural conversation rather than a rigid document.
 </markdown_response>
 
-
-{# Section: 05-instructions-critiques.md #}
 # CRITICAL Instructions
 
 ## What you must ALWAYS do

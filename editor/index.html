@@ -44,9 +44,8 @@
 
     #app {
       display: grid;
-      grid-template-columns: var(--sidebar-width) 1fr;
-      grid-template-rows: var(--header-height) 1fr;
-      grid-template-areas: "header header" "sidebar main";
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
       height: 100vh;
     }
 
@@ -319,75 +318,6 @@
       color: var(--accent-red);
     }
 
-    /* Validation Panel */
-    .validation-panel {
-      background: var(--bg-tertiary);
-      border-radius: 8px;
-      padding: 10px;
-    }
-
-    .validation-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      padding: 4px 0;
-    }
-
-    .validation-item .icon {
-      font-size: 0.9rem;
-    }
-
-    .validation-item.valid .icon {
-      color: var(--accent-green);
-    }
-
-    .validation-item.invalid .icon {
-      color: var(--accent-red);
-    }
-
-    .validation-item.warning .icon {
-      color: var(--accent-yellow);
-    }
-
-    .validation-item .message {
-      color: var(--text-secondary);
-    }
-
-    .validation-item .count {
-      margin-left: auto;
-      background: var(--bg-secondary);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.7rem;
-    }
-
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .stat-item {
-      background: var(--bg-tertiary);
-      border-radius: 6px;
-      padding: 8px;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .stat-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
     /* Actions */
     .sidebar-actions {
       margin-top: auto;
@@ -401,6 +331,263 @@
     .sidebar-actions .btn {
       width: 100%;
       justify-content: center;
+    }
+
+    /* FLOATING SECTIONS NAV */
+    .floating-sections-nav {
+      position: fixed;
+      left: 16px;
+      top: calc(var(--header-height) + 16px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .floating-section-item {
+      display: flex;
+      align-items: center;
+      width: 36px;
+      height: 36px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: width 0.2s ease, background 0.15s;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .floating-section-item:hover {
+      width: 200px;
+      background: var(--bg-tertiary);
+    }
+
+    .floating-section-item.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: white;
+    }
+
+    .floating-section-num {
+      min-width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .floating-section-name {
+      padding-right: 12px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .floating-section-item:hover .floating-section-name {
+      opacity: 1;
+    }
+
+    .floating-reorder-btn,
+    .floating-add-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+
+    .floating-reorder-btn:hover {
+      background: var(--accent-purple);
+      border-color: var(--accent-purple);
+      color: white;
+    }
+
+    .floating-reorder-btn.active {
+      background: var(--accent-purple);
+      border-color: var(--accent-purple);
+      color: white;
+    }
+
+    .floating-add-btn {
+      border-style: dashed;
+    }
+
+    .floating-add-btn:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Reorder mode */
+    .floating-sections-nav.reorder-mode .floating-section-item {
+      width: 200px;
+      cursor: grab;
+    }
+
+    .floating-sections-nav.reorder-mode .floating-section-name {
+      opacity: 1;
+    }
+
+    .floating-section-item.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+      background: var(--accent-purple);
+    }
+
+    .floating-section-item.drag-over {
+      border-color: var(--accent-yellow);
+      border-width: 2px;
+    }
+
+    /* SPLIT MODE (Default Layout) */
+    .split-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      height: 100%;
+    }
+
+    .split-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .split-panel:first-child {
+      border-right: 2px solid var(--border-color);
+    }
+
+    .split-panel-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .split-panel-header .agent-selector {
+      min-width: 140px;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+    }
+
+    .split-panel-header .lang-toggle {
+      font-size: 0.75rem;
+    }
+
+    .split-panel-header .lang-toggle button {
+      padding: 6px 10px;
+    }
+
+    .split-panel-content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .split-monaco-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Floating nav for split panels */
+    .split-floating-nav {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .split-add-section-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px dashed var(--border-color);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 18px;
+      font-weight: 300;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .split-add-section-btn:hover {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: white;
+    }
+
+    .btn-split {
+      background: var(--accent-purple);
+      border-color: var(--accent-purple);
+    }
+
+    .btn-split:hover {
+      background: #7c3aed;
+    }
+
+    .btn-split.active {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    /* Split Panel Modes (Preview/Diff) */
+    .split-panel-btn {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+    }
+
+    .split-panel-btn.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .split-preview-content,
+    .split-diff-container {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .split-panel.preview-mode .split-monaco-container {
+      display: none;
+    }
+
+    .split-panel.preview-mode .split-preview-content {
+      display: block;
+      overflow-y: auto;
+      padding: 16px 24px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .split-panel.diff-mode .split-monaco-container {
+      display: none;
+    }
+
+    .split-panel.diff-mode .split-diff-container {
+      display: block;
     }
 
     /* MAIN */
@@ -1213,146 +1400,68 @@
 
 <body>
   <div id="app">
-    <header>
-      <div class="logo">
-        <span class="logo-icon">&#128221;</span>
-        <span>Prompt Studio</span>
-      </div>
-
-      <select id="project-select" class="agent-selector" style="min-width: 160px;">
-      </select>
-
-      <select id="agent-select" class="agent-selector">
-      </select>
-
-      <div id="current-file" class="current-file" style="display: none;">
-        <span class="file-icon">&#128196;</span>
-        <span id="current-file-name">-</span>
-      </div>
-
-      <div class="lang-toggle">
-        <button id="lang-fr" class="active">FR</button>
-        <button id="lang-en">EN</button>
-      </div>
-
-      <div class="modified-indicator" id="modified-indicator"></div>
-
-      <div class="header-spacer"></div>
-
-      <div class="header-actions">
-        <button class="btn btn-expand" id="btn-toggle-expand" style="display: none;"
-          title="Basculer entre includes expandés et collapsés">
-          <span>&#128230;</span> Collapse Includes
-        </button>
-        <button class="btn" id="btn-diff" title="Voir les différences (Ctrl+D)">
-          <span>&#128203;</span> Diff
-        </button>
-        <button class="btn btn-primary" id="btn-generate" title="Générer le prompt final">
-          <span>&#9881;</span> Générer
-        </button>
-      </div>
-    </header>
-
-    <!-- Collapse Sidebar Button -->
-    <button class="collapse-btn collapse-sidebar-btn" id="collapse-sidebar-btn" title="Masquer/Afficher la sidebar">
-      ◀
-    </button>
-
-    <aside id="sidebar">
-      <div class="sidebar-section">
-        <div class="section-title">
-          <span>&#128196;</span> Sections
-        </div>
-        <ul id="sections-list" class="sections-list">
-          <li class="section-item" style="color: var(--text-muted); font-style: italic;">
-            Sélectionnez un agent
-          </li>
-        </ul>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="section-title">
-          <span>&#9989;</span> Validation
-        </div>
-        <div id="validation-panel" class="validation-panel">
-          <div class="validation-item" style="color: var(--text-muted); font-style: italic;">
-            Aucun fichier chargé
+    <!-- Split Mode Container (Main Editor) -->
+    <div class="split-container" id="split-container">
+      <!-- Left Panel -->
+      <div class="split-panel" id="split-panel-left">
+        <div class="split-panel-header">
+          <select class="agent-selector split-project-select" data-panel="left"></select>
+          <select class="agent-selector split-agent-select" data-panel="left"></select>
+          <div class="lang-toggle">
+            <button class="split-lang-btn active" data-panel="left" data-lang="fr">FR</button>
+            <button class="split-lang-btn" data-panel="left" data-lang="en">EN</button>
           </div>
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="section-title">
-          <span>&#128200;</span> Statistiques
-        </div>
-        <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-value" id="stat-lines">-</div>
-            <div class="stat-label">Lignes</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="stat-chars">-</div>
-            <div class="stat-label">Caractères</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="stat-tokens">-</div>
-            <div class="stat-label">Tokens (est.)</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="stat-protected">-</div>
-            <div class="stat-label">Protégés</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-actions">
-        <button class="btn btn-success" id="btn-save" disabled title="Sauvegarder (Ctrl+S)">
-          <span>&#128190;</span> Sauvegarder
-        </button>
-      </div>
-    </aside>
-
-    <main id="main">
-      <div class="editor-container">
-        <div class="editor-pane">
-          <div class="pane-header">Éditeur Markdown</div>
-          <div id="monaco-container"></div>
-        </div>
-
-        <div class="resizer hidden" id="resizer"></div>
-
-        <div class="preview-pane collapsed" id="preview-pane">
-          <!-- Collapse Preview Button -->
-          <button class="collapse-btn collapse-preview-btn" id="collapse-preview-btn" title="Masquer/Afficher l'aperçu">
-            ◀
+          <div class="header-spacer"></div>
+          <button class="btn split-panel-btn split-expand-btn" data-panel="left" title="Expand/Collapse includes" style="display: none;">
+            <span>&#128194;</span> <span class="expand-label">Expand</span>
           </button>
-          <div class="pane-header">
-            <span>Aperçu</span>
-            <div class="preview-header-actions">
-              <button class="preview-header-btn" id="preview-copy-btn" title="Copier le markdown">
-                📋
-              </button>
-              <button class="preview-header-btn" id="preview-mode-toggle" title="Basculer Light/Dark mode">
-                ☀️
-              </button>
-            </div>
-          </div>
-          <div id="preview-content">
-            <p style="color: var(--text-muted); font-style: italic;">
-              Sélectionnez un agent et une section pour commencer l'édition.
-            </p>
-          </div>
+          <button class="btn split-panel-btn split-preview-btn" data-panel="left" title="Afficher preview">
+            <span>&#128065;</span> Preview
+          </button>
+          <button class="btn split-panel-btn split-diff-btn" data-panel="left" title="Afficher diff">
+            <span>&#128203;</span> Diff
+          </button>
+        </div>
+        <div class="split-panel-content">
+          <nav class="split-floating-nav" data-panel="left">
+            <div class="split-sections-list" data-panel="left"></div>
+          </nav>
+          <div class="split-monaco-container" id="split-monaco-left"></div>
+          <div class="split-preview-content" data-panel="left"></div>
+          <div class="split-diff-container" id="split-diff-left" data-panel="left"></div>
         </div>
       </div>
 
-      <div id="diff-panel">
-        <div class="diff-header">
-          <span class="diff-title">Comparaison des modifications</span>
-          <button class="diff-close" id="diff-close">&times;</button>
+      <!-- Right Panel -->
+      <div class="split-panel" id="split-panel-right">
+        <div class="split-panel-header">
+          <select class="agent-selector split-project-select" data-panel="right"></select>
+          <select class="agent-selector split-agent-select" data-panel="right"></select>
+          <div class="lang-toggle">
+            <button class="split-lang-btn active" data-panel="right" data-lang="fr">FR</button>
+            <button class="split-lang-btn" data-panel="right" data-lang="en">EN</button>
+          </div>
+          <div class="header-spacer"></div>
+          <button class="btn split-panel-btn split-expand-btn" data-panel="right" title="Expand/Collapse includes" style="display: none;">
+            <span>&#128194;</span> <span class="expand-label">Expand</span>
+          </button>
+          <button class="btn split-panel-btn split-preview-btn" data-panel="right" title="Afficher preview">
+            <span>&#128065;</span> Preview
+          </button>
+          <button class="btn split-panel-btn split-diff-btn" data-panel="right" title="Afficher diff">
+            <span>&#128203;</span> Diff
+          </button>
         </div>
-        <div id="diff-container"></div>
+        <div class="split-panel-content">
+          <nav class="split-floating-nav" data-panel="right">
+            <div class="split-sections-list" data-panel="right"></div>
+          </nav>
+          <div class="split-monaco-container" id="split-monaco-right"></div>
+          <div class="split-preview-content" data-panel="right"></div>
+          <div class="split-diff-container" id="split-diff-right" data-panel="right"></div>
+        </div>
       </div>
-    </main>
+    </div>
   </div>
 
   <!-- Modal Création Section -->
@@ -1521,8 +1630,40 @@
       isExpanded: true,      // Track if includes are expanded
       hasIncludes: false,    // Track if content has includes
       insertIncludePosition: null,  // Store cursor position for include insertion
+      insertIncludePanelId: null,   // Store which panel is inserting (split mode)
       availableIncludes: {},        // Cache of available includes by agent
       includeCompletions: [],       // Cache for autocompletion suggestions
+      isReorderMode: false,         // Track if reorder mode is active
+      splitMode: false,             // Track if split mode is active
+      splitCreatePanelId: null,     // Track which panel is creating a section
+      panels: {
+        left: {
+          project: null,
+          agent: null,
+          lang: 'fr',
+          sections: [],
+          editor: null,
+          originalContent: '',
+          originalSections: {},
+          sectionBoundaries: [],
+          isModified: false,
+          hasIncludes: false,
+          isExpanded: false
+        },
+        right: {
+          project: null,
+          agent: null,
+          lang: 'fr',
+          sections: [],
+          editor: null,
+          originalContent: '',
+          originalSections: {},
+          sectionBoundaries: [],
+          isModified: false,
+          hasIncludes: false,
+          isExpanded: false
+        }
+      }
     };
 
     // Section delimiter pattern
@@ -1628,6 +1769,19 @@
         return res.json();
       },
 
+      // Get list of section names only
+      async getSections(project, agent, lang) {
+        const data = await this.getAllSections(project, agent, lang);
+        // data.order is an array of section names, data.sections is an object
+        return data.order || Object.keys(data.sections || {});
+      },
+
+      // Get content of a single section
+      async getSectionContent(project, agent, lang, section) {
+        const data = await this.getSection(project, agent, lang, section);
+        return data.content || '';
+      },
+
       async saveAllSections(project, agent, lang, sections) {
         const res = await fetch(`${CONFIG.apiBase}/projects/${project}/agents/${agent}/${lang}/save-all`, {
           method: 'POST',
@@ -1725,8 +1879,11 @@
 
     function setModified(modified) {
       state.isModified = modified;
-      document.getElementById('modified-indicator').classList.toggle('show', modified);
-      document.getElementById('btn-save').disabled = !modified;
+      // Elements may not exist in split-only mode
+      const indicator = document.getElementById('modified-indicator');
+      const btn = document.getElementById('btn-save');
+      if (indicator) indicator.classList.toggle('show', modified);
+      if (btn) btn.disabled = !modified;
     }
 
     // ============================================
@@ -1742,72 +1899,6 @@
           rules: [],
           colors: {
             'editor.background': '#1e1e1e',
-          }
-        });
-
-        // Create main editor
-        state.editor = monaco.editor.create(document.getElementById('monaco-container'), {
-          value: '',
-          language: 'markdown',
-          theme: 'cowai-dark',
-          minimap: { enabled: true },
-          wordWrap: 'on',
-          lineNumbers: 'on',
-          fontSize: 14,
-          automaticLayout: true,
-          scrollBeyondLastLine: false,
-          renderWhitespace: 'selection',
-          glyphMargin: true,  // Enable glyph margin for section markers
-          folding: true,      // Enable code folding
-        });
-
-        // Listen for changes
-        state.editor.onDidChangeModelContent(() => {
-          if (state.currentAgent) {
-            const content = state.editor.getValue();
-            if (content !== state.originalContent) {
-              setModified(true);
-              // Update stats
-              updateStats(content);
-              runValidation(content);
-              // Update preview with the full concatenated content
-              updatePreviewFromEditor(content);
-            } else {
-              setModified(false);
-            }
-          }
-        });
-
-        // Track cursor position to update current section highlight
-        state.editor.onDidChangeCursorPosition((e) => {
-          if (state.sectionBoundaries.length > 0) {
-            const line = e.position.lineNumber;
-            for (const boundary of state.sectionBoundaries) {
-              if (line >= boundary.delimiterLine && line <= boundary.endLine) {
-                if (state.currentSection !== boundary.section) {
-                  state.currentSection = boundary.section;
-                  // Update sidebar highlighting
-                  document.querySelectorAll('.section-item').forEach(item => {
-                    item.classList.toggle('active', item.dataset.section === boundary.section);
-                  });
-                }
-                break;
-              }
-            }
-          }
-        });
-
-        // Add custom context menu action for inserting includes
-        state.editor.addAction({
-          id: 'insert-include',
-          label: 'Insérer un Include',
-          keybindings: [
-            monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyI
-          ],
-          contextMenuGroupId: 'navigation',
-          contextMenuOrder: 1.5,
-          run: function (ed) {
-            openInsertIncludeModal();
           }
         });
 
@@ -1867,6 +1958,9 @@
     }
 
     function updatePreviewFromEditor(content) {
+      const previewEl = document.getElementById('preview-content');
+      if (!previewEl) return; // Element may not exist in split-only mode
+
       // Strip section delimiters for clean preview
       const cleanContent = content
         .replace(/<!-- ═+[^>]*-->/g, '')  // Remove all ═══ comment lines
@@ -1883,10 +1977,13 @@
         const regex = new RegExp(`(${escaped})`, 'g');
         highlighted = highlighted.replace(regex, '<span class="protected-token">$1</span>');
       });
-      document.getElementById('preview-content').innerHTML = highlighted;
+      previewEl.innerHTML = highlighted;
     }
 
     async function updatePreview(content) {
+      const previewEl = document.getElementById('preview-content');
+      if (!previewEl) return; // Element may not exist in split-only mode
+
       // Helper to clean content for preview
       function cleanForPreview(text) {
         return (text || '')
@@ -1914,7 +2011,7 @@
               html = html.replace(regex, '<span class="protected-token">$1</span>');
             });
 
-            document.getElementById('preview-content').innerHTML = html;
+            previewEl.innerHTML = html;
 
             // Auto-scroll to current section if loaded
             if (state.currentSection) {
@@ -1936,7 +2033,7 @@
         const regex = new RegExp(`(${escaped})`, 'g');
         highlighted = highlighted.replace(regex, '<span class="protected-token">$1</span>');
       });
-      document.getElementById('preview-content').innerHTML = highlighted;
+      previewEl.innerHTML = highlighted;
     }
 
     function scrollToSectionInPreview() {
@@ -1945,6 +2042,7 @@
       if (!sectionName) return;
 
       const preview = document.getElementById('preview-content');
+      if (!preview) return; // Element may not exist in split-only mode
       const headings = preview.querySelectorAll('h1, h2, h3');
 
       for (const h of headings) {
@@ -1973,86 +2071,6 @@
           break;
         }
       }
-    }
-
-    function updateStats(content) {
-      const lines = (content.match(/\n/g) || []).length + 1;
-      const chars = content.length;
-      const tokens = Math.round(chars / 4);
-
-      let protectedCount = 0;
-      state.protectedTokens.forEach(token => {
-        const regex = new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-        const matches = content.match(regex);
-        if (matches) protectedCount += matches.length;
-      });
-
-      document.getElementById('stat-lines').textContent = lines.toLocaleString();
-      document.getElementById('stat-chars').textContent = chars.toLocaleString();
-      document.getElementById('stat-tokens').textContent = tokens.toLocaleString();
-      document.getElementById('stat-protected').textContent = protectedCount;
-    }
-
-    // ============================================
-    // VALIDATION
-    // ============================================
-    function runValidation(content) {
-      const results = [];
-
-      // 1. Check structure
-      const hasH1 = /^# .+/m.test(content);
-      const hasH2 = /^## .+/m.test(content);
-      results.push({
-        valid: hasH1,
-        type: hasH1 ? 'valid' : 'invalid',
-        message: hasH1 ? 'Structure H1 présente' : 'H1 manquant',
-      });
-
-      // 2. Count protected tokens
-      let tokenCount = 0;
-      state.protectedTokens.forEach(token => {
-        if (content.includes(token)) tokenCount++;
-      });
-      results.push({
-        valid: true,
-        type: 'valid',
-        message: 'Tokens protégés',
-        count: tokenCount,
-      });
-
-      // 3. Check for residual markers
-      const markers = content.match(/<<<TOKEN_\d+>>>/g) || [];
-      if (markers.length > 0) {
-        results.push({
-          valid: false,
-          type: 'invalid',
-          message: 'Marqueurs résiduels',
-          count: markers.length,
-        });
-      }
-
-      // 4. Markdown well-formed
-      const unclosedCode = (content.match(/```/g) || []).length % 2 !== 0;
-      if (unclosedCode) {
-        results.push({
-          valid: false,
-          type: 'warning',
-          message: 'Bloc code non fermé',
-        });
-      }
-
-      renderValidation(results);
-    }
-
-    function renderValidation(results) {
-      const container = document.getElementById('validation-panel');
-      container.innerHTML = results.map(r => `
-        <div class="validation-item ${r.type}">
-          <span class="icon">${r.type === 'valid' ? '&#10004;' : r.type === 'warning' ? '&#9888;' : '&#10006;'}</span>
-          <span class="message">${r.message}</span>
-          ${r.count !== undefined ? `<span class="count">${r.count}</span>` : ''}
-        </div>
-      `).join('');
     }
 
     // ============================================
@@ -2124,23 +2142,11 @@
         const data = await api.getProjects();
         state.projects = data.projects || [];
 
-        const select = document.getElementById('project-select');
-        select.innerHTML = '<option value="">Projet...</option>';
+        // Populate split mode project selects
+        populateSplitProjectSelects();
 
-        state.projects.forEach(proj => {
-          const option = document.createElement('option');
-          option.value = proj.name;
-          option.textContent = `${proj.name} (${proj.agents_count || 0} agents)`;
-          select.appendChild(option);
-        });
-
-        // Restore last selected project
-        const savedProject = localStorage.getItem('prompt-studio-project');
-        if (savedProject && state.projects.find(p => p.name === savedProject)) {
-          select.value = savedProject;
-          state.currentProject = savedProject;
-          await loadAgents();
-        }
+        // Restore both panels from localStorage
+        await restorePanelStates();
 
         showLoading(false);
       } catch (error) {
@@ -2149,15 +2155,71 @@
       }
     }
 
+    async function restorePanelStates() {
+      for (const panelId of ['left', 'right']) {
+        const saved = getSavedPanelState(panelId);
+        if (!saved) continue;
+
+        const { project, agent, lang } = saved;
+
+        // Check if project still exists
+        if (!project || !state.projects.find(p => p.name === project)) continue;
+
+        // Set project select
+        const projectSelect = document.querySelector(`.split-project-select[data-panel="${panelId}"]`);
+        if (projectSelect) {
+          projectSelect.value = project;
+        }
+
+        // Load agents for this project
+        try {
+          const agentsData = await api.getAgents(project);
+          const agents = agentsData.agents || [];
+
+          // Populate agent select
+          const agentSelect = document.querySelector(`.split-agent-select[data-panel="${panelId}"]`);
+          if (agentSelect) {
+            agentSelect.innerHTML = '<option value="">-- Agent --</option>';
+            agents.forEach(a => {
+              const option = document.createElement('option');
+              option.value = a.name;
+              option.textContent = a.name;
+              agentSelect.appendChild(option);
+            });
+
+            // Select saved agent if exists
+            if (agent && agents.find(a => a.name === agent)) {
+              agentSelect.value = agent;
+
+              // Update panel state
+              const panel = state.panels[panelId];
+              panel.project = project;
+              panel.agent = agent;
+              panel.lang = lang || 'fr';
+
+              // Update lang buttons
+              document.querySelectorAll(`.split-lang-btn[data-panel="${panelId}"]`).forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === panel.lang);
+              });
+
+              // Load sections
+              const sections = await api.getSections(project, agent, panel.lang);
+              panel.sections = sections;
+              await loadSplitPanelContent(panelId);
+            }
+          }
+        } catch (err) {
+          console.error(`Failed to restore panel ${panelId}:`, err);
+        }
+      }
+    }
+
     async function loadAgents() {
       if (!state.currentProject) {
-        const select = document.getElementById('agent-select');
-        select.innerHTML = '<option value="">Sélectionnez un projet d\'abord</option>';
         return;
       }
 
       try {
-        showLoading(true, 'Chargement des agents...');
         const data = await api.getAgents(state.currentProject);
         const agents = data.agents || [];
 
@@ -2171,32 +2233,7 @@
         });
 
         state.protectedTokens = (await api.getProtectedTokens()).tokens || [];
-
-        const select = document.getElementById('agent-select');
-        select.innerHTML = '<option value="">Agent...</option>';
-
-        // Simple list (no categories for prompt-studio)
-        Object.keys(state.agents).sort().forEach(agentName => {
-          const option = document.createElement('option');
-          option.value = agentName;
-          const frCount = state.agents[agentName].fr?.length || 0;
-          const enCount = state.agents[agentName].en?.length || 0;
-          option.textContent = `${agentName} (${frCount} FR / ${enCount} EN)`;
-          select.appendChild(option);
-        });
-
-        // Restore last selected agent
-        const savedAgent = localStorage.getItem('prompt-studio-agent');
-        if (savedAgent && state.agents[savedAgent]) {
-          select.value = savedAgent;
-          state.currentAgent = savedAgent;
-          renderSections(savedAgent, state.currentLang);
-          await loadAllSections(savedAgent, state.currentLang);
-        }
-
-        showLoading(false);
       } catch (error) {
-        showLoading(false);
         showToast(`Erreur agents: ${error.message}`, 'error');
       }
     }
@@ -2204,6 +2241,9 @@
     function renderSections(agent, lang) {
       const sections = state.agents[agent]?.[lang] || [];
       const list = document.getElementById('sections-list');
+
+      // Element may not exist in split-only mode
+      if (!list) return;
 
       if (sections.length === 0) {
         list.innerHTML = `<li class="section-item" style="color: var(--text-muted);">
@@ -2254,6 +2294,930 @@
           if (e.target.closest('.section-actions')) return;
           loadSection(agent, lang, item.dataset.section);
         });
+      });
+
+      // Also render the floating nav
+      renderFloatingSections();
+    }
+
+    // ============================================
+    // FLOATING SECTIONS NAV
+    // ============================================
+    function renderFloatingSections() {
+      const sections = state.agents[state.currentAgent]?.[state.currentLang] || [];
+      const container = document.getElementById('floating-sections-list');
+
+      if (!container) return;
+
+      container.innerHTML = sections.map((section, index) => {
+        const num = section.match(/^(\d+)/)?.[1] || String(index + 1).padStart(2, '0');
+        const name = section.replace(/^\d+-/, '').replace('.md', '');
+        const isActive = section === state.currentSection;
+
+        return `
+          <div class="floating-section-item ${isActive ? 'active' : ''}"
+               data-section="${section}"
+               data-index="${index}"
+               draggable="${state.isReorderMode ? 'true' : 'false'}">
+            <span class="floating-section-num">${num}</span>
+            <span class="floating-section-name">${name}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.floating-section-item').forEach(item => {
+        item.addEventListener('click', () => {
+          if (state.isReorderMode) return;
+          const section = item.dataset.section;
+          scrollToSectionInEditor(section);
+        });
+
+        // Drag events for reorder mode
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('dragleave', handleDragLeave);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragend', handleDragEnd);
+      });
+    }
+
+    function scrollToSectionInEditor(sectionName) {
+      const boundary = state.sectionBoundaries.find(b => b.section === sectionName);
+      if (boundary && state.editor) {
+        state.editor.revealLineInCenter(boundary.startLine);
+        state.editor.setPosition({ lineNumber: boundary.startLine, column: 1 });
+        state.editor.focus();
+
+        // Update active state in floating nav
+        document.querySelectorAll('.floating-section-item').forEach(item => {
+          item.classList.toggle('active', item.dataset.section === sectionName);
+        });
+        // Update active state in sidebar
+        document.querySelectorAll('#sections-list .section-item').forEach(item => {
+          item.classList.toggle('active', item.dataset.section === sectionName);
+        });
+
+        state.currentSection = sectionName;
+      }
+    }
+
+    // ============================================
+    // REORDER MODE (Drag & Drop)
+    // ============================================
+    function toggleReorderMode() {
+      state.isReorderMode = !state.isReorderMode;
+      const nav = document.getElementById('floating-sections-nav');
+      const btn = document.getElementById('btn-reorder');
+
+      nav.classList.toggle('reorder-mode', state.isReorderMode);
+      btn.classList.toggle('active', state.isReorderMode);
+
+      // Re-render to update draggable attribute
+      renderFloatingSections();
+
+      if (state.isReorderMode) {
+        // Add click outside listener
+        setTimeout(() => {
+          document.addEventListener('click', closeReorderOnOutsideClick);
+        }, 0);
+      } else {
+        document.removeEventListener('click', closeReorderOnOutsideClick);
+      }
+    }
+
+    function closeReorderOnOutsideClick(e) {
+      const nav = document.getElementById('floating-sections-nav');
+      if (!nav.contains(e.target)) {
+        toggleReorderMode();
+      }
+    }
+
+    let draggedElement = null;
+    let draggedIndex = null;
+
+    function handleDragStart(e) {
+      if (!state.isReorderMode) return;
+      draggedElement = e.target.closest('.floating-section-item');
+      draggedIndex = parseInt(draggedElement.dataset.index);
+      draggedElement.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      if (!state.isReorderMode) return;
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.target.closest('.floating-section-item');
+      if (target && target !== draggedElement) {
+        target.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      const target = e.target.closest('.floating-section-item');
+      if (target) {
+        target.classList.remove('drag-over');
+      }
+    }
+
+    async function handleDrop(e) {
+      e.preventDefault();
+      if (!state.isReorderMode || !draggedElement) return;
+
+      const target = e.target.closest('.floating-section-item');
+      if (!target || target === draggedElement) return;
+
+      target.classList.remove('drag-over');
+
+      const targetIndex = parseInt(target.dataset.index);
+      if (targetIndex === draggedIndex) return;
+
+      // Get current sections order
+      const sections = [...(state.agents[state.currentAgent]?.[state.currentLang] || [])];
+
+      // Reorder
+      const [removed] = sections.splice(draggedIndex, 1);
+      sections.splice(targetIndex, 0, removed);
+
+      try {
+        showLoading(true, 'Réorganisation...');
+
+        const result = await api.reorderSections(
+          state.currentProject,
+          state.currentAgent,
+          state.currentLang,
+          sections
+        );
+
+        // Update state with new order and renamed files
+        const updatedSections = sections.map(oldName => result.mapping[oldName] || oldName);
+        state.agents[state.currentAgent][state.currentLang] = updatedSections;
+
+        // Re-render everything
+        renderSections(state.currentAgent, state.currentLang);
+        await loadAllSections(state.currentAgent, state.currentLang);
+
+        showLoading(false);
+        showToast('Ordre mis à jour !', 'success');
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    function handleDragEnd(e) {
+      if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+      }
+      document.querySelectorAll('.floating-section-item.drag-over').forEach(el => {
+        el.classList.remove('drag-over');
+      });
+      draggedElement = null;
+      draggedIndex = null;
+    }
+
+    // ============================================
+    // SPLIT MODE
+    // ============================================
+    function toggleSplitMode() {
+      state.splitMode = !state.splitMode;
+      const app = document.getElementById('app');
+      const btn = document.getElementById('btn-split');
+
+      app.classList.toggle('split-mode', state.splitMode);
+      btn.classList.toggle('active', state.splitMode);
+      btn.innerHTML = state.splitMode
+        ? '<span>&#9707;</span> Normal'
+        : '<span>&#9707;</span> Split';
+
+      if (state.splitMode) {
+        initSplitMode();
+      } else {
+        // Clean up split editors
+        if (state.panels.left.editor) {
+          state.panels.left.editor.dispose();
+          state.panels.left.editor = null;
+        }
+        if (state.panels.right.editor) {
+          state.panels.right.editor.dispose();
+          state.panels.right.editor = null;
+        }
+      }
+    }
+
+    function initSplitMode() {
+      // Populate project selects for both panels
+      populateSplitProjectSelects();
+
+      // Initialize with current selection on left panel
+      if (state.currentProject) {
+        const leftProjectSelect = document.querySelector('.split-project-select[data-panel="left"]');
+        leftProjectSelect.value = state.currentProject;
+        onSplitProjectChange('left', state.currentProject);
+      }
+    }
+
+    function populateSplitProjectSelects() {
+      const selects = document.querySelectorAll('.split-project-select');
+      selects.forEach(select => {
+        select.innerHTML = '<option value="">-- Projet --</option>';
+        state.projects.forEach(project => {
+          const option = document.createElement('option');
+          option.value = project.name;
+          option.textContent = `${project.name} (${project.agents_count || 0} agents)`;
+          select.appendChild(option);
+        });
+      });
+    }
+
+    async function onSplitProjectChange(panelId, project) {
+      const panel = state.panels[panelId];
+      panel.project = project;
+      panel.agent = null;
+      panel.sections = [];
+
+      // Save to localStorage
+      savePanelState(panelId);
+
+      const agentSelect = document.querySelector(`.split-agent-select[data-panel="${panelId}"]`);
+      agentSelect.innerHTML = '<option value="">-- Agent --</option>';
+
+      if (!project) return;
+
+      try {
+        const agentsData = await api.getAgents(project);
+        const agents = agentsData.agents || [];
+        agents.forEach(agent => {
+          const option = document.createElement('option');
+          option.value = agent.name;
+          option.textContent = agent.name;
+          agentSelect.appendChild(option);
+        });
+
+        // If switching to split mode with current agent, select it on left panel
+        const agentNames = agents.map(a => a.name);
+        if (panelId === 'left' && state.currentAgent && agentNames.includes(state.currentAgent)) {
+          agentSelect.value = state.currentAgent;
+          await onSplitAgentChange(panelId, state.currentAgent);
+        }
+      } catch (err) {
+        console.error('Failed to load agents for split panel:', err);
+      }
+    }
+
+    async function onSplitAgentChange(panelId, agent) {
+      const panel = state.panels[panelId];
+      panel.agent = agent;
+
+      // Save to localStorage
+      savePanelState(panelId);
+
+      if (!agent || !panel.project) {
+        renderSplitFloatingNav(panelId);
+        if (panel.editor) {
+          panel.editor.setValue('');
+        }
+        return;
+      }
+
+      try {
+        // Load sections for this agent
+        const sections = await api.getSections(panel.project, agent, panel.lang);
+        panel.sections = sections;
+
+        // Load content for all sections
+        await loadSplitPanelContent(panelId);
+      } catch (err) {
+        console.error('Failed to load sections for split panel:', err);
+      }
+    }
+
+    // Save/restore panel state to localStorage
+    function savePanelState(panelId) {
+      const panel = state.panels[panelId];
+      const key = `prompt-studio-panel-${panelId}`;
+      localStorage.setItem(key, JSON.stringify({
+        project: panel.project,
+        agent: panel.agent,
+        lang: panel.lang
+      }));
+    }
+
+    function getSavedPanelState(panelId) {
+      const key = `prompt-studio-panel-${panelId}`;
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          return null;
+        }
+      }
+      return null;
+    }
+
+    async function onSplitLangChange(panelId, lang) {
+      const panel = state.panels[panelId];
+      panel.lang = lang;
+
+      // Save to localStorage
+      savePanelState(panelId);
+
+      // Update button states
+      document.querySelectorAll(`.split-lang-btn[data-panel="${panelId}"]`).forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Reload content if agent is selected
+      if (panel.agent && panel.project) {
+        try {
+          const sections = await api.getSections(panel.project, panel.agent, lang);
+          panel.sections = sections;
+          await loadSplitPanelContent(panelId);
+        } catch (err) {
+          console.error('Failed to reload sections after lang change:', err);
+        }
+      }
+    }
+
+    async function loadSplitPanelContent(panelId) {
+      const panel = state.panels[panelId];
+      if (!panel.project || !panel.agent || panel.sections.length === 0) {
+        renderSplitFloatingNav(panelId);
+        updateSplitExpandButton(panelId);
+        return;
+      }
+
+      // Load all section contents
+      const sectionsData = {};
+      for (const section of panel.sections) {
+        try {
+          const content = await api.getSectionContent(panel.project, panel.agent, panel.lang, section);
+          sectionsData[section] = content;
+        } catch (err) {
+          console.error(`Failed to load section ${section}:`, err);
+          sectionsData[section] = '';
+        }
+      }
+
+      // Concatenate sections
+      const { content, boundaries } = concatenateSections(sectionsData, panel.sections);
+
+      // Check for includes and expand automatically
+      const hasIncludes = content.includes('{% include');
+      panel.hasIncludes = hasIncludes;
+
+      let displayContent = content;
+      if (hasIncludes) {
+        try {
+          const expandResult = await expandContentWithIncludesForPanel(content, panel.lang, panel.project);
+          displayContent = expandResult.expanded;
+          panel.isExpanded = true;
+        } catch (err) {
+          console.error('Failed to expand includes:', err);
+          panel.isExpanded = false;
+        }
+      } else {
+        panel.isExpanded = false;
+      }
+
+      panel.originalContent = displayContent;
+      panel.originalSections = { ...sectionsData };
+      panel.sectionBoundaries = boundaries;
+
+      // Initialize or update editor
+      if (!panel.editor) {
+        initSplitPanelEditor(panelId);
+      }
+      panel.editor.setValue(displayContent);
+
+      // Render floating nav and update expand button
+      renderSplitFloatingNav(panelId);
+      updateSplitExpandButton(panelId);
+      addSplitIncludeDecorations(panelId);
+    }
+
+    function initSplitPanelEditor(panelId) {
+      const panel = state.panels[panelId];
+      const containerId = panelId === 'left' ? 'split-monaco-left' : 'split-monaco-right';
+      const container = document.getElementById(containerId);
+
+      panel.editor = monaco.editor.create(container, {
+        value: '',
+        language: 'markdown',
+        theme: 'vs-dark',
+        fontSize: 14,
+        wordWrap: 'on',
+        minimap: { enabled: false },
+        automaticLayout: true,
+        scrollBeyondLastLine: false,
+        lineNumbers: 'on',
+        renderLineHighlight: 'all',
+        folding: true,
+        foldingStrategy: 'indentation'
+      });
+
+      // Add "Insert Include" action to context menu
+      panel.editor.addAction({
+        id: `insert-include-${panelId}`,
+        label: '📂 Insérer un Include',
+        contextMenuGroupId: 'navigation',
+        contextMenuOrder: 1.5,
+        run: function(editor) {
+          openInsertIncludeModal(panelId);
+        }
+      });
+
+      // Add content change listener for auto-save
+      panel.editor.onDidChangeModelContent(async () => {
+        const currentContent = panel.editor.getValue();
+        panel.isModified = currentContent !== panel.originalContent;
+
+        // Auto-save logic
+        if (panel.isModified) {
+          clearTimeout(panel.saveTimeout);
+          panel.saveTimeout = setTimeout(async () => {
+            await saveSplitPanelContent(panelId);
+          }, 1500);
+        }
+      });
+    }
+
+    // Expand includes for split panel (uses panel's project instead of global state)
+    async function expandContentWithIncludesForPanel(content, lang, project) {
+      const res = await fetch(`${CONFIG.apiBase}/expand`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, lang, project }),
+      });
+      if (!res.ok) {
+        return { expanded: content, has_includes: false };
+      }
+      return res.json();
+    }
+
+    // Collapse includes for split panel
+    async function collapseContentWithIncludesForPanel(content, lang) {
+      const res = await fetch(`${CONFIG.apiBase}/collapse-content`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, lang }),
+      });
+      if (!res.ok) throw new Error('Failed to collapse includes');
+      return res.json();
+    }
+
+    // Update expand/collapse button visibility and label
+    function updateSplitExpandButton(panelId) {
+      const panel = state.panels[panelId];
+      const btn = document.querySelector(`.split-expand-btn[data-panel="${panelId}"]`);
+      if (!btn) return;
+
+      if (panel.hasIncludes) {
+        btn.style.display = 'flex';
+        const label = btn.querySelector('.expand-label');
+        const icon = btn.querySelector('span:first-child');
+        if (panel.isExpanded) {
+          label.textContent = 'Collapse';
+          icon.innerHTML = '&#128230;'; // 📦
+          btn.title = 'Remettre les {% include %} au lieu du contenu';
+        } else {
+          label.textContent = 'Expand';
+          icon.innerHTML = '&#128194;'; // 📂
+          btn.title = 'Afficher le contenu des includes';
+        }
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    // Toggle expand/collapse for split panel
+    async function toggleSplitExpandIncludes(panelId) {
+      const panel = state.panels[panelId];
+      if (!panel.agent || !panel.hasIncludes || !panel.editor) return;
+
+      try {
+        showLoading(true, panel.isExpanded ? 'Collapsing includes...' : 'Expanding includes...');
+        const content = panel.editor.getValue();
+
+        if (panel.isExpanded) {
+          // Collapse: replace expanded content with {% include %}
+          const result = await collapseContentWithIncludesForPanel(content, panel.lang);
+          panel.editor.setValue(result.collapsed);
+          panel.isExpanded = false;
+        } else {
+          // Expand: replace {% include %} with actual content
+          const result = await expandContentWithIncludesForPanel(content, panel.lang, panel.project);
+          panel.editor.setValue(result.expanded);
+          panel.isExpanded = true;
+        }
+
+        updateSplitExpandButton(panelId);
+        addSplitIncludeDecorations(panelId);
+        panel.isModified = false; // Don't mark as modified, just display change
+        showLoading(false);
+      } catch (error) {
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+      }
+    }
+
+    // Add decorations for include markers in split panel editor
+    function addSplitIncludeDecorations(panelId) {
+      const panel = state.panels[panelId];
+      if (!panel.editor || !panel.hasIncludes || !panel.isExpanded) return;
+
+      const content = panel.editor.getValue();
+      const lines = content.split('\n');
+      const decorations = [];
+
+      lines.forEach((line, index) => {
+        const lineNum = index + 1;
+        if (line.includes('<!-- @include-start:')) {
+          decorations.push({
+            range: new monaco.Range(lineNum, 1, lineNum, 100),
+            options: {
+              isWholeLine: true,
+              className: 'include-start-line',
+              glyphMarginClassName: 'include-glyph-start',
+            }
+          });
+        } else if (line.includes('<!-- @include-end:')) {
+          decorations.push({
+            range: new monaco.Range(lineNum, 1, lineNum, 100),
+            options: {
+              isWholeLine: true,
+              className: 'include-end-line',
+              glyphMarginClassName: 'include-glyph-end',
+            }
+          });
+        }
+      });
+
+      panel.editor.deltaDecorations([], decorations);
+    }
+
+    async function saveSplitPanelContent(panelId) {
+      const panel = state.panels[panelId];
+      if (!panel.project || !panel.agent || !panel.editor) return;
+
+      const content = panel.editor.getValue();
+      let savedCount = 0;
+
+      // Check if content has expanded includes (with markers)
+      const hasExpandedIncludes = content.includes('<!-- @include-start:');
+
+      if (hasExpandedIncludes) {
+        // First collapse to extract include contents
+        try {
+          const collapseResult = await collapseContentWithIncludesForPanel(content, panel.lang);
+          const collapsedContent = collapseResult.collapsed;
+          const modifiedIncludeFiles = collapseResult.modified_files || {};
+
+          // Save include files directly via the API
+          if (Object.keys(modifiedIncludeFiles).length > 0) {
+            for (const [includeRef, includeContent] of Object.entries(modifiedIncludeFiles)) {
+              // includeRef is like 'common/01-contexte.md'
+              const [agent, filename] = includeRef.split('/');
+              await api.saveSection(panel.project, agent, panel.lang, filename, includeContent);
+              savedCount++;
+            }
+          }
+
+          // Parse sections from collapsed content
+          const parsedSections = parseSectionsFromContent(collapsedContent);
+
+          // Save main sections that changed
+          for (const [sectionName, sectionContent] of Object.entries(parsedSections)) {
+            const originalContent = panel.originalSections[sectionName];
+            if (sectionContent !== originalContent) {
+              try {
+                await api.saveSection(panel.project, panel.agent, panel.lang, sectionName, sectionContent);
+                panel.originalSections[sectionName] = sectionContent;
+                savedCount++;
+              } catch (err) {
+                console.error(`Failed to save section ${sectionName}:`, err);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Failed to collapse includes:', err);
+          showToast(`Erreur collapse includes: ${err.message}`, 'error');
+          return;
+        }
+      } else {
+        // No expanded includes - save normally
+        const parsedSections = parseSectionsFromContent(content);
+
+        for (const [sectionName, sectionContent] of Object.entries(parsedSections)) {
+          if (sectionContent !== panel.originalSections[sectionName]) {
+            try {
+              await api.saveSection(panel.project, panel.agent, panel.lang, sectionName, sectionContent);
+              panel.originalSections[sectionName] = sectionContent;
+              savedCount++;
+            } catch (err) {
+              console.error(`Failed to save section ${sectionName}:`, err);
+            }
+          }
+        }
+      }
+
+      panel.originalContent = content;
+      panel.isModified = false;
+
+      // Auto-generate prompt after save (like normal mode)
+      if (savedCount > 0) {
+        try {
+          const result = await api.buildPrompt(panel.project, panel.agent, panel.lang);
+          // Consider build successful if:
+          // 1. result.success is true, OR
+          // 2. result.exported is true and there's no actual error message
+          const hasRealError = result.error && result.error.trim() !== '';
+          const buildSucceeded = result.success || (result.exported && !hasRealError);
+
+          if (buildSucceeded) {
+            showToast(`${savedCount} section(s) sauvegardée(s), prompt ${panel.lang.toUpperCase()} généré !`, 'success');
+          } else {
+            const errorMsg = result.stderr || result.error || result.message || 'Erreur inconnue';
+            console.error('Build failed:', result);
+            showToast(`${savedCount} section(s) sauvegardée(s), erreur build: ${errorMsg}`, 'warning');
+          }
+        } catch (err) {
+          console.error('Build failed:', err);
+          showToast(`${savedCount} section(s) sauvegardée(s), erreur build: ${err.message}`, 'warning');
+        }
+      }
+    }
+
+    function renderSplitFloatingNav(panelId) {
+      const panel = state.panels[panelId];
+      const nav = document.querySelector(`.split-floating-nav[data-panel="${panelId}"]`);
+      const container = document.querySelector(`.split-sections-list[data-panel="${panelId}"]`);
+      if (!container) return;
+
+      container.innerHTML = panel.sections.map((section, index) => {
+        const num = section.match(/^(\d+)/)?.[1] || String(index + 1).padStart(2, '0');
+        const name = section.replace(/^\d+-/, '').replace('.md', '');
+        return `
+          <div class="floating-section-item" data-section="${section}" data-index="${index}" data-panel="${panelId}" draggable="true">
+            <span class="floating-section-num">${num}</span>
+            <span class="floating-section-name">${name}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Add click and drag listeners
+      container.querySelectorAll('.floating-section-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const section = item.dataset.section;
+          scrollToSectionInSplitEditor(panelId, section);
+        });
+
+        // Drag events
+        item.addEventListener('dragstart', handleSplitDragStart);
+        item.addEventListener('dragover', handleSplitDragOver);
+        item.addEventListener('dragleave', handleSplitDragLeave);
+        item.addEventListener('drop', handleSplitDrop);
+        item.addEventListener('dragend', handleSplitDragEnd);
+      });
+
+      // Add or update the "+" button
+      let addBtn = nav.querySelector('.split-add-section-btn');
+      if (!addBtn && panel.project && panel.agent) {
+        addBtn = document.createElement('button');
+        addBtn.className = 'split-add-section-btn';
+        addBtn.innerHTML = '+';
+        addBtn.title = 'Ajouter une section';
+        addBtn.dataset.panel = panelId;
+        addBtn.addEventListener('click', () => openSplitCreateSectionModal(panelId));
+        nav.appendChild(addBtn);
+      } else if (addBtn && (!panel.project || !panel.agent)) {
+        addBtn.remove();
+      }
+    }
+
+    // Split mode drag & drop
+    let splitDraggedElement = null;
+    let splitDraggedIndex = null;
+    let splitDraggedPanel = null;
+
+    function handleSplitDragStart(e) {
+      splitDraggedElement = e.target.closest('.floating-section-item');
+      splitDraggedIndex = parseInt(splitDraggedElement.dataset.index);
+      splitDraggedPanel = splitDraggedElement.dataset.panel;
+      splitDraggedElement.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleSplitDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.target.closest('.floating-section-item');
+      // Only allow drop on same panel
+      if (target && target !== splitDraggedElement && target.dataset.panel === splitDraggedPanel) {
+        target.classList.add('drag-over');
+      }
+    }
+
+    function handleSplitDragLeave(e) {
+      const target = e.target.closest('.floating-section-item');
+      if (target) {
+        target.classList.remove('drag-over');
+      }
+    }
+
+    async function handleSplitDrop(e) {
+      e.preventDefault();
+      if (!splitDraggedElement || !splitDraggedPanel) return;
+
+      const target = e.target.closest('.floating-section-item');
+      if (!target || target === splitDraggedElement || target.dataset.panel !== splitDraggedPanel) return;
+
+      target.classList.remove('drag-over');
+
+      const targetIndex = parseInt(target.dataset.index);
+      if (targetIndex === splitDraggedIndex) return;
+
+      // Capture panel ID before any async operation
+      const panelId = splitDraggedPanel;
+      const panel = state.panels[panelId];
+
+      if (!panel || !panel.project || !panel.agent) {
+        console.error('Invalid panel state for drop:', panelId, panel);
+        return;
+      }
+
+      const sections = [...panel.sections];
+      const fromIndex = splitDraggedIndex;
+
+      // Reorder locally
+      const [removed] = sections.splice(fromIndex, 1);
+      sections.splice(targetIndex, 0, removed);
+
+      try {
+        showLoading(true, 'Réorganisation...');
+
+        const result = await api.reorderSections(
+          panel.project,
+          panel.agent,
+          panel.lang,
+          sections
+        );
+
+        // Update state with new order and renamed files
+        if (result && result.mapping) {
+          panel.sections = sections.map(oldName => result.mapping[oldName] || oldName);
+        } else {
+          // Fallback: reload sections from server
+          const data = await api.getAllSections(panel.project, panel.agent, panel.lang);
+          panel.sections = data.order || Object.keys(data.sections || {});
+        }
+
+        // Reload content to update Monaco editor
+        await loadSplitPanelContent(panelId);
+
+        showLoading(false);
+        showToast('Ordre mis à jour !', 'success');
+      } catch (error) {
+        console.error('Drop error:', error);
+        showLoading(false);
+        showToast(`Erreur: ${error.message}`, 'error');
+
+        // Reload to restore correct state
+        try {
+          const data = await api.getAllSections(panel.project, panel.agent, panel.lang);
+          panel.sections = data.order || Object.keys(data.sections || {});
+          await loadSplitPanelContent(panelId);
+        } catch (reloadError) {
+          console.error('Failed to reload after error:', reloadError);
+        }
+      }
+    }
+
+    function handleSplitDragEnd(e) {
+      if (splitDraggedElement) {
+        splitDraggedElement.classList.remove('dragging');
+      }
+      document.querySelectorAll('.floating-section-item.drag-over').forEach(el => {
+        el.classList.remove('drag-over');
+      });
+      splitDraggedElement = null;
+      splitDraggedIndex = null;
+      splitDraggedPanel = null;
+    }
+
+    // Split mode: Create section modal
+    function openSplitCreateSectionModal(panelId) {
+      state.splitCreatePanelId = panelId;
+      document.getElementById('new-section-name').value = '';
+      document.getElementById('create-section-modal').classList.add('open');
+    }
+
+    function scrollToSectionInSplitEditor(panelId, sectionName) {
+      const panel = state.panels[panelId];
+      if (!panel.editor) return;
+
+      const boundary = panel.sectionBoundaries.find(b => b.section === sectionName);
+      if (boundary) {
+        panel.editor.revealLineInCenter(boundary.delimiterLine);
+        panel.editor.setPosition({ lineNumber: boundary.delimiterLine + 2, column: 1 });
+        panel.editor.focus();
+      }
+    }
+
+    // ============================================
+    // SPLIT PANEL PREVIEW & DIFF
+    // ============================================
+    function toggleSplitPreview(panelId) {
+      const panel = state.panels[panelId];
+      const panelEl = document.getElementById(`split-panel-${panelId}`);
+      const previewBtn = document.querySelector(`.split-preview-btn[data-panel="${panelId}"]`);
+      const diffBtn = document.querySelector(`.split-diff-btn[data-panel="${panelId}"]`);
+
+      // If diff mode is active, disable it first
+      if (panelEl.classList.contains('diff-mode')) {
+        panelEl.classList.remove('diff-mode');
+        diffBtn.classList.remove('active');
+      }
+
+      // Toggle preview mode
+      const isActive = panelEl.classList.toggle('preview-mode');
+      previewBtn.classList.toggle('active', isActive);
+
+      if (isActive) {
+        updateSplitPreview(panelId);
+      }
+    }
+
+    function updateSplitPreview(panelId) {
+      const panel = state.panels[panelId];
+      const previewEl = document.querySelector(`.split-preview-content[data-panel="${panelId}"]`);
+
+      if (!panel.editor || !previewEl) return;
+
+      const content = panel.editor.getValue();
+      // Strip section delimiters for clean preview
+      const cleanContent = content
+        .replace(/<!-- ═+[^>]*-->/g, '')
+        .replace(/<!-- 📄 SECTION:[^>]*-->/g, '')
+        .replace(/^---\s*$/gm, '')
+        .replace(/^\s*[\r\n]/gm, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+
+      previewEl.innerHTML = renderMarkdown(cleanContent || '');
+    }
+
+    function toggleSplitDiff(panelId) {
+      const panel = state.panels[panelId];
+      const panelEl = document.getElementById(`split-panel-${panelId}`);
+      const previewBtn = document.querySelector(`.split-preview-btn[data-panel="${panelId}"]`);
+      const diffBtn = document.querySelector(`.split-diff-btn[data-panel="${panelId}"]`);
+
+      // If preview mode is active, disable it first
+      if (panelEl.classList.contains('preview-mode')) {
+        panelEl.classList.remove('preview-mode');
+        previewBtn.classList.remove('active');
+      }
+
+      // Toggle diff mode
+      const isActive = panelEl.classList.toggle('diff-mode');
+      diffBtn.classList.toggle('active', isActive);
+
+      if (isActive) {
+        updateSplitDiff(panelId);
+      }
+    }
+
+    function updateSplitDiff(panelId) {
+      const panel = state.panels[panelId];
+      const diffContainerId = `split-diff-${panelId}`;
+      const diffContainer = document.getElementById(diffContainerId);
+
+      if (!panel.editor || !diffContainer) return;
+
+      const currentContent = panel.editor.getValue();
+      const originalContent = panel.originalContent || '';
+
+      // Dispose existing diff editor if any
+      if (panel.diffEditor) {
+        panel.diffEditor.dispose();
+      }
+
+      // Create diff editor
+      panel.diffEditor = monaco.editor.createDiffEditor(diffContainer, {
+        theme: 'vs-dark',
+        readOnly: true,
+        automaticLayout: true,
+        renderSideBySide: true,
+        scrollBeyondLastLine: false,
+        minimap: { enabled: false }
+      });
+
+      panel.diffEditor.setModel({
+        original: monaco.editor.createModel(originalContent, 'markdown'),
+        modified: monaco.editor.createModel(currentContent, 'markdown')
       });
     }
 
@@ -2395,9 +3359,6 @@
         // Add decorations for include markers
         addIncludeDecorations();
 
-        // Stats and validation
-        updateStats(displayContent);
-        runValidation(displayContent);
         await updatePreview(displayContent);
 
         showLoading(false);
@@ -2684,6 +3645,9 @@
           showToast(`${Object.keys(changedSections).length} section(s) sauvegardée(s) !`, 'success');
         }
 
+        // Auto-generate after successful save
+        await generatePrompt();
+
         setModified(false);
         showLoading(false);
       } catch (error) {
@@ -2706,10 +3670,17 @@
         const result = await api.buildPrompt(state.currentProject, state.currentAgent, state.currentLang);
 
         showLoading(false);
-        if (result.success) {
+        // Consider build successful if:
+        // 1. result.success is true, OR
+        // 2. result.exported is true and there's no actual error message
+        const hasRealError = result.error && result.error.trim() !== '';
+        const buildSucceeded = result.success || (result.exported && !hasRealError);
+
+        if (buildSucceeded) {
           showToast(`Prompt ${state.currentLang.toUpperCase()} généré !`, 'success');
         } else {
-          showToast(`Erreur: ${result.stderr}`, 'error');
+          const errorMsg = result.stderr || result.error || result.message || 'Erreur inconnue';
+          showToast(`Erreur: ${errorMsg}`, 'error');
         }
       } catch (error) {
         showLoading(false);
@@ -2817,8 +3788,26 @@
         return;
       }
 
+      // Check if we're in split mode
+      const panelId = state.splitCreatePanelId;
+      const isSplitMode = panelId !== null;
+
+      let project, agent, lang, existingSections;
+
+      if (isSplitMode) {
+        const panel = state.panels[panelId];
+        project = panel.project;
+        agent = panel.agent;
+        lang = panel.lang;
+        existingSections = panel.sections || [];
+      } else {
+        project = state.currentProject;
+        agent = state.currentAgent;
+        lang = state.currentLang;
+        existingSections = state.agents[agent]?.[lang] || [];
+      }
+
       // Calculate next number based on existing sections
-      const existingSections = state.agents[state.currentAgent]?.[state.currentLang] || [];
       let maxNum = 0;
       existingSections.forEach(s => {
         const match = s.match(/^(\d+)-/);
@@ -2832,22 +3821,29 @@
 
       try {
         showLoading(true, 'Création de la section...');
-        const result = await api.createSection(state.currentProject, state.currentAgent, state.currentLang, sanitizedName);
+        const result = await api.createSection(project, agent, lang, sanitizedName);
 
-        // Update local state
-        if (!state.agents[state.currentAgent][state.currentLang]) {
-          state.agents[state.currentAgent][state.currentLang] = [];
+        if (isSplitMode) {
+          // Update split panel state and reload
+          const panel = state.panels[panelId];
+          panel.sections.push(result.section);
+          panel.sections.sort();
+          await loadSplitPanelContent(panelId);
+        } else {
+          // Update normal mode state
+          if (!state.agents[agent][lang]) {
+            state.agents[agent][lang] = [];
+          }
+          state.agents[agent][lang].push(result.section);
+          state.agents[agent][lang].sort();
+          renderSections(agent, lang);
+          await loadAllSections(agent, lang);
         }
-        state.agents[state.currentAgent][state.currentLang].push(result.section);
-        state.agents[state.currentAgent][state.currentLang].sort();
 
-        // Re-render sidebar
-        renderSections(state.currentAgent, state.currentLang);
         closeCreateSectionModal();
+        state.splitCreatePanelId = null;
+        showLoading(false);
         showToast(`Section ${result.section} créée !`, 'success');
-
-        // Reload all sections in editor to include the new one
-        await loadAllSections(state.currentAgent, state.currentLang);
       } catch (error) {
         showLoading(false);
         showToast(`Erreur: ${error.message}`, 'error');
@@ -2878,14 +3874,16 @@
           state.agents[state.currentAgent][state.currentLang].splice(idx, 1);
         }
 
-        // Clear editor if we deleted the current section
+        // Clear editor if we deleted the current section (for main editor - may not exist)
         if (state.currentSection === sectionToDelete) {
           state.currentSection = null;
-          state.editor.setValue('');
+          if (state.editor) state.editor.setValue('');
           state.originalContent = '';
           setModified(false);
-          document.getElementById('current-file').style.display = 'none';
-          document.getElementById('preview-content').innerHTML = '<p style="color: var(--text-muted);">Section supprimée</p>';
+          const currentFile = document.getElementById('current-file');
+          if (currentFile) currentFile.style.display = 'none';
+          const previewContent = document.getElementById('preview-content');
+          if (previewContent) previewContent.innerHTML = '<p style="color: var(--text-muted);">Section supprimée</p>';
         }
 
         closeDeleteModal();
@@ -2901,9 +3899,26 @@
     // ============================================
     // INSERT INCLUDE MODAL
     // ============================================
-    async function openInsertIncludeModal() {
+    async function openInsertIncludeModal(panelId = null) {
+      // Store which panel we're inserting into (for split mode)
+      state.insertIncludePanelId = panelId;
+
       // Store cursor position before opening modal
-      state.insertIncludePosition = state.editor.getPosition();
+      if (panelId && state.panels[panelId]?.editor) {
+        // Split mode: use panel's editor
+        state.insertIncludePosition = state.panels[panelId].editor.getPosition();
+      } else if (state.editor) {
+        // Normal mode: use main editor
+        state.insertIncludePosition = state.editor.getPosition();
+      } else {
+        state.insertIncludePosition = null;
+      }
+
+      // Determine which project to pre-select
+      let currentProject = state.currentProject;
+      if (panelId && state.panels[panelId]?.project) {
+        currentProject = state.panels[panelId].project;
+      }
 
       try {
         // Load all projects
@@ -2918,7 +3933,7 @@
           opt.value = project.name;
           opt.textContent = project.name;
           // Pre-select current project if available
-          if (project.name === state.currentProject) {
+          if (project.name === currentProject) {
             opt.selected = true;
           }
           projectSelect.appendChild(opt);
@@ -2935,7 +3950,7 @@
         document.getElementById('btn-insert-include').disabled = true;
 
         // If current project is pre-selected, load its agents
-        if (state.currentProject) {
+        if (currentProject) {
           await onIncludeProjectChange();
         }
 
@@ -3051,20 +4066,42 @@
 
       if (!project || !agent || !section) return;
 
+      // Determine current project based on context (split panel or main)
+      const panelId = state.insertIncludePanelId;
+      let currentProject = state.currentProject;
+      let targetEditor = state.editor;
+
+      if (panelId && state.panels[panelId]) {
+        // Split mode
+        currentProject = state.panels[panelId].project;
+        targetEditor = state.panels[panelId].editor;
+      }
+
       // If same project, use short format: agent/section.md
       // If different project, use full format: project/agent/section.md
       let includePath;
-      if (project === state.currentProject) {
+      if (project === currentProject) {
         includePath = `${agent}/${section}`;
       } else {
         includePath = `${project}/${agent}/${section}`;
       }
 
       const includeText = `{% include '${includePath}' %}`;
-      const position = state.insertIncludePosition || state.editor.getPosition();
+
+      // Check if we have a target editor
+      if (!targetEditor) {
+        // Copy to clipboard instead
+        navigator.clipboard.writeText(includeText).then(() => {
+          showToast('Include copié dans le presse-papier', 'success');
+        });
+        closeInsertIncludeModal();
+        return;
+      }
+
+      const position = state.insertIncludePosition || targetEditor.getPosition();
 
       // Insert text at cursor position
-      state.editor.executeEdits('insert-include', [{
+      targetEditor.executeEdits('insert-include', [{
         range: new monaco.Range(
           position.lineNumber,
           position.column,
@@ -3076,12 +4113,16 @@
       }]);
 
       // Focus editor and move cursor after inserted text
-      state.editor.focus();
+      targetEditor.focus();
       const newColumn = position.column + includeText.length;
-      state.editor.setPosition({ lineNumber: position.lineNumber, column: newColumn });
+      targetEditor.setPosition({ lineNumber: position.lineNumber, column: newColumn });
 
       // Mark as modified
-      setModified(true);
+      if (panelId && state.panels[panelId]) {
+        state.panels[panelId].isModified = true;
+      } else {
+        setModified(true);
+      }
 
       // Close modal
       closeInsertIncludeModal();
@@ -3341,132 +4382,57 @@
     document.addEventListener('DOMContentLoaded', () => {
       initMonaco(() => {
         loadProjects();  // Load projects first (multi-projet)
-        initScrollSync();
-      });
-      initResizer();
-
-      // Collapse buttons
-      document.getElementById('collapse-sidebar-btn').addEventListener('click', toggleSidebar);
-      document.getElementById('collapse-preview-btn').addEventListener('click', togglePreview);
-
-      // Preview Light/Dark mode toggle
-      document.getElementById('preview-mode-toggle').addEventListener('click', () => {
-        const previewPane = document.getElementById('preview-pane');
-        const toggleBtn = document.getElementById('preview-mode-toggle');
-        previewPane.classList.toggle('light-mode');
-        toggleBtn.textContent = previewPane.classList.contains('light-mode') ? '🌙' : '☀️';
-      });
-
-      // Copy markdown to clipboard
-      document.getElementById('preview-copy-btn').addEventListener('click', async () => {
-        const copyBtn = document.getElementById('preview-copy-btn');
-
-        // Get markdown content from editor
-        let markdownContent = '';
-        if (state.editor) {
-          markdownContent = state.editor.getValue();
-        }
-
-        if (!markdownContent) {
-          console.warn('No content to copy');
-          return;
-        }
-
-        // Clean section delimiters before copying
-        const cleanContent = markdownContent
-          .replace(/<!-- ═+[^>]*-->\n?/g, '')  // Remove ═══ lines
-          .replace(/<!-- 📄 SECTION:[^>]*-->\n?/g, '')  // Remove section markers
-          .replace(/\n{3,}/g, '\n\n')  // Normalize multiple newlines
-          .trim();
-
-        try {
-          await navigator.clipboard.writeText(cleanContent);
-
-          // Visual feedback
-          const originalText = copyBtn.textContent;
-          copyBtn.textContent = '✓';
-          copyBtn.classList.add('copied');
-
-          setTimeout(() => {
-            copyBtn.textContent = originalText;
-            copyBtn.classList.remove('copied');
-          }, 1500);
-        } catch (err) {
-          console.error('Failed to copy:', err);
-        }
-      });
-
-      // Project selector
-      document.getElementById('project-select').addEventListener('change', async (e) => {
-        const project = e.target.value;
-        state.currentProject = project;
-        state.currentAgent = null;
-        state.agents = {};
-        // Reset include completions cache when project changes
-        state.includeCompletions = [];
-        state.availableIncludes = {};
-        if (project) {
-          localStorage.setItem('prompt-studio-project', project);
-          await loadAgents();
-        } else {
-          const agentSelect = document.getElementById('agent-select');
-          agentSelect.innerHTML = '<option value="">Sélectionnez un projet d\'abord</option>';
-        }
-        // Clear editor
-        if (state.editor) state.editor.setValue('');
-        document.getElementById('sections-list').innerHTML = '';
-      });
-
-      // Agent selector - auto-load all sections
-      document.getElementById('agent-select').addEventListener('change', async (e) => {
-        const agent = e.target.value;
-        console.log('[Agent Select] Selected agent:', agent);
-        if (agent && !agent.includes('<!--')) {
-          state.currentAgent = agent;
-          localStorage.setItem('prompt-studio-agent', agent);
-          renderSections(agent, state.currentLang);
-          await loadAllSections(agent, state.currentLang);
-          // Reset include completions cache when agent changes
-          state.includeCompletions = [];
-        } else if (agent.includes('<!--')) {
-          console.error('[Agent Select] Invalid agent value:', agent);
-        }
       });
 
       // Include section select - for insert include modal
       document.getElementById('include-section-select').addEventListener('change', onIncludeSectionChange);
 
-      // Language toggle
-      document.getElementById('lang-fr').addEventListener('click', async () => {
-        if (state.currentLang === 'fr') return; // Already FR
-        state.currentLang = 'fr';
-        document.getElementById('lang-fr').classList.add('active');
-        document.getElementById('lang-en').classList.remove('active');
-        if (state.currentAgent) {
-          renderSections(state.currentAgent, 'fr');
-          // Reload all sections in new language
-          await loadAllSections(state.currentAgent, 'fr');
-        }
+      // Split mode selectors
+      document.querySelectorAll('.split-project-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const panelId = e.target.dataset.panel;
+          onSplitProjectChange(panelId, e.target.value);
+        });
       });
 
-      document.getElementById('lang-en').addEventListener('click', async () => {
-        if (state.currentLang === 'en') return; // Already EN
-        state.currentLang = 'en';
-        document.getElementById('lang-en').classList.add('active');
-        document.getElementById('lang-fr').classList.remove('active');
-        if (state.currentAgent) {
-          renderSections(state.currentAgent, 'en');
-          // Reload all sections in new language
-          await loadAllSections(state.currentAgent, 'en');
-        }
+      document.querySelectorAll('.split-agent-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const panelId = e.target.dataset.panel;
+          onSplitAgentChange(panelId, e.target.value);
+        });
       });
 
-      // Buttons
-      document.getElementById('btn-save').addEventListener('click', saveSection);
-      document.getElementById('btn-diff').addEventListener('click', showDiff);
-      document.getElementById('diff-close').addEventListener('click', closeDiff);
-      document.getElementById('btn-generate').addEventListener('click', generatePrompt);
-      document.getElementById('btn-toggle-expand').addEventListener('click', toggleExpandIncludes);
+      document.querySelectorAll('.split-lang-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const panelId = e.target.dataset.panel;
+          const lang = e.target.dataset.lang;
+          onSplitLangChange(panelId, lang);
+        });
+      });
+
+      // Split mode: Preview buttons
+      document.querySelectorAll('.split-preview-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const panelId = e.target.closest('.split-preview-btn').dataset.panel;
+          toggleSplitPreview(panelId);
+        });
+      });
+
+      // Split mode: Diff buttons
+      document.querySelectorAll('.split-diff-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const panelId = e.target.closest('.split-diff-btn').dataset.panel;
+          toggleSplitDiff(panelId);
+        });
+      });
+
+      // Split mode: Expand/Collapse buttons
+      document.querySelectorAll('.split-expand-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const panelId = e.target.closest('.split-expand-btn').dataset.panel;
+          toggleSplitExpandIncludes(panelId);
+        });
+      });
     });
   </script>
 </body>
