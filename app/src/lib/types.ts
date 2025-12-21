@@ -49,6 +49,7 @@ export interface PanelState {
 	content: string;
 	originalContent: string;
 	collapsedContent: string;
+	originalExpandedContent: string; // Conservé lors de l'expansion, jamais écrasé par auto-save
 	sectionBoundaries: SectionBoundary[];
 	hasIncludes: boolean;
 	isModified: boolean;

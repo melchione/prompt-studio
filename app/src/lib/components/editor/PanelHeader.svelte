@@ -6,14 +6,23 @@
 		showToast,
 		setLoading,
 		concatenateSections,
-		parseSectionsFromContent
+		parseSectionsFromContent,
+		detectModifiedIncludes,
+		openSaveIncludeModal,
+		leftPanel,
+		rightPanel
 	} from '$lib/stores/editor.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import LanguageToggle from '$lib/components/ui/LanguageToggle.svelte';
 	import AgentBrowser from './AgentBrowser.svelte';
 	import { FolderOpen, ChevronDown } from 'lucide-svelte';
 
-	let { panel, panelId }: { panel: PanelState; panelId: 'left' | 'right' } = $props();
+	// On reçoit panelId comme prop, mais on utilise directement le store pour la réactivité
+	let { panelId }: { panelId: 'left' | 'right' } = $props();
+
+	// Accès direct au panel depuis le store (référence directe, pas $derived)
+	// panelId ne change pas pendant la vie du composant, donc c'est safe
+	const panel = panelId === 'left' ? leftPanel : rightPanel;
 
 	let agents = $state<{ name: string }[]>([]);
 	let browserOpen = $state(false);
@@ -67,6 +76,7 @@
 				panel.content = content;
 				panel.collapsedContent = content;
 				panel.originalContent = content;
+				panel.originalExpandedContent = ''; // Reset avant expansion
 				panel.sectionBoundaries = boundaries;
 				panel.currentSection = allData.order[0] || null;
 				panel.isModified = false;
@@ -109,7 +119,9 @@
 					showToast('Erreur lors de l\'expansion des includes', 'error');
 					return;
 				}
-				panel.content = data.content || panel.content;
+				const expandedContent = data.content || panel.content;
+				panel.content = expandedContent;
+				panel.originalExpandedContent = expandedContent; // Conserver pour détection des modifications
 				panel.isExpanded = true;
 			} else {
 				showToast('Erreur lors de l\'expansion des includes', 'error');
@@ -123,6 +135,7 @@
 	// Collapse les includes (revenir au contenu original)
 	function collapseIncludes() {
 		panel.content = panel.collapsedContent;
+		panel.originalExpandedContent = ''; // Reset lors du collapse
 		panel.isExpanded = false;
 	}
 
@@ -166,8 +179,23 @@
 
 	// Sauvegarder toutes les sections
 	async function save() {
+		console.log('[save] Called, isExpanded:', panel.isExpanded, 'originalExpandedContent length:', panel.originalExpandedContent?.length);
 		if (!panel.project || !panel.agent) return;
 
+		// Vérifier si des includes ont été modifiés
+		if (panel.isExpanded) {
+			const modifiedIncludes = detectModifiedIncludes(panelId);
+			console.log('[save] modifiedIncludes:', modifiedIncludes.length, modifiedIncludes);
+
+			if (modifiedIncludes.length > 0) {
+				// Ouvrir la modal pour demander comment sauvegarder
+				console.log('[save] Opening modal');
+				openSaveIncludeModal(panelId, modifiedIncludes);
+				return;
+			}
+		}
+
+		// Sauvegarde normale (pas d'includes modifiés)
 		setLoading(true, 'Sauvegarde...');
 		try {
 			// Parser le contenu pour extraire les sections individuelles

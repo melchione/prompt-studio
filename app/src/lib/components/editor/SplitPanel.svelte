@@ -20,7 +20,7 @@
 
 <div class="flex h-full flex-col">
 	<!-- Header avec sélecteurs -->
-	<PanelHeader {panel} {panelId} />
+	<PanelHeader {panelId} />
 
 	<!-- Contenu principal -->
 	<div class="relative flex-1 overflow-hidden">
@@ -31,7 +31,7 @@
 
 		<!-- Éditeur ou Preview ou Diff -->
 		{#if panel.viewMode === 'editor'}
-			<MonacoEditor bind:this={monacoEditor} {panel} {panelId} />
+			<MonacoEditor bind:this={monacoEditor} {panelId} />
 		{:else if panel.viewMode === 'preview'}
 			<MarkdownPreview content={panel.content} />
 		{:else if panel.viewMode === 'diff'}

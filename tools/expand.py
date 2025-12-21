@@ -530,6 +530,116 @@ def list_includes(project: str, agent: str, lang: str, section: str):
         print(f"\nNo includes in {project}/{agent}/{lang}/{section}")
 
 
+def find_reverse_includes(project: str, target_file: str, lang: Optional[str] = None) -> List[Dict]:
+    """
+    Find all files that include a given target file.
+
+    Scans all agents in the project to find files containing:
+    {% include 'target_file' %}
+
+    Args:
+        project: Project name
+        target_file: The include path to search for (e.g., 'common/01-context.md')
+        lang: Optional language filter (fr/en). If None, search all languages.
+
+    Returns:
+        List of dicts with keys: project, agent, lang, section, full_path
+    """
+    agents_dir = get_project_agents_dir(project)
+    dependents = []
+
+    if not agents_dir.exists():
+        return dependents
+
+    # Normalize target for matching
+    # Target can be: 'agent/section.md' or 'agent/lang/section.md'
+    target_parts = target_file.split('/')
+
+    # Build regex patterns to match this include
+    # We need to match both exact path and language-inferred paths
+    patterns = []
+
+    if len(target_parts) == 2:
+        # Format: agent/section.md - matches when language is inferred
+        patterns.append(re.compile(
+            r"\{%\s*include\s*['\"]" + re.escape(target_file) + r"['\"]\s*%\}"
+        ))
+    elif len(target_parts) == 3:
+        # Format: agent/lang/section.md
+        agent_name, target_lang, section_name = target_parts
+        # Also match the short form if current file's lang matches
+        patterns.append(re.compile(
+            r"\{%\s*include\s*['\"]" + re.escape(target_file) + r"['\"]\s*%\}"
+        ))
+        # Also match short form: agent/section.md (when language matches)
+        short_form = f"{agent_name}/{section_name}"
+        patterns.append(re.compile(
+            r"\{%\s*include\s*['\"]" + re.escape(short_form) + r"['\"]\s*%\}"
+        ))
+
+    # Scan all agents
+    for agent_path in agents_dir.iterdir():
+        if not agent_path.is_dir():
+            continue
+
+        agent_name = agent_path.name
+
+        # Scan language directories
+        for lang_path in agent_path.iterdir():
+            if not lang_path.is_dir():
+                continue
+
+            file_lang = lang_path.name
+
+            # Filter by language if specified
+            if lang and file_lang != lang:
+                continue
+
+            # Scan section files
+            for section_path in lang_path.glob("*.md"):
+                section_name = section_path.name
+
+                try:
+                    content = section_path.read_text(encoding="utf-8")
+
+                    # Check if this file includes our target
+                    for pattern in patterns:
+                        if pattern.search(content):
+                            # For short form pattern, verify language matches
+                            if len(target_parts) == 3:
+                                target_lang = target_parts[1]
+                                # Short form only matches if languages match
+                                if pattern.pattern.find(re.escape(f"{target_parts[0]}/{target_parts[2]}")) != -1:
+                                    if file_lang != target_lang:
+                                        continue
+
+                            dependents.append({
+                                "project": project,
+                                "agent": agent_name,
+                                "lang": file_lang,
+                                "section": section_name,
+                                "full_path": str(section_path)
+                            })
+                            break  # Don't add same file twice
+
+                except Exception as e:
+                    # Skip files that can't be read
+                    continue
+
+    return dependents
+
+
+def find_reverse_includes_json(project: str, target_file: str, lang: Optional[str] = None) -> str:
+    """
+    Find reverse includes and return as JSON string.
+
+    Convenience wrapper for API usage.
+    """
+    import json
+    dependents = find_reverse_includes(project, target_file, lang)
+    return json.dumps({"dependents": dependents}, indent=2)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Prompt Studio - Expand/Collapse includes for transparent editing",
@@ -566,6 +676,10 @@ Examples:
     stdin_parser.add_argument("--project", "-p", required=True, help="Project name")
     stdin_parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
 
+    # collapse-stdin command (for API usage - reads expanded content from stdin)
+    collapse_stdin_parser = subparsers.add_parser("collapse-stdin", help="Collapse includes from stdin content")
+    collapse_stdin_parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
+
     # list command
     list_parser = subparsers.add_parser("list", help="List includes in a file")
     list_parser.add_argument("--project", "-p", required=True, help="Project name")
@@ -599,6 +713,13 @@ Examples:
     edit_parser.add_argument("--section", "-s", required=True, help="Section filename")
     edit_parser.add_argument("--editor", "-e", help="Editor to use (default: $EDITOR or vim)")
 
+    # reverse-includes command
+    reverse_parser = subparsers.add_parser("reverse-includes", help="Find files that include a target file")
+    reverse_parser.add_argument("--project", "-p", required=True, help="Project name")
+    reverse_parser.add_argument("--target", "-t", required=True, help="Target include path (e.g., 'common/01-context.md')")
+    reverse_parser.add_argument("--lang", "-l", help="Filter by language (fr/en)")
+    reverse_parser.add_argument("--json", action="store_true", help="Output as JSON")
+
     args = parser.parse_args()
 
     try:
@@ -607,6 +728,17 @@ Examples:
             content = sys.stdin.read()
             expanded = expand_includes(content, args.project, args.lang)
             print(expanded)
+
+        elif args.command == "collapse-stdin":
+            # Read expanded content from stdin and collapse includes
+            import json
+            content = sys.stdin.read()
+            collapsed, modified_files = collapse_includes(content, args.lang)
+            # Output as JSON for API usage
+            print(json.dumps({
+                "content": collapsed,
+                "modifiedFiles": modified_files
+            }))
 
         elif args.command == "list":
             list_includes(args.project, args.agent, args.lang, args.section)
@@ -625,6 +757,19 @@ Examples:
 
         elif args.command == "edit":
             edit_file(args.project, args.agent, args.lang, args.section, editor=args.editor)
+
+        elif args.command == "reverse-includes":
+            dependents = find_reverse_includes(args.project, args.target, args.lang)
+            if args.json:
+                import json
+                print(json.dumps({"dependents": dependents}, indent=2))
+            else:
+                if dependents:
+                    print(f"\nFiles that include '{args.target}':")
+                    for dep in dependents:
+                        print(f"  - {dep['agent']}/{dep['lang']}/{dep['section']}")
+                else:
+                    print(f"\nNo files include '{args.target}'")
 
     except (FileNotFoundError, ValueError, RecursionError) as e:
         print(f"Error: {e}", file=sys.stderr)

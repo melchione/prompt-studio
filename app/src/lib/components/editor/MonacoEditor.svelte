@@ -1,9 +1,23 @@
 <script lang="ts">
 	import type { PanelState } from '$lib/types';
 	import { onMount, onDestroy } from 'svelte';
-	import { persistPanel, triggerAutoSave, manualSave, modals } from '$lib/stores/editor.svelte';
+	import {
+		persistPanel,
+		triggerAutoSave,
+		manualSave,
+		modals,
+		saveToOriginDirect,
+		saveAndRebuildAll,
+		leftPanel,
+		rightPanel
+	} from '$lib/stores/editor.svelte';
 
-	let { panel, panelId }: { panel: PanelState; panelId: 'left' | 'right' } = $props();
+	// On reçoit panelId comme prop, mais on utilise directement le store pour la réactivité
+	let { panelId }: { panelId: 'left' | 'right' } = $props();
+
+	// Accès direct au panel depuis le store (référence directe, pas $derived)
+	// panelId ne change pas pendant la vie du composant, donc c'est safe
+	const panel = panelId === 'left' ? leftPanel : rightPanel;
 
 	let container: HTMLDivElement;
 	let editor = $state<any>(null);
@@ -147,12 +161,22 @@
 		// Écouter les changements
 		editor.onDidChangeModelContent(() => {
 			const newContent = editor.getValue();
+			console.log('[Monaco] Content changed, newContent length:', newContent.length, 'panel.content length:', panel.content.length);
 			if (newContent !== panel.content) {
 				panel.content = newContent;
-				panel.isModified = panel.content !== panel.originalContent;
+
+				// Comparer avec le bon original selon le mode (expanded ou non)
+				const referenceContent = panel.isExpanded
+					? panel.originalExpandedContent
+					: panel.originalContent;
+				console.log('[Monaco] isExpanded:', panel.isExpanded, 'referenceContent length:', referenceContent?.length, 'content length:', panel.content.length);
+				console.log('[Monaco] Are they equal?', panel.content === referenceContent);
+				panel.isModified = panel.content !== referenceContent;
+				console.log('[Monaco] isModified set to:', panel.isModified);
+
 				persistPanel(panelId);
 
-				// Déclencher l'auto-save si modifié
+				// Auto-save si modifié
 				if (panel.isModified) {
 					triggerAutoSave(panelId);
 				}
@@ -166,6 +190,22 @@
 		editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
 			manualSave(panelId);
 		});
+
+		// Raccourci Ctrl+Shift+S pour sauvegarde directe dans l'origine (sans popup)
+		editor.addCommand(
+			monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyS,
+			() => {
+				saveToOriginDirect(panelId);
+			}
+		);
+
+		// Raccourci Ctrl+Alt+S pour sauvegarde origine + rebuild tous les dépendants
+		editor.addCommand(
+			monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.KeyS,
+			() => {
+				saveAndRebuildAll(panelId);
+			}
+		);
 
 		// Action pour insérer un include (clic droit + Ctrl+I)
 		editor.addAction({
@@ -205,12 +245,8 @@
 		}
 	});
 
-	// Mode readonly quand expanded (pour éviter de modifier les includes)
-	$effect(() => {
-		if (editor) {
-			editor.updateOptions({ readOnly: panel.isExpanded });
-		}
-	});
+	// Note: On permet maintenant l'édition des includes expandés
+	// Le système de sauvegarde gère la détection des modifications
 
 	// Fonction pour naviguer vers une section
 	export function goToSection(sectionName: string) {

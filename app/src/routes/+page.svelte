@@ -5,6 +5,7 @@
 	import CreateSectionModal from '$lib/components/modals/CreateSectionModal.svelte';
 	import DeleteConfirmModal from '$lib/components/modals/DeleteConfirmModal.svelte';
 	import InsertIncludeModal from '$lib/components/modals/InsertIncludeModal.svelte';
+	import SaveIncludeModal from '$lib/components/modals/SaveIncludeModal.svelte';
 
 	onMount(async () => {
 		setLoading(true, 'Chargement des projets...');
@@ -32,3 +33,4 @@
 <CreateSectionModal />
 <DeleteConfirmModal />
 <InsertIncludeModal />
+<SaveIncludeModal />
