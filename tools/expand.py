@@ -542,6 +542,9 @@ Examples:
   # Expand a file (output to stdout)
   python tools/expand.py expand --project cowai --agent executive --lang fr --section 02-instructions.md
 
+  # Expand content from stdin (for API usage)
+  echo "content with includes" | python tools/expand.py expand-stdin --project cowai --lang fr
+
   # Expand with local content highlighting
   python tools/expand.py expand --project cowai --agent executive --lang fr --section 02-instructions.md --highlight
 
@@ -556,35 +559,56 @@ Examples:
 """
     )
 
-    # Common arguments
-    parser.add_argument("--project", "-p", required=True, help="Project name")
-    parser.add_argument("--agent", "-a", required=True, help="Agent name")
-    parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
-    parser.add_argument("--section", "-s", required=True, help="Section filename (e.g., 02-instructions.md)")
-
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    # expand-stdin command (for API usage - reads content from stdin)
+    stdin_parser = subparsers.add_parser("expand-stdin", help="Expand includes from stdin content")
+    stdin_parser.add_argument("--project", "-p", required=True, help="Project name")
+    stdin_parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
+
     # list command
-    subparsers.add_parser("list", help="List includes in a file")
+    list_parser = subparsers.add_parser("list", help="List includes in a file")
+    list_parser.add_argument("--project", "-p", required=True, help="Project name")
+    list_parser.add_argument("--agent", "-a", required=True, help="Agent name")
+    list_parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
+    list_parser.add_argument("--section", "-s", required=True, help="Section filename")
 
     # expand command
     expand_parser = subparsers.add_parser("expand", help="Expand includes to stdout")
+    expand_parser.add_argument("--project", "-p", required=True, help="Project name")
+    expand_parser.add_argument("--agent", "-a", required=True, help="Agent name")
+    expand_parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
+    expand_parser.add_argument("--section", "-s", required=True, help="Section filename")
     expand_parser.add_argument("--highlight", "-H", action="store_true", help="Add markers for local content sections")
     expand_parser.add_argument("--html", action="store_true", help="Generate HTML preview with color coding")
 
     # collapse command
     collapse_parser = subparsers.add_parser("collapse", help="Collapse and save from expanded content")
+    collapse_parser.add_argument("--project", "-p", required=True, help="Project name")
+    collapse_parser.add_argument("--agent", "-a", required=True, help="Agent name")
+    collapse_parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
+    collapse_parser.add_argument("--section", "-s", required=True, help="Section filename")
     collapse_parser.add_argument("--input", "-i", required=True, help="Expanded file to read")
     collapse_parser.add_argument("--dry-run", action="store_true", help="Don't write files")
 
     # edit command
     edit_parser = subparsers.add_parser("edit", help="Expand, edit, then collapse")
+    edit_parser.add_argument("--project", "-p", required=True, help="Project name")
+    edit_parser.add_argument("--agent", "-a", required=True, help="Agent name")
+    edit_parser.add_argument("--lang", "-l", default="fr", help="Language (fr/en)")
+    edit_parser.add_argument("--section", "-s", required=True, help="Section filename")
     edit_parser.add_argument("--editor", "-e", help="Editor to use (default: $EDITOR or vim)")
 
     args = parser.parse_args()
 
     try:
-        if args.command == "list":
+        if args.command == "expand-stdin":
+            # Read content from stdin and expand includes
+            content = sys.stdin.read()
+            expanded = expand_includes(content, args.project, args.lang)
+            print(expanded)
+
+        elif args.command == "list":
             list_includes(args.project, args.agent, args.lang, args.section)
 
         elif args.command == "expand":
@@ -603,7 +627,7 @@ Examples:
             edit_file(args.project, args.agent, args.lang, args.section, editor=args.editor)
 
     except (FileNotFoundError, ValueError, RecursionError) as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 

@@ -1,0 +1,252 @@
+@import 'tailwindcss';
+
+@theme {
+	/* Backgrounds - Palette Navy */
+	--color-bg-primary: #0f172a;
+	--color-bg-secondary: #1e293b;
+	--color-bg-tertiary: #334155;
+	--color-bg-editor: #1e1e1e;
+
+	/* Text */
+	--color-text-primary: #f8fafc;
+	--color-text-secondary: #94a3b8;
+	--color-text-muted: #64748b;
+
+	/* Border */
+	--color-border: #475569;
+
+	/* Accent Colors */
+	--color-accent-blue: #3b82f6;
+	--color-accent-green: #22c55e;
+	--color-accent-yellow: #fcd34d;
+	--color-accent-red: #dc2626;
+	--color-accent-purple: #8b5cf6;
+
+	/* Font */
+	--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Base styles */
+html,
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	font-family: var(--font-sans);
+	background-color: var(--color-bg-primary);
+	color: var(--color-text-primary);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--color-bg-tertiary);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-border);
+}
+
+/* Monaco Editor overrides */
+.monaco-editor {
+	font-family: var(--font-mono) !important;
+}
+
+/* Markdown Preview styles */
+.markdown-preview {
+	font-family: var(--font-sans);
+	color: #a3a3a3;
+	line-height: 1.65;
+}
+
+.markdown-preview h1 {
+	font-size: 2.25em;
+	font-weight: 700;
+	color: #f8fafc;
+	margin-top: 32px;
+	margin-bottom: 16px;
+}
+
+.markdown-preview h2 {
+	font-size: 1.8em;
+	color: #e2e8f0;
+	margin-top: 24px;
+	margin-bottom: 12px;
+}
+
+.markdown-preview h3 {
+	font-size: 1.44em;
+	color: #cbd5e1;
+	margin-bottom: 10px;
+}
+
+.markdown-preview p {
+	margin: 12px 0;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+	margin: 12px 0;
+	padding-left: 24px;
+}
+
+.markdown-preview code {
+	background: #1a1a1a;
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-family: var(--font-mono);
+	font-size: 0.85em;
+	color: #f59e0b;
+}
+
+.markdown-preview pre {
+	background: #111111;
+	padding: 14px 16px;
+	border-radius: 6px;
+	overflow-x: auto;
+	margin: 16px 0;
+	border: 1px solid #1f1f1f;
+}
+
+.markdown-preview pre code {
+	background: transparent;
+	padding: 0;
+	color: #d4d4d4;
+}
+
+.markdown-preview blockquote {
+	border-left: 3px solid #404040;
+	padding-left: 16px;
+	color: #737373;
+	font-style: italic;
+}
+
+/* Include markers */
+.include-marker {
+	background: rgba(34, 197, 94, 0.15);
+	border-left: 3px solid var(--color-accent-green);
+	padding: 4px 8px;
+	font-family: var(--font-mono);
+	font-size: 0.8em;
+	color: var(--color-accent-green);
+}
+
+/* Protected tokens highlight */
+.protected-token {
+	background: #6b5b3e;
+	color: #fef3c7;
+	padding: 1px 4px;
+	border-radius: 3px;
+	font-family: var(--font-mono);
+	font-size: 0.85em;
+}
+
+/* Light mode preview */
+.preview-light {
+	background: #faf8f5 !important;
+	color: #57534e !important;
+}
+
+.preview-light h1 {
+	color: #292524 !important;
+}
+
+.preview-light h2 {
+	color: #44403c !important;
+}
+
+.preview-light code {
+	color: #c2410c !important;
+}
+
+/* Animations */
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.animate-spin {
+	animation: spin 1s linear infinite;
+}
+
+.animate-slide-in {
+	animation: slideIn 0.3s ease;
+}
+
+.animate-fade-in {
+	animation: fadeIn 0.2s ease;
+}
+
+/* Monaco Editor Section Decorations */
+.section-delimiter-line {
+	background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%) !important;
+}
+
+.section-delimiter-glyph {
+	background: var(--color-accent-blue) !important;
+	width: 4px !important;
+	margin-left: 2px;
+}
+
+.section-name-line {
+	background: rgba(59, 130, 246, 0.1) !important;
+	font-weight: bold !important;
+}
+
+.section-name-glyph::before {
+	content: '📄';
+	font-size: 12px;
+}
+
+/* Monaco Editor Include Decorations */
+.include-directive-line {
+	background: rgba(34, 197, 94, 0.15) !important;
+	border-left: 3px solid var(--color-accent-green) !important;
+}
+
+.include-glyph {
+	background: var(--color-accent-green) !important;
+	width: 4px !important;
+	margin-left: 2px;
+}
+
+.include-start-line {
+	background: rgba(34, 197, 94, 0.08) !important;
+	border-left: 2px solid rgba(34, 197, 94, 0.5) !important;
+}
+
+.include-end-line {
+	background: rgba(34, 197, 94, 0.08) !important;
+	border-left: 2px solid rgba(34, 197, 94, 0.5) !important;
+}

@@ -9,7 +9,12 @@
       "Bash(open http://localhost:8421)",
       "Bash(lsof:*)",
       "Bash(find:*)",
-      "Bash(du:*)"
+      "Bash(du:*)",
+      "Bash(npm install)",
+      "Bash(/bin/bash -c \"cd /Users/melkione/Projets/Cowai/prompt-studio/app && npm install\")",
+      "Bash(/bin/bash -c \"cd /Users/melkione/Projets/Cowai/prompt-studio/app && npm run dev 2>&1 &\")",
+      "Bash(/usr/bin/curl -s \"http://localhost:5173/api/projects/agents_metier/agents/processdesigner/fr/all\")",
+      "Bash(/usr/bin/curl -s \"http://localhost:5173\")"
     ]
   }
 }

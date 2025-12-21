@@ -1,4 +1,9 @@
 # State files (user-specific)
+app/.installed-version
+
+# Node.js
+app/node_modules/
+app/.svelte-kit/
 
 # Projects data (user-specific)
 
